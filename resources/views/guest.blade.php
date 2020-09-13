@@ -46,7 +46,7 @@
                 </div>
             </div>
         </nav>
- <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url('/images/bg1.jpg')">
+ <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
         <div class="wrapper wrapper--w680">
             <div class="card card-4">
                 <div class="card-body" >
