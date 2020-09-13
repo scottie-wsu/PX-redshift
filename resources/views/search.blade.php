@@ -55,7 +55,7 @@
             </div>
         </nav>
 
-<body style="background-image: url('/images/bg1.jpg')">
+<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
 <div class="overflow-auto">
  @if(isset($details))
