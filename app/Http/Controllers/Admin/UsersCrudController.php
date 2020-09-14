@@ -86,8 +86,15 @@ class UsersCrudController extends CrudController
 
     protected function setupShowOperation()
     {
-        $this->crud->setFromDb(); // columns
-        //$this->setupListOperation();
+        $this->crud->denyAccess(['delete']);
+        $this->crud->set('show.setFromDb', false);
+        CRUD::column('email')->type('email');
+        CRUD::column('name')->type('name');
+        CRUD::column('institution')->type('name');
+
+        CRUD::column('level')->type('boolean')->label('Admin privileges enabled');
+        //$this->crud->setFromDb(); // columns
+        $this->setupListOperation();
 
 
         /**

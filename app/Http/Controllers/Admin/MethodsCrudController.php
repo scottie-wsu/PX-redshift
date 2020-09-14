@@ -43,9 +43,27 @@ class MethodsCrudController extends CrudController
     protected function setupListOperation()
     {
 
+        $count = Methods::count();
+
+        for($i=0;$i<$count;$i++){
+            $query = Methods::select('*')->where('method_id', $i+1)->first();
+            //use first instead of get so no need to extract array from object
+            $savedPath = $query->python_script_path;
+            $explodedSavedPath = explode("/",$savedPath);
+            //splitting the saved path on the slash so we only rename the file not the path
+            if($query->method_name != $explodedSavedPath[1]){
+                $query->python_script_path = "scripts/" . $query->method_name . "/" . $query->method_name .".py";
+                $query->save();
+            }
+        }
+
+
         CRUD::column('method_name')->type('text');
         //CRUD::column('python_script_path')->type('file');
         CRUD::column('method_description')->type('text');
+        CRUD::column('python_script_path')->type('text');
+
+        //dump($count);
 
     }
 
@@ -148,13 +166,22 @@ class MethodsCrudController extends CrudController
             'type' => 'upload',
             'upload' => true,
             'disk' => 'public',
-
-        
 ];
 
         $this->crud->addFields($fields);
         $this->crud->addField('method_name');
         $this->crud->addField('method_description');
+        //$this->crud->addSaveAction([
+            //'name' => 'save_method',
+            //'visible' => function ($crud) {
+            //    return $crud->hasAccess('list');
+            //},
+            //'redirect' => function ($crud, $request, $itemId = null) {
+
+               //return $request->has('http_referrer') ? $request->get('http_referrer') : $crud->route;
+            //},
+            //'button_text' => 'Save changes',
+        //]);
         $this->crud->removeSaveActions(['save_and_new', 'save_and_edit', 'save_and_preview']);
 
 

@@ -54,6 +54,7 @@ class CalculationController extends Controller
 
         while($lineCounter < $lineCount){
             $data = fgetcsv($file, $delimiter= ",");
+            //checking if first element is numeric so that a header rows isn't submitted
             if(is_numeric($data[0])){ //sizeof($data) > 14 &&
                 $galaxy[$i] = new redshifts();
                 //should we be assigning assigned_calc_id if it's a primary key?
@@ -73,50 +74,48 @@ class CalculationController extends Controller
                 $galaxy[$i]->infrared_K =  floatval($data[13]);
                 $galaxy[$i]->radio_one_four =  floatval($data[14]);
                 $galaxy[$i]->user_ID = auth()->id();
-                //$galaxy[$counter]->save();
-                $galaxy_ID[$i] = DB::getPdo()->lastInsertId();
-                //
-                $galaxy[$i]->method_id = 1;//(int)$request->input('methods');
                 $galaxy[$i]->toJson();
                 $i++;
             }
             $lineCounter++;
-            //dump($galaxy);
   		}
 		fclose($file);
 
+        $methodCount = methods::count();
+        $x = 0;
 
-        //setting up all required API data to send via JSON
+        for($i=1;$i<$methodCount+1;$i++){
+            if($request->input('method_id_for_files'.$i)!= null){
+                $methodRequests[$x] = $request->input('method_id_for_files'.$i);
+                $x = $x+1;
+            }
+        }
+
+        $arrayCount = count($galaxy);
+        $galaxy[$arrayCount] = new redshifts();
+        $galaxy[$arrayCount]->methods = $methodRequests;
+
+        //creating token logic - todo, add a way to pull hashed password with selectraw (bad sec?)
+        $userEmail = User::select('email')->where('id', auth()->id())->first();
+        $mergeData = $userEmail . " : " . random_bytes(32);
+        $cipherMethod = "aes-128-cbc";
+        $key = "5rCBIs9Km!!cacr1";
+        $iv = "123hasdba036vpax";
+        $tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
+
+        $galaxy[$arrayCount]->token = $tokenData;
+        //$galaxy[$arrayCount]->method_id = 1;
+        $galaxy[$arrayCount]->toJson();
+
+        //setting up all required API data to send via JSON.
+        //using a copied variable here in case more processing needs to be done in future
         $dataJSON = $galaxy;
-        //add method ID so API knows what method to use on the data
-        //$dataJSON = $dataAPI->toJSON();
         ////initialising the guzzle client
         $urlAPI = 'http://127.0.0.1:5000';
         $client = new Client(['base_uri' => $urlAPI]);
         ////writing the code to send data to the API
         $client->request('POST', '/', ['json' => $dataJSON]);
 
-        //$calculate = array();
-        //$method = methods::select('python_script_path')->where('method_id', $request->input('method_id_for_files'))->get();
-        //$method = collect($method)->pluck('python_script_path')->toArray();
-
-    	//for($i = 0; $i < $counter; $i++){
-    			//$process = new Process('python ' . $method[0]. ' ' . $str[$i]);
-        		//$calculate[$i] = new calculations();
-
-       			//try {
-              		//$process->mustRun();
-             		//$calculate[$i]->redshift_result = $process->getOutput();
-                	//$calculate[$i]->galaxy_id = $galaxy_ID[$i];
-    				//$calculate[$i]->method_id = $request->input('method_id_for_files');
-        		//} catch (ProcessFailedException $exception) {
-           			 //$calculate[$i]->redshift_result = -100;
-        		//}
-
-        //}
-		//for($i = $counter - 1; $i >= 0; $i--){
-			//$calculate[$i]->save();
-        //}
         return redirect('/history');
     }
 
@@ -254,7 +253,6 @@ class CalculationController extends Controller
     public function store(Request $request){
 
         $galaxy = new redshifts();
-    	$calculate = new calculations();
 		$galaxy->assigned_calc_ID = $request->input('assigned_calc_ID');
     	$galaxy->optical_u = $request->input('optical_u');
     	$galaxy->optical_v = $request->input('optical_v');
@@ -271,54 +269,33 @@ class CalculationController extends Controller
     	$galaxy->infrared_K = $request->input('infrared_K');
         $galaxy->radio_one_four = $request->input('radio_one_four');
     	$galaxy->user_ID = auth()->id();
-    	// optical g + optical u
-    	//$str =  $galaxy->optical_u . " " . $galaxy->optical_g . " " . $galaxy->optical_r  . " " . $galaxy->optical_i . " " . $galaxy->optical_z .  " " . $galaxy->infrared_three_six . " " . $galaxy->infrared_four_five . " " . $galaxy->infrared_five_eight . " " . $galaxy->infrared_eight_zero . " " . $galaxy->infrared_J . " " . $galaxy->infrared_K  . " " .  $galaxy->radio_one_four;
-   		//adds a / to command characters
-    	//$str = escapeshellcmd($str);
+    	$galaxy->methods = $request->input('methods');
 
+        $userEmail = User::select('email')->where('id', auth()->id())->first();
+        $mergeData = $userEmail . " : " . random_bytes(32);
+        $cipherMethod = "aes-128-cbc";
+        $key = "5rCBIs9Km!!cacr1";
+        $iv = "123hasdba036vpax";
+        $tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
 
+        $galaxy->token = $tokenData;
 
-        $galaxy->save();
-   		$calculate->galaxy_id = DB::getPdo()->lastInsertId();
-
-        $calculate->method_id = (int)$request->input('methods');
-
-        //using this reset command as the code below isn't compatible with an array of methods,
-        //and there's no point fixing it when we won't be using it once the API is up and running
-        //also for some reason putting calculate->methodid[0] gave errors about array to str
-        $reset = $calculate->method_id[0];
-
-        $method = methods::select('python_script_path')->where('method_id', $reset)->get();
-        $method = collect($method)->pluck('python_script_path')->toArray();
-
-        //$process = new Process(['c:\Python27\python27.exe', $method[0], $galaxy->optical_u, $galaxy->optical_v,
-            //$galaxy->optical_g, $galaxy->optical_r, $galaxy->optical_i, $galaxy->optical_z, $galaxy->infrared_three_six,
-            //$galaxy->infrared_four_five, $galaxy->infrared_five_eight, $galaxy->infrared_eight_zero,
-            //$galaxy->infrared_J, $galaxy->infrared_H, $galaxy->infrared_K, $galaxy->radio_one_four]);
-
-
-    	//try {
-    	    //$process->mustRun();
-            //$calculate->redshift_result = 123123; //$process->getOutput();
-            //$calculate->redshift_result = rtrim($calculate->redshift_result);
-		//} catch (ProcessFailedException $exception) {
-    	    //$calculate->redshift_result = -150;
-        //}
-        //$calculate->save();
+        //$calculate->method_id = (int)$request->input('methods');
+        //return(dump($galaxy));
 
         //setting up all required API data to send via JSON
-        $dataAPI = clone $galaxy;
-        //add method ID so API knows what method to use on the data
-        $dataAPI->method_id = $calculate->method_id;
-        $dataJSON = $dataAPI->toJSON();
+        $dataJSON[0] = $galaxy->toJSON();
+        //$dataJSON[1] = $galaxy[1]->toJSON();
+
+        //return(dump($dataJSON));
         ////initialising the guzzle client
         $urlAPI = 'http://127.0.0.1:5000';
         $client = new Client(['base_uri' => $urlAPI]);
         ////writing the code to send data to the API
         $client->request('POST', '/', ['json' => $dataJSON]);
 
-     	$red_result=$calculate->redshift_result;
-        return redirect('/history')->with(compact('red_result'));
+     	//$red_result=$calculate->redshift_result;
+        return redirect('/history');
 
 
     }

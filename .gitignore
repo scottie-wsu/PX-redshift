@@ -1,3 +1,11 @@
 
 packages/packages.zip
 redshiftFixedFolderstructure.zip
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/PX-redshift.iml
+.idea/phpunit.xml
+.idea/php.xml
+.idea/modules.xml
+.idea/deployment.xml
+.idea/codeStyles/codeStyleConfig.xml
