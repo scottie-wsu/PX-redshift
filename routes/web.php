@@ -15,7 +15,6 @@ Route::get('/', function () {
     return view('auth.login');
 })->middleware('guest');
 Route::get('/guest','guestController@index')->name('guest')->middleware('guest');
-
 Route::post('/guest','guestController@store')->middleware('guest');
 Route::any('/search','CalculationController@search')->name('search');
 

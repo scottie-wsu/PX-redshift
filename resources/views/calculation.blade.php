@@ -203,12 +203,12 @@
 
                                 <!-- This script updates the hidden inputs further below to match the inputs the user changes -->
                                     <script>
-                                function update_var(element) {
-                                     var methodValue = element.value;
-                                     fileFunctionName = "method_id_for_files";
-                                	 document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
-                                }
-                                </script>
+                                        function update_var(element) {
+                                        var methodValue = element.value;
+                                        fileFunctionName = "method_id_for_files";
+                                	    document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
+                                    }
+                                    </script>
                                 </div>
 
                             </div>

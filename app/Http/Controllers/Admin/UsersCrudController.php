@@ -73,15 +73,12 @@ class UsersCrudController extends CrudController
         $this->crud->denyAccess('operation');
         $this->crud->denyAccess(['create', 'delete']);
         $this->crud->allowAccess(['read', 'update']);
-        //$this->crud->addButtonFromView('line', 'reset', 'reset', 'beginning');
 
+        ////hides current user from listing
+        //$this->crud->addClause('where', 'id', '!=', auth()->id());
+        //because the guestuser right now is id 4 in users table
+		$this->crud->addClause('where', 'id', '!=', 4);
 
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
     }
 
     protected function setupShowOperation()
@@ -96,12 +93,6 @@ class UsersCrudController extends CrudController
         //$this->crud->setFromDb(); // columns
         $this->setupListOperation();
 
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
     }
 
     /**
@@ -116,11 +107,6 @@ class UsersCrudController extends CrudController
 
         CRUD::setFromDb(); // fields
 
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
     }
 
     /**
@@ -135,31 +121,57 @@ class UsersCrudController extends CrudController
         //$this->setupCreateOperation();
         $param = Route::current()->parameter('id');
         $paramQuery = User::select('level')->where('id', $param)->get();
+        $adminCheck = User::select('*')
+			->where('level', 1)->count();
+			//->selectRaw('count(*) as count')
+			//->groupBy('level')->get();
+		//dump($adminCheck);
 
-        if($paramQuery[0]->level != 0){
-            $fields[] = [   // CustomHTML
-                'name'      => 'separator',
-                'type'      => 'custom_html',
-                'value'     => '<p>User current status: <b>Administrator</b></p>',
-            ];
-        }
-        else{
-            $fields[] = [   // CustomHTML
-                'name'      => 'separator',
-                'type'      => 'custom_html',
-                'value'     => '<p>User current status: <b>Non-administrator</b></p>',
-            ];
-        }
+		//this way leaves open the possibility of admin loading two pages
+		//and de-admining the two last admins. Solution to fix this would
+		//probably be to implement a custom save action and do the check there
+
+		$currentUserId = auth()->id();
+
+		if((int)$param == $currentUserId){
+			echo '<script>window.location.replace("'. backpack_url('users') .'")</script>';
+		}
+
+		if($adminCheck == 1 && $paramQuery[0]->level != 0){
+			$fields[] = [   // CustomHTML
+				'name'      => 'separator',
+				'type'      => 'custom_html',
+				'value'     => '<p><b>This is the last admin. Cannot have privileges removed.</b></p>',
+			];
+		}
+		else{
+			if($paramQuery[0]->level != 0){
+				$fields[] = [   // CustomHTML
+					'name'      => 'separator',
+					'type'      => 'custom_html',
+					'value'     => '<p>User current status: <b>Administrator</b></p>',
+				];
+			}
+			else{
+				$fields[] = [   // CustomHTML
+					'name'      => 'separator',
+					'type'      => 'custom_html',
+					'value'     => '<p>User current status: <b>Non-administrator</b></p>',
+				];
+			}
 
 
-        $fields[] = [
-            'name' => 'level',
-            'label' => 'Enable administrator access',
-            'type' => 'checkbox',
-            'value' => $paramQuery[0]->level,
+			$fields[] = [
+				'name' => 'level',
+				'label' => 'Enable administrator access',
+				'type' => 'checkbox',
+				'value' => $paramQuery[0]->level,
 
 
-        ];
+			];
+		}
+
+
 
         $this->crud->addFields($fields);
         $this->crud->removeSaveActions(['save_and_new', 'save_and_edit']);
