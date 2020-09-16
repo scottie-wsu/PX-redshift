@@ -7,6 +7,11 @@ use App\Models\Methods;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Support\Facades\Route;
+use mysql_xdevapi\Exception;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+
+
 
 
 /**
@@ -42,10 +47,27 @@ class MethodsCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $count = Methods::count();
+        //doing the file rename logic here as it isn't possible in the model file
+
+
+		$blank = new Methods;
+
+
+		//dump($blank->isDirty());
+
+
+
+
+
+
 
         CRUD::column('method_name')->type('text');
         //CRUD::column('python_script_path')->type('file');
         CRUD::column('method_description')->type('text');
+        CRUD::column('python_script_path')->type('text');
+
+        //dump($count);
 
     }
 
@@ -148,14 +170,12 @@ class MethodsCrudController extends CrudController
             'type' => 'upload',
             'upload' => true,
             'disk' => 'public',
-
-        
-];
+		];
 
         $this->crud->addFields($fields);
         $this->crud->addField('method_name');
         $this->crud->addField('method_description');
-        $this->crud->removeSaveActions(['save_and_new', 'save_and_edit', 'save_and_preview']);
+		$this->crud->removeSaveActions(['save_and_new', 'save_and_edit', 'save_and_preview']);
 
 
 

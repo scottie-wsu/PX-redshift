@@ -1,3 +1,15 @@
 
 packages/packages.zip
 redshiftFixedFolderstructure.zip
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/PX-redshift.iml
+.idea/phpunit.xml
+.idea/php.xml
+.idea/modules.xml
+.idea/deployment.xml
+.idea/codeStyles/codeStyleConfig.xml
+.idea/dataSources/1b5beb87-ab84-41cf-a739-19d8a26cf825/storage_v2/_src_/schema/information_schema.FNRwLQ.meta
+.idea/dataSources/1b5beb87-ab84-41cf-a739-19d8a26cf825.xml
+.idea/dataSources.xml
+.idea/dataSources.local.xml

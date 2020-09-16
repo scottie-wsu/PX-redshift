@@ -31,12 +31,13 @@ class CreateRedshiftsTable extends Migration
             $table->double('infrared_K', 16, 8);
             $table->double('radio_one_four', 16, 8);
             $table->text('status');
-            $table->text('jobcount');
-            /*$table->float('redshift_result');*/
+            $table->integer('job_id')->unsigned();
+			$table->integer('user_id')->unsigned()->default(1);
             $table->timestamps();
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id', 'redshifts_ibfk_1')->references('id')->on('users');
-        });
+            $table->foreign('user_id', 'redshifts_ibfk_1')->references('user_id')->on('jobs');
+			$table->foreign('job_id', 'redshifts_ibfk_2')->references('job_id')->on('jobs');
+
+		});
     }
 
     /**

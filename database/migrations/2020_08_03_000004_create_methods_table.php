@@ -24,21 +24,21 @@ class CreateMethodsTable extends Migration
         DB::table('methods')->insert(array(
             [
                 'method_name' => 'mean',
-                'python_script_path' => 'mean.py',
+                'python_script_path' => 'scripts/mean.py',
                 'method_description' => 'Average of all measurements',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'method_name' => 'sum',
-                'python_script_path' => 'sum.py',
+                'python_script_path' => 'scripts/sum.py',
                 'method_description' => 'Sum of all measurements',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'method_name' => 'minus',
-                'python_script_path' => 'minus.py',
+                'python_script_path' => 'scripts/minus.py',
                 'method_description' => 'subtracting all measurements',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

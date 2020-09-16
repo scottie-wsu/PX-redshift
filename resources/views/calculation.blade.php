@@ -18,9 +18,6 @@
   			 transition: 0.3s;
         }
         .btn_upload:hover {opacity: 0.9}
-        .chkbox {
-            vertical-align: middle;
-        }
         h2 {
             display: inline-block;
         }
@@ -89,7 +86,7 @@
             <div class="card card-4">
                 <div class="card-body" >
                     <h2 class="title">Calculation Form</h2>
-                    <form method="POST" action="{{ route('calculation.index') }}" style="align-items:center;">
+                    <form name="form1" method="POST" action="{{ route('calculation.index') }}" style="align-items:center;">
                         @csrf
                         <div class="row">
                             <div class="col-4">
@@ -201,14 +198,17 @@
                                 <div class="input-group" style="text-align:center">
                                     <label class="label text-md-right">Calculation Method</label>
                                         @foreach($checkboxes as $checkbox)
-                                        <input tabindex="0" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" > {{ $checkbox->method_name}}</br>
+                                        <input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" > <label for="methods[]">{{ $checkbox->method_name}}</label></br>
                                         @endforeach
 
-                                <script>
-                                function update_var() {
-                                	 document.getElementById("method_id_for_files").value = document.getElementById("method").value;
-								}
-                                </script>
+                                <!-- This script updates the hidden inputs further below to match the inputs the user changes -->
+                                    <script>
+                                        function update_var(element) {
+                                        var methodValue = element.value;
+                                        fileFunctionName = "method_id_for_files";
+                                	    document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
+                                    }
+                                    </script>
                                 </div>
 
                             </div>
@@ -219,28 +219,40 @@
 
                         </div>
                     </form>
+
+
                          <div class="input-group" style = "margin-top: 20px">
                          	<div class="custom-file">
+
                         		<form enctype="multipart/form-data" action="{{ route('upload') }}" method="POST">
-                            	@csrf
-                                <input type="file" class="custom-file-input" id="fileInput" name="fileToUpload">
 
-   							 	<label id = "inputLable" class="custom-file-label" for="fileInput">
-                                <script>
-                                document.getElementById('fileInput').onchange = function () {
-  									 document.getElementById('inputLable').innerHTML = this.value.replace(/.*[\/\\]/, '');
-								};
-                                </script>
-                                Choose File
-                                </label>
+                                    <!-- creating hidden inputs that mirror the visible inputs in the single input form -->
+                                    @php
+                                        $count = \App\methods::count();
+                                        for($i=1;$i<$count+1;$i++){
+                                            echo '<input style="display:none" id="method_id_for_files'.$i.'" name="method_id_for_files'.$i.'" type="checkbox" value="'.$i.'">';
+                                        }
 
+                                    @endphp
 
-							</div>
+                            	    @csrf
+                                    <input type="file" class="custom-file-input" id="fileInput" name="fileToUpload">
+
+   							 	    <label id = "inputLabel" class="custom-file-label" for="fileInput">Choose File
+                                    <script>
+                                    document.getElementById('fileInput').onchange = function () {
+  									    document.getElementById('inputLabel').innerHTML = this.value.replace(/.*[\/\\]/, '');
+								    };
+                                    </script>
+                                    </label>
+
+                            </div>
+
                             <div class="input-group-append" style="padding-left:15px">
-
-   									 <button class ="btn_upload btn--radius-2 btn--blue" style="height:92%" type="submit" value="Upload">Submit File</button>
+                                <button class ="btn_upload btn--radius-2 btn--blue" style="height:92%" type="submit" value="Upload">Submit File</button>
   							</div>
-                        </form>
+                             </form>
+
                     	</div>
                 </div>
             </div>

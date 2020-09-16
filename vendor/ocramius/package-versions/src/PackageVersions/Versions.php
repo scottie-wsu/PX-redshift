@@ -41,6 +41,7 @@ final class Versions
   'facade/ignition-contracts' => '1.0.1@aeab1ce8b68b188a43e81758e750151ad7da796b',
   'fideloper/proxy' => '4.4.0@9beebf48a1c344ed67c1d36bb1b8709db7c3c1a8',
   'filp/whoops' => '2.7.3@5d5fe9bb3d656b514d455645b3addc5f7ba7714d',
+  'fx3costa/laravelchartjs' => '2.8.0@f6560fa90ad2b12e11959fb5addda045d068f224',
   'guzzlehttp/guzzle' => '7.0.1@2d9d3c186a6637a43193e66b097c50e4451eaab2',
   'guzzlehttp/promises' => 'v1.3.1@a59da6cf61d80060647ff4d3eb2c03a2bc694646',
   'guzzlehttp/psr7' => '1.6.1@239400de7a173fe9901b9ac7c06497751f00727a',
@@ -135,7 +136,7 @@ final class Versions
   'sebastian/version' => '2.0.1@99732be0ddb3361e16ad77b68ba41efc8e979019',
   'theseer/tokenizer' => '1.2.0@75a63c33a8577608444246075ea0af0d052e452a',
   'webmozart/assert' => '1.9.1@bafc69caeb4d49c39fd0779086c03a3738cbb389',
-  'laravel/laravel' => 'No version set (parsed as 1.0.0)@',
+  'laravel/laravel' => 'dev-Scott@6ae1843efe0779aa82ad4c790847063f575360dd',
 );
 
     private function __construct()
