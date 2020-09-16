@@ -1,5 +1,5 @@
 @extends(backpack_view('blank'))
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
 
 @section('header')
     <style>
@@ -53,7 +53,12 @@
 @endsection
 
 @section('content')
-
+	<div style="width:75%;">
+		{!! $chartjs->render() !!}
+	</div>
+	<div style="width:75%;">
+		{!! $chartjs1->render() !!}
+	</div>
     @php
         use App\methods;
         use App\calculations;
@@ -62,79 +67,6 @@
 
 
 
-        $widgets['after_content'][] = [
-        'type' => 'div',
-        'class' => 'row',
-        'content' => [ // widgets
-
-            //institutions chart
-              [
-                'type' => 'chart',
-                'wrapperClass' => 'col-md-6',
-                // 'class' => 'col-md-6',
-                'controller' => \App\Http\Controllers\Admin\Charts\InstitutionsChartController::class,
-                'content' => [
-                    'header' => 'Users and jobs completed per institution', // optional
-                    // 'body' => 'This chart should make it obvious how many new users have signed up in the past 7 days.<br><br>', // optional
-
-                ]
-
-            ],
-        //breakdown of jobs completed per user - not particularly useful right now, need feedback
-        [
-            'type' => 'chart',
-            'wrapperClass' => 'col-md-6',
-            // 'class' => 'col-md-6',
-            'controller' => \App\Http\Controllers\Admin\Charts\JobsChartController::class,
-            'content' => [
-                'header' => 'Jobs done per user', // optional
-                // 'body' => 'This chart should make it obvious how many new users have signed up in the past 7 days.<br><br>', // optional
-
-            ]
-        ],
-
-        //breakdown of calcs per method, pie chart
-        [
-            'type' => 'chart',
-            'wrapperClass' => 'col-md-6',
-            // 'class' => 'col-md-6',
-            'controller' => \App\Http\Controllers\Admin\Charts\MethodUseChartController::class,
-            'content' => [
-                'header' => 'Breakdown of all calculations by method used', // optional
-                // 'body' => 'This chart should make it obvious how many new users have signed up in the past 7 days.<br><br>', // optional
-
-            ]
-        ],
-
-        ////breakdown of calcs per method, pie chart
-        //[
-            //'type' => 'chart',
-            //'wrapperClass' => 'col-md-6',
-            //// 'class' => 'col-md-6',
-            //'controller' => \App\Http\Controllers\Admin\Charts\WeeklyMethodUseChartChartController::class,
-            //'content' => [
-                //'header' => 'Breakdown of what methods have been used in the past week', // optional
-                //// 'body' => 'This chart should make it obvious how many new users have signed up in the past 7 days.<br><br>', // optional
-
-            //]
-        //],
-
-        //redshifts histogram
-              [
-                'type' => 'chart',
-                'wrapperClass' => 'col-md-6',
-                // 'class' => 'col-md-8',
-                'controller' => \App\Http\Controllers\Admin\Charts\RedshiftsChartController::class,
-                'content' => [
-                    'header' => 'Redshift Result Frequency', // optional
-                    // 'body' => 'This chart should make it obvious how many new users have signed up in the past 7 days.<br><br>', // optional
-
-                ]
-            ]
-            ]
-
-
-    ];
 
 
 

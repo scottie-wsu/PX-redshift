@@ -59,12 +59,13 @@ class guestController extends Controller
 		$galaxy->infrared_H = $request->input('infrared_H');
 		$galaxy->infrared_K = $request->input('infrared_K');
 		$galaxy->radio_one_four = $request->input('radio_one_four');
-		//todo - this is reliant on guest being id 4 in the users table.
-		$galaxy->user_ID = 4;
+
+		//todo - this is reliant on guest being id 1 in the users table.
+		$galaxy->user_ID = 1;
 		$galaxy->methods = $request->input('methods');
 
-		//todo - this is reliant on guest being id 4 in the users table.
-		$userEmail = User::select('email')->where('id', 4)->first();
+		//todo - this is reliant on guest being id 1 in the users table.
+		$userEmail = User::select('email')->where('id', 1)->first();
 		$mergeData = $userEmail . " : " . random_bytes(32);
 		$cipherMethod = "aes-128-cbc";
 		$key = "5rCBIs9Km!!cacr1";
@@ -80,8 +81,10 @@ class guestController extends Controller
 		////writing the code to send data to the API
 		$client->request('POST', '/', ['json' => $dataJSON]);
 
+
 		//todo - implement waiter page for guest too, then the link on that page when the calc
 		//todo - completes is just the result page (w/ updates) with the result
+		$red_result = 1;
 		return(dump($red_result));
          return view('result',compact('red_result'));
     }
