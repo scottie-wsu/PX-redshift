@@ -60,15 +60,30 @@
 		{!! $chartjs1->render() !!}
 	</div>
     @php
-        use App\methods;
+        use App\redshifts;
         use App\calculations;
         use Illuminate\Support\Facades\DB;
         use Carbon\Carbon;
 
+		$read = redshifts::select('calculation_id')->where('status', 'READ')->get()->count();
+		$completed = redshifts::select('calculation_id')->where('status', 'COMPLETED')->get()->count();
+		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
+		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
 
-
-
-
+		$working = $processing+$submitted;
+		//print_r($working);
+		$set = $processing+$submitted+$completed;
+		$percentage = $working/$set;
+		$progress = (1-$percentage)*100;
 
     @endphp
+	<div style="width:75%;">
+		@php print_r("Number of calculations currently queued: " . $submitted) @endphp
+		<br>
+		@php print_r("Number of calculations currently processing: " . $processing) @endphp
+		<br>
+
+
+	</div>
+
 @endsection

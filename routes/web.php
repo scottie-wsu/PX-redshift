@@ -22,6 +22,7 @@ Route::any('/search','CalculationController@search')->name('search');
 
 Route::get('/csv', 'CalculationController@export')->name('csv');
 
+//csv file submit
 Route::post('/upload', 'CalculationController@import')->name('upload');
 
 Route::resource('/calculation', 'CalculationController');

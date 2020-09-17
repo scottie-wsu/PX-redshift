@@ -219,35 +219,35 @@ class CalculationController extends Controller
 
     public function search(Request $req)
     {
-        //
-        $pages=20;
-        $q = $req->input('q');
-    $user = calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-     ->where('redshifts.user_ID', auth()->id())->where(function ($query) use ($q)  {
-    $query->orWhere('assigned_calc_ID','LIKE','%'.$q.'%')
-    ->orWhere('redshifts.optical_u','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_v','LIKE','%'.$q.'%')->
-    orWhere('optical_g','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_r','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_i','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_z','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_three_six','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_five_eight','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_eight_zero','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_J','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_H','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_K','LIKE','%'.$q.'%')->
-    orWhere('redshifts.radio_one_four','LIKE','%'.$q.'%')->
-    orWhere('calculations.redshift_result','LIKE','%'.$q.'%');
-})->paginate($pages);
+				//
+			$pages=20;
+			$q = $req->input('q');
+			$user = calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
+			 ->where('redshifts.user_ID', auth()->id())->where(function ($query) use ($q)  {
+			$query->orWhere('assigned_calc_ID','LIKE','%'.$q.'%')
+			->orWhere('redshifts.optical_u','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_v','LIKE','%'.$q.'%')->
+			orWhere('optical_g','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_r','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_i','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_z','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_three_six','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_five_eight','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_eight_zero','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_J','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_H','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_K','LIKE','%'.$q.'%')->
+			orWhere('redshifts.radio_one_four','LIKE','%'.$q.'%')->
+			orWhere('calculations.redshift_result','LIKE','%'.$q.'%');
+			})->paginate($pages);
 
-    if(count($user) > 0){
-        $details=1;
-        return view('search',compact('user','details'));
-    }
-    else {
-
-        return view ('search')->withMessage('No Details found. Try to search again!');}
+			if(count($user) > 0){
+				$details=1;
+				return view('search',compact('user','details'));
+			}
+			else {
+				return view ('search')->withMessage('No Details found. Try to search again!');
+			}
     }
 
     public function store(Request $request){
