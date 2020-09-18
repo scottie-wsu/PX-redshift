@@ -71,7 +71,7 @@ return [
     // ------
 
     // Menu logo. You can replace this with an <img> tag if you have a logo.
-    'project_logo'   => '<b>Red</b>Shift',
+    'project_logo'   => '<b>Red</b>shift',
 
     // Show / hide breadcrumbs on admin panel pages.
     'breadcrumbs' => true,
@@ -108,10 +108,10 @@ return [
     'developer_name' => 'PS2035',
 
     // Developer website. Link in footer. Type false if you want to hide it.
-    'developer_link' => 'redshift-estimator',
+    'developer_link' => false,
 
     // Show powered by Laravel Backpack in the footer? true/false
-    'show_powered_by' => false,
+    'show_powered_by' => true,
 
     // -------
     // SCRIPTS
