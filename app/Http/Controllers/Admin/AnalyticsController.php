@@ -255,4 +255,12 @@ class AnalyticsController extends Controller
 		//dump($leftAxisDataTest
 		return view('plotting', compact('chartjs'));
 	}
+
+	public function ajaxCounts(){
+		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
+		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
+		$result = [$submitted, $processing];
+		echo $result[0];
+	}
+
 }

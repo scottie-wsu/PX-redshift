@@ -23,6 +23,7 @@ Route::group([
     Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
 	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
 	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
+	Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');
 
 	Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');

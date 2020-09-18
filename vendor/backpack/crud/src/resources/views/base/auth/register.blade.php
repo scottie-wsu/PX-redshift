@@ -1,84 +1,103 @@
-@extends(backpack_view('layouts.plain'))
-
+@extends('layouts.app_boot')
+@section('title','Register')
 @section('content')
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-4">
-            <h3 class="text-center mb-4">{{ trans('backpack::base.register') }}</h3>
-            <div class="card">
-                <div class="card-body">
-                    <form class="col-md-12 p-t-10" role="form" method="POST" action="{{ route('backpack.auth.register') }}">
-                        {!! csrf_field() !!}
+    <div class="limiter" >
+        <div class="container-login100" style="background-image: url({{ asset('images/bg1.jpg') }})">
+            <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
+                <form class="login100-form validate-form" method="POST" action="{{ route('register') }}">
+                    @csrf
 
-                        <div class="form-group">
-                            <label class="control-label" for="name">{{ trans('backpack::base.name') }}</label>
 
-                            <div>
-                                <input type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" id="name" value="{{ old('name') }}">
+                    <span class="login100-form-title p-b-49">
+						Register
+					</span>
 
-                                @if ($errors->has('name'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('name') }}</strong>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Name is required">
+                        <span class="label-input100">{{ __('Name') }}</span>
+                        <input id="name" class="input100 form-control @error('name') is-invalid @enderror" type="text" name="name" placeholder="Type your name" value="{{ old('name') }}">
+                        <span class="focus-input100" data-symbol="&#xf206;"></span>
+
+                        @error('email')
+
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Email is required">
+                        <span class="label-input100">{{ __('E-Mail Address') }}</span>
+                        <input id="email" class="input100 form-control @error('email') is-invalid @enderror" type="email" name="email" placeholder="Type your email" value="{{ old('email') }}">
+                        <span class="focus-input100" data-symbol="&#xf206;"></span>
 
-                        <div class="form-group">
-                            <label class="control-label" for="{{ backpack_authentication_column() }}">{{ config('backpack.base.authentication_column_name') }}</label>
+                        @error('email')
 
-                            <div>
-                                <input type="{{ backpack_authentication_column()=='email'?'email':'text'}}" class="form-control{{ $errors->has(backpack_authentication_column()) ? ' is-invalid' : '' }}" name="{{ backpack_authentication_column() }}" id="{{ backpack_authentication_column() }}" value="{{ old(backpack_authentication_column()) }}">
-
-                                @if ($errors->has(backpack_authentication_column()))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first(backpack_authentication_column()) }}</strong>
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <label class="control-label" for="password">{{ trans('backpack::base.password') }}</label>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Institution is required">
+                        <span class="label-input100">{{ __('Institution') }}</span>
+                        <input id="institution" class="input100 form-control @error('institution') is-invalid @enderror" type="institution" name="institution" placeholder="Type your institution" value="{{ old('institution') }}">
+                        <span class="focus-input100" data-symbol="&#xf206;"></span>
 
-                            <div>
-                                <input type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" id="password">
+                        @error('institution')
 
-                                @if ($errors->has('password'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('password') }}</strong>
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <label class="control-label" for="password_confirmation">{{ trans('backpack::base.confirm_password') }}</label>
 
-                            <div>
-                                <input type="password" class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" name="password_confirmation" id="password_confirmation">
 
-                                @if ($errors->has('password_confirmation'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate="Password is required">
+                        <span class="label-input100">Password</span>
+                        <input id="password" type="password" class="input100 form-control @error('password') is-invalid @enderror" type="password" name="password" placeholder="Type your password" required autocomplete="current-password">
+                        <span class="focus-input100" data-symbol="&#xf190;"></span>
+                        @error('password')
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <div>
-                                <button type="submit" class="btn btn-block btn-primary">
-                                    {{ trans('backpack::base.register') }}
-                                </button>
-                            </div>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate="Password is required">
+                        <span class="label-input100">Confirm Password</span>
+                        <input  class="input100 form-control " type="password" placeholder="Confirm your password" required  id="password-confirm" name="password_confirmation" required autocomplete="new-password">
+                        <span class="focus-input100" data-symbol="&#xf190;"></span>
+                        @error('password')
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                        @enderror
+                    </div>
+
+
+
+                    <div class="container-login100-form-btn">
+                        <div class="wrap-login100-form-btn">
+                            <div class="login100-form-bgbtn"></div>
+                            <button type="submit" class="login100-form-btn">
+                                {{ __('Register') }}
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+
+
+
+
+                </form>
             </div>
-            @if (backpack_users_have_email())
-                <div class="text-center"><a href="{{ route('backpack.auth.password.reset') }}">{{ trans('backpack::base.forgot_your_password') }}</a></div>
-            @endif
-            <div class="text-center"><a href="{{ route('backpack.auth.login') }}">{{ trans('backpack::base.login') }}</a></div>
         </div>
     </div>
+
 @endsection
+
+
+
+
+

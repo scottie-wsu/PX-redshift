@@ -75,10 +75,38 @@
 		$set = $processing+$submitted+$completed;
 		$percentage = $working/$set;
 		$progress = (1-$percentage)*100;
+		//	src="https://code.jquery.com/jquery-3.5.1.js"
+		//	<script src="vendor/pace/pace-1.0.2.js"></script>
 
-    @endphp
+
+	@endphp
+	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
+
 	<div style="width:75%;">
-		@php print_r("Number of calculations currently queued: " . $submitted) @endphp
+
+
+		<span id="mycount">
+			@php print_r("Number of calculations currently queued: " . $submitted) @endphp
+		</span>
+
+		<!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
+		<script>
+			function getCount() {
+
+				$.ajax({
+					type: "GET",
+					url: "{{ route('ajaxcounts') }}",
+				})
+					.done(function( data ) {
+						$('#mycount').html(data);
+						setTimeout(getCount, 1000);
+					});
+
+
+			}
+			getCount();
+
+		</script>
 		<br>
 		@php print_r("Number of calculations currently processing: " . $processing) @endphp
 		<br>

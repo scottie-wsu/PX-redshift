@@ -1,68 +1,83 @@
-@extends(backpack_view('layouts.plain'))
-
+@extends('layouts.app_boot')
+@section('title','Login')
 @section('content')
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-4">
-            <h3 class="text-center mb-4">{{ trans('backpack::base.login') }}</h3>
-            <div class="card">
-                <div class="card-body">
-                    <form class="col-md-12 p-t-10" role="form" method="POST" action="{{ route('backpack.auth.login') }}">
-                        {!! csrf_field() !!}
+    <div class="limiter" >
+        <div class="container-login100" style="background-image: url({{ asset('images/bg1.jpg') }})
+            ">
+            <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
+                <form class="login100-form validate-form" method="POST" action="{{ route('login') }}">
+                    @csrf
 
-                        <div class="form-group">
-                            <label class="control-label" for="{{ $username }}">{{ config('backpack.base.authentication_column_name') }}</label>
 
-                            <div>
-                                <input type="text" class="form-control{{ $errors->has($username) ? ' is-invalid' : '' }}" name="{{ $username }}" value="{{ old($username) }}" id="{{ $username }}">
+                    <span class="login100-form-title p-b-49">
+						Login
+					</span>
 
-                                @if ($errors->has($username))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first($username) }}</strong>
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Email is required">
+                        <span class="label-input100">{{ __('E-Mail Address') }}</span>
+                        <input id="email" class="input100 form-control @error('email') is-invalid @enderror" type="email" name="email" placeholder="Type your email" value="{{ old('email') }}">
+                        <span class="focus-input100" data-symbol="&#xf206;"></span>
+
+                        @error('email')
+
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <label class="control-label" for="password">{{ trans('backpack::base.password') }}</label>
-
-                            <div>
-                                <input type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" id="password">
-
-                                @if ($errors->has('password'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('password') }}</strong>
+                    <div class="wrap-input100 validate-input" data-validate="Password is required">
+                        <span class="label-input100">Password</span>
+                        <input id="password" type="password" class="input100 form-control @error('password') is-invalid @enderror" type="password" name="password" placeholder="Type your password" required autocomplete="current-password">
+                        <span class="focus-input100" data-symbol="&#xf190;"></span>
+                        @error('password')
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="remember"> {{ trans('backpack::base.remember_me') }}
-                                    </label>
-                                </div>
-                            </div>
+                    <div class="text-right p-t-8 p-b-31">
+                        @if (Route::has('password.request'))
+                            <a  href="{{ route('password.request') }}">
+                                {{ __('Forgot Your Password?') }}
+                            </a>
+                        @endif
+                    </div>
+                    <!-- style="margin-top:50px;" -->
+                    <div class="container-login100-form-btn" >
+                        <div class="wrap-login100-form-btn">
+                            <div class="login100-form-bgbtn"></div>
+                            <button type="submit" class="login100-form-btn">
+                                {{ __('Login') }}
+                            </button>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <div>
-                                <button type="submit" class="btn btn-block btn-primary">
-                                    {{ trans('backpack::base.login') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+
+
+                    <div class="flex-col-c p-t-155">
+						<span class="txt1 p-b-2">
+							If your're just looking for a quick estimation then pick
+						</span>
+                        <a class="txt2" href="{{ route('guest') }}">{{ __(' Guest') }}</a>
+
+                        <span class="txt1 p-b-2">
+							Or Sign Up Using
+						</span>
+
+                        <a class="txt2" href="{{ route('register') }}">{{ __('Register') }}</a>
+
+                    </div>
+
+
+                </form>
             </div>
-            @if (backpack_users_have_email())
-                <div class="text-center"><a href="{{ route('backpack.auth.password.reset') }}">{{ trans('backpack::base.forgot_your_password') }}</a></div>
-            @endif
-            @if (config('backpack.base.registration_open'))
-                <div class="text-center"><a href="{{ route('backpack.auth.register') }}">{{ trans('backpack::base.register') }}</a></div>
-            @endif
         </div>
     </div>
+
 @endsection
+
+
+
+
