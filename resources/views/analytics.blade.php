@@ -34,6 +34,21 @@
         .admin{
             color: lightskyblue;
         }
+
+        .one {
+            margin-right:15%;
+            float: left;
+        }
+
+        .two {
+            margin-right:15%;
+            float:right;
+        }
+
+        .three {
+            width: 25%;
+        }
+
     </style>
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="d-none d-lg-block">
@@ -50,20 +65,35 @@
     </h2>
 </div>
 
+
+
 @endsection
 
 @section('content')
-	<div style="width:75%;">
+	<div class = "one">
 		{!! $chartjs->render() !!}
 	</div>
-	<div style="width:75%;">
+	<div class = "two">
 		{!! $chartjs1->render() !!}
 	</div>
+    <div class = "three">
+        {!! $chartjs2->render() !!}
+    </div>
     @php
-        use App\methods;
-        use App\calculations;
-        use Illuminate\Support\Facades\DB;
-        use Carbon\Carbon;
+    $redshiftCount = App\redshifts::count();
+        Widget::add()->to('before_content')->type('div')->class('row')->content([
+
+        Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-success')
+            ->progressClass('progress-bar')
+            ->value($redshiftCount. ' Redshifts Counted')
+            ->progress(80)
+            ->onlyHere()
+
+
+
+        ]);
 
 
 
@@ -72,3 +102,7 @@
 
     @endphp
 @endsection
+
+
+
+
