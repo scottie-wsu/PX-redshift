@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\redshifts;
 use App\methods;
+use App\calculations;
 
 class AnalyticsController extends Controller
 {
@@ -52,6 +53,11 @@ class AnalyticsController extends Controller
         }
 
         $jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
+
+        $redshifts = calculations::select('redshift_result')->groupBy('redshift_result')->get();
+        $redshiftsPluck = collect($redshifts)->pluck('redshift_result');
+		$redshiftCount = calculations::select('redshift_result', DB::raw('COUNT(*) as total'))->groupBy('redshift_result')->orderBy('redshift_result')->get();
+        $redshiftArray = $redshiftCount->pluck('total')->all();
 
 
 
@@ -151,7 +157,8 @@ class AnalyticsController extends Controller
 				}
 			}");
 
-			$chartjs2 = app()->chartjs
+
+		$chartjs2 = app()->chartjs
         ->name('pieChartTest')
         ->type('pie')
         ->size(['width' => 400, 'height' => 200])
@@ -165,12 +172,18 @@ class AnalyticsController extends Controller
             ]
         ])
         ->options([]);
-			
-			
 
 
 		return view('analytics', compact('chartjs','chartjs1','chartjs2'));
 		//return(dump($label));
+	}
+
+	public function ajaxCounts()
+	{
+		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
+		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
+		$result = [$submitted, $processing];
+		echo $result[0];
 	}
 
 }

@@ -18,12 +18,10 @@
             outline: none;
             font-size: 15px;
         }
-
         /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
         .active, .collapsible:hover {
             background-color: #ccc;
         }
-
         /* Style the collapsible content. Note: hidden by default */
         .content {
             padding: 0 18px;
@@ -34,21 +32,17 @@
         .admin{
             color: lightskyblue;
         }
-
         .one {
             margin-right:15%;
             float: left;
         }
-
         .two {
             margin-right:15%;
             float:right;
         }
-
         .three {
             width: 25%;
         }
-
     </style>
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="d-none d-lg-block">
@@ -70,19 +64,21 @@
 @endsection
 
 @section('content')
-	<div class = "one">
-		{!! $chartjs->render() !!}
-	</div>
-	<div class = "two">
-		{!! $chartjs1->render() !!}
-	</div>
+    <div class = "one">
+        {!! $chartjs->render() !!}
+    </div>
+    <div class = "two">
+        {!! $chartjs1->render() !!}
+    </div>
     <div class = "three">
         {!! $chartjs2->render() !!}
+    </div>
+    <div class = "three">
+        {!! $chartjs3->render() !!}
     </div>
     @php
     $redshiftCount = App\redshifts::count();
         Widget::add()->to('before_content')->type('div')->class('row')->content([
-
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-success')
@@ -90,17 +86,33 @@
             ->value($redshiftCount. ' Redshifts Counted')
             ->progress(80)
             ->onlyHere()
-
-
-
         ]);
-
-
-
-
-
-
     @endphp
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <div style="width:75%;">
+
+    <span id="mycount">
+            @php print_r("Number of calculations currently queued: " . $submitted)
+        </span>
+
+        <!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
+        <script>
+            function getCount() {
+
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('ajaxcounts') }}",
+                })
+                    .done(function( data ) {
+                        $('#mycount').html(data);
+                        setTimeout(getCount, 1000);
+                    });
+
+
+            }
+            getCount();
+
+        </script>
 @endsection
 
 
