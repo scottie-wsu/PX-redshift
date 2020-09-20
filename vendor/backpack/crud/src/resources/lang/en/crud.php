@@ -40,7 +40,7 @@ return [
     'list'                      => 'List',
     'reset'                     => 'Reset',
     'actions'                   => 'Actions',
-    'preview'                   => 'Preview',
+    'preview'                   => 'Details',
     'delete'                    => 'Delete',
     'admin'                     => 'Admin',
     'details_row'               => 'This is the details row. Modify as you please.',
