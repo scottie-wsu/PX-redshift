@@ -53,12 +53,21 @@
 @endsection
 
 @section('content')
-	<div style="width:75%;">
-		{!! $chartjs->render() !!}
-	</div>
-	<div style="width:75%;">
-		{!! $chartjs1->render() !!}
-	</div>
+		<div class="chart1  col" style="width:400px;height:400px">
+			{!! $charts[0]->render() !!}
+		</div>
+		<div class="chart2  col" style="width:400px;height:400px">
+			{!! $charts[1]->render() !!}
+		</div>
+
+		<div class="chart3" style="width:400px;height:400px">
+			{!! $charts[2]->render() !!}
+		</div>
+		<div class="chart4" style="width:400px;height:400px">
+			{!! $charts[3]->render() !!}
+		</div>
+
+
     @php
         use App\redshifts;
         use App\calculations;
@@ -82,7 +91,7 @@
 	@endphp
 	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
 
-	<div style="width:75%;">
+	<div style="width:240px;">
 
 
 		<span id="mycount">

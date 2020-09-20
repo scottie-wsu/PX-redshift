@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\User;
 use App\redshifts;
+use App\methods;
 
 class AnalyticsController extends Controller
 {
@@ -142,10 +143,104 @@ class AnalyticsController extends Controller
 				}
 			}");
 
+		//
+		//method breakdown chart
+		//
+		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
 
-		return view('analytics', compact('chartjs','chartjs1'));
+		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
+		$colorArray =[
+			'rgba(255, 40, 31, 0.6)', //red
+			'rgba(255, 242, 31, 0.6)', //yellow
+			'rgba(31, 31, 255, 0.6)', //blue
+			'rgba(141, 31, 187, 0.8)', //purple
+			'rgba(31, 187, 31, 0.8)', //green
+			'rgba(255, 165, 31, 0.8)', //orange
+			'rgba(244, 31, 224, 0.8)', //pink
+			'rgba(31, 187, 212, 0.8)', //aqua
+			'rgba(255, 207, 31, 0.8)', //light orange
+			'rgba(255, 125, 31, 0.8)', //dark orange
+			'rgba(133, 31, 255, 0.8)', //dark purple
+			'rgba(131, 206, 31, 0.8)', //bright green
+		];
+
+		$chartjs2 = app()->chartjs
+			->name('pieChartTest')
+			->type('pie')
+			->size(['width' => 400, 'height' => 200])
+			->labels($method_name->keys()->toArray())
+			->datasets([
+				[
+					"label" => "Methods Used",
+					'backgroundColor' => ($colorArray),
+					'hoverBackgroundColor' => [],
+					'data' => collect($jobCountPerMethod)->pluck('total')->toArray(),
+				]
+			])
+			->options([]);
+
+		//
+		//redshift result chart
+		//
+
+
+		$institutionLabels1 = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
+		//$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
+		$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
+		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+
+
+
+
+
+		$calculationCountPerInstitution = $redshiftResultsPerInstitution;
+
+
+		$chartjs3 = app()->chartjs
+
+			->name('lineChartTest3')
+			->type('line')
+			->size(['width' => 400, 'height' => 200])
+			->labels($institutionLabels1->keys()->toArray())
+			->datasets([
+				[
+					"label" => "Redshift result frequency",
+					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
+					'borderColor' => "rgba(200, 34, 154, 0.7)",
+					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
+					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
+					"pointHoverBackgroundColor" => "#fff",
+					"pointHoverBorderColor" => "rgba(220,220,220,1)",
+					'data' => collect($calculationCountPerInstitution)->pluck('total')->toArray(),
+				]
+
+			])
+			//for some reason it needs the ticks values to be set
+			//todo - find the max value in the datasets and set max value to that
+			->optionsRaw([]);
+
+		$charts = [$chartjs, $chartjs1, $chartjs2, $chartjs3];
+
+		return view('analytics', compact('charts'));
 		//return(dump($label));
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public function plotting(){
 		$test = 'test';
