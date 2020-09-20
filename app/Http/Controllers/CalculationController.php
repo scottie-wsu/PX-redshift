@@ -16,7 +16,7 @@ use GuzzleHttp\Client;
 use function MongoDB\BSON\toJSON;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CalcCompleteMail;
-
+use App\Jobs;
 
 
 class CalculationController extends Controller
@@ -119,135 +119,54 @@ class CalculationController extends Controller
         return redirect('/history');
     }
 
+    //building /history page
 	public function home(){
        $pages=20;
 
-        if (request()->has('galaxy_id')){
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.assigned_calc_ID')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_u')){
 
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_u')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_v')){
-
-            $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-                ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_u')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_g')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_g')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_r')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_r')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_i')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_i')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('optical_z')){
-
-                                         $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.optical_z')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_three_six')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_three_six')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_four_five')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_four_five')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_five_eight')){
-
-                                         $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_five_eight')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_eight_zero')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_eight_zero')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_J')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_J')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_H')){
-
-            $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-                ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_J')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('infrared_K')){
-
-                                        $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.infrared_K')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('radio_1.4')){
-
-            $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('redshifts.radio_one_four')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-        }
-        else if (request()->has('redshift_result')){
-            //   $calculations= calculations::join('redshifts','redshifts.calculation_ID','=','calculations.galaxy_ID')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-
-             $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.redshift_result')->where('redshifts.user_ID', auth()->id())->paginate($pages);
-
-
-
-        }
-        else{
-
-
-
+        //else{
         $calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id())->paginate($pages);
+            ->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
+		//}
 
-                                    }
+		$userId = auth()->id();
+		//FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+        $jobs = DB::select('SELECT job_id, job_name, job_description, user_id, created_at FROM jobs WHERE user_id = '.$userId);
 
-        return view('history', compact('calculations'));
+        return view('history', compact('calculations', 'jobs'));
     }
 
     public function search(Request $req)
     {
-        //
-        $pages=20;
-        $q = $req->input('q');
-    $user = calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-     ->where('redshifts.user_ID', auth()->id())->where(function ($query) use ($q)  {
-    $query->orWhere('assigned_calc_ID','LIKE','%'.$q.'%')
-    ->orWhere('redshifts.optical_u','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_v','LIKE','%'.$q.'%')->
-    orWhere('optical_g','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_r','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_i','LIKE','%'.$q.'%')->
-    orWhere('redshifts.optical_z','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_three_six','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_five_eight','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_eight_zero','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_J','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_H','LIKE','%'.$q.'%')->
-    orWhere('redshifts.infrared_K','LIKE','%'.$q.'%')->
-    orWhere('redshifts.radio_one_four','LIKE','%'.$q.'%')->
-    orWhere('calculations.redshift_result','LIKE','%'.$q.'%');
-})->paginate($pages);
+				//
+			$pages=20;
+			$q = $req->input('q');
+			$user = calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
+			 ->where('redshifts.user_ID', auth()->id())->where(function ($query) use ($q)  {
+			$query->orWhere('assigned_calc_ID','LIKE','%'.$q.'%')
+			->orWhere('redshifts.optical_u','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_v','LIKE','%'.$q.'%')->
+			orWhere('optical_g','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_r','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_i','LIKE','%'.$q.'%')->
+			orWhere('redshifts.optical_z','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_three_six','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_five_eight','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_eight_zero','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_J','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_H','LIKE','%'.$q.'%')->
+			orWhere('redshifts.infrared_K','LIKE','%'.$q.'%')->
+			orWhere('redshifts.radio_one_four','LIKE','%'.$q.'%')->
+			orWhere('calculations.redshift_result','LIKE','%'.$q.'%');
+			})->paginate($pages);
 
-    if(count($user) > 0){
-        $details=1;
-        return view('search',compact('user','details'));
-    }
-    else {
-
-        return view ('search')->withMessage('No Details found. Try to search again!');}
+			if(count($user) > 0){
+				$details=1;
+				return view('search',compact('user','details'));
+			}
+			else {
+				return view ('search')->withMessage('No Details found. Try to search again!');
+			}
     }
 
     public function store(Request $request){

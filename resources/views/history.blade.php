@@ -2,153 +2,212 @@
 @section('title','History')
 @section('content')
 
-    <head>
-        <style>
-            h2 {
-                display: inline-block;
-            }
-        </style>
-    </head>
+	<head>
+		<style>
+			h2 {
+				display: inline-block;
+			}
+		</style>
+	</head>
 
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
+	<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
 
-     <div class="container">
-     <a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">Shift</h2></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+		<div class="container">
+			<a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-                        <!-- <li class="nav-item">
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<!-- Left Side Of Navbar -->
+				<ul class="navbar-nav mr-auto">
+				<!-- <li class="nav-item">
                                 <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
                         </li> -->
-                        <!-- <li class="nav-item">
+				<!-- <li class="nav-item">
                        	 <form class="form-inline mr-auto">
                             @csrf
-     						<div class="md-form my-0">
-        							<input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        							<i class="fas fa-search text-white ml-3" aria-hidden="true"></i>
-     				   		</div>
-                       	 </form>
-      				   </li> -->
+					<div class="md-form my-0">
+						   <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+						   <i class="fas fa-search text-white ml-3" aria-hidden="true"></i>
+					   </div>
+				   </form>
+				</li> -->
 
-   <li class="nav-item">
-                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<li class="nav-item">
+						<div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-    <form class="form-inline mr-auto" action="/search" method="POST" role="search">
-    @csrf
-      <input class="form-control" type="text" placeholder="Search"  name="q" aria-label="Search">
-      <button class="btn btn-mdb-color btn-rounded btn-sm my-0 ml-sm-2" type="submit">Search</button>
-    </form>
+							<form class="form-inline mr-auto" action="/search" method="POST" role="search">
+								@csrf
+								<input class="form-control" type="text" placeholder="Search"  name="q" aria-label="Search">
+								<button class="btn btn-mdb-color btn-rounded btn-sm my-0 ml-sm-2" type="submit">Search</button>
+							</form>
 
-  </div>
-</li>
+						</div>
+					</li>
 
 
 
-                    </ul>
+				</ul>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto" >
-                        <!-- Authentication Links -->
-                        @php
-                            use App\User;
-                            use Illuminate\Support\Facades\Auth;
-                            //dump()
-                            $user = Auth::user();
-                            $check = User::select('level')->where('id', $user->id)->get();
-                            $userChecker = $check[0]->level;
-                            //return ($userChecker == 1);
-                        @endphp
+				<!-- Right Side Of Navbar -->
+				<ul class="navbar-nav ml-auto" >
+					<!-- Authentication Links -->
+					@php
+						use App\User;
+						use Illuminate\Support\Facades\Auth;
+						//dump()
+						$user = Auth::user();
+						$check = User::select('level')->where('id', $user->id)->get();
+						$userChecker = $check[0]->level;
+						//return ($userChecker == 1);
+					@endphp
 
-                        @if($userChecker==1)
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
-                            </li>
-                        @endif
-                    		<li class="nav-item">
-                            	<div style = "background: coral; border-radius: 20px;">
-                                <a class="nav-link" href="{{ route('csv') }}">{{ __('Download History') }}</a>
-                                </div>
-                        	</li>
+					@if($userChecker==1)
+						<li class="nav-item">
+							<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
+						</li>
+					@endif
+					<li class="nav-item">
+						<div style = "background: coral; border-radius: 20px;">
+							<a class="nav-link" href="{{ route('csv') }}">{{ __('Download History') }}</a>
+						</div>
+					</li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                               onclick="event.preventDefault();
+					<li class="nav-item">
+						<a class="nav-link" href="{{ route('logout') }}"
+						   onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
-                            </a>
+							{{ __('Logout') }}
+						</a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-
-
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-<body style="background-image: url({{ asset('images/bg1.jpg') }})">
-
-<div class="overflow-auto">
-<div class="table-responsive">
-
-<table class="table table-light">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col"><a href='/history?galaxy_id'>Galaxy ID</th>
-      <th scope="col"><a href='/history?optical_u'>Optical u</th>
-        <th scope="col"><a href='/history?optical_v'>Optical v</th>
-        <th scope="col"><a href='/history?optical_g'>Optical g</th>
-        <th scope="col"><a href='/history?optical_r'>Optical r</th>
-         <th scope="col"><a href='/history?optical_i'>Optical i</th>
-          <th scope="col"><a href='/history?optical_z'>Optical z</th>
-          <th scope="col"><a href='/history?infrared_three_six'>Infrared 3.6</th>
-          <th scope="col"><a href='/history?infrared_four_five'>Infrared 4.5</th>
-          <th scope="col"><a href='/history?infrared_five_eight'>Infrared 5.8</th>
-          <th scope="col"><a href='/history?infrared_eight_zero'>Infrared 8.0</th>
-          <th scope="col"><a href='/history?infrared_J'>Infrared j</th>
-        <th scope="col"><a href='/history?infrared_H'>Infrared h</th>
-        <th scope="col"><a href='/history?infrared_K'>Infrared k</th>
-          <th scope="col"><a href='/history?radio_1.4'>Radio 1.4</th>
-          <th scope="col"><a href='/history?redshift_result'>Redshift Result</th>
+						<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+							@csrf
+						</form>
 
 
-    </tr>
-  </thead>
-  <tbody>
+				</ul>
+			</div>
+		</div>
+	</nav>
 
-        @foreach($calculations as $calculation  )
-         <tr>
-    <th scope="row">{{ $calculation->assigned_calc_id }}</th>
-      <td>{{ $calculation->optical_u }}</td>
-     <td>{{ $calculation->optical_v }}</td>
-      <td>{{ $calculation->optical_g }}</td>
-     <td>{{ $calculation->optical_r }}</td>
-    <td>{{ $calculation->optical_i }}</td>
-      <td>{{ $calculation->optical_z }}</td>
-      <td>{{ $calculation->infrared_three_six }}</td>
-      <td>{{ $calculation->infrared_four_five }}</td>
-      <td>{{ $calculation->infrared_five_eight }}</td>
-      <td>{{ $calculation->infrared_eight_zero }}</td>
-      <td>{{ $calculation->infrared_J }}</td>
-     <td>{{ $calculation->infrared_H }}</td>
-     <td>{{ $calculation->infrared_K }}</td>
-      <td>{{ $calculation->radio_one_four }}</td>
-      <td>{{ $calculation->redshift_result }}</td>
- </tr>
-        @endforeach
+	<body style="background-image: url('/images/bg1.jpg')">
 
-  </tbody>
-</table>
-</div>
+	<div class="overflow-auto">
+		<div class="table-responsive">
+				<table class="fold-table">
+					<thead>
+					<tr>
+						<th>Job name</th><th>Description</th><th>Submitted at</th><th>Duration</th>
+					</tr>
+					</thead>
+					<!-- might need to go below the tbody -->
+					@foreach($jobs as $job)
+						@php
+							$uniqueJobId = $job->job_id;
+							$jobCreatedAt = $job->created_at;
+							$jobClosedAt = DB::select('SELECT calculations.created_at FROM calculations
+								INNER JOIN redshifts ON calculations.galaxy_id = redshifts.calculation_id
+								WHERE redshifts.job_id = '.$uniqueJobId .' ORDER BY calculations.created_at DESC
+								LIMIT 1');
+							//dump($jobCreatedAt);
+							//dump($jobClosedAt[0]->created_at);
+							$jobStartTime = strtotime($jobCreatedAt);
+							$jobFinishTime = strtotime($jobClosedAt[0]->created_at);
+							$intervalSeconds = ($jobFinishTime-$jobStartTime);
 
-{{ $calculations->links()}}
-</div>
+							if($intervalSeconds < 60){
+								$interval = round($intervalSeconds, 2) . " seconds";
+							}
+							elseif ($intervalSeconds < 3600){
+								//minutes
+								$interval = round(($intervalSeconds/60), 2) . " minutes";
+							}
+							elseif ($intervalSeconds < 86400){
+								//hours
+								$interval = round(($intervalSeconds/(60*60)), 2) . " hours";
+							}
+							else{
+								//days
+								$interval = round(($intervalSeconds/(60*60*24)), 2) . " days";
+							}
+						@endphp
+					<tbody>
+					<tr class="view">
+						<td>{{ $job->job_name }}</td>
+						<td>{{ $job->job_description }}</td>
+						<td>{{ $job->created_at }}</td>
+						<td>{{ $interval }}</td>
+					</tr>
+					<tr class="fold">
+						<td colspan="7">
+							<div class="fold-content">
+								<h3>{{ $job->job_name }}</h3>
+								<p>{{ $job->job_description }}</p>
+								<table>
+									<thead>
+									<tr>
+										<th>Galaxy ID</th>
+										<th>Optical u</th>
+										<th>Optical v</th>
+										<th>Optical g</th>
+										<th>Optical r</th>
+										<th>Optical i</th>
+										<th>Optical z</th>
+										<th>Infrared 3.6</th>
+										<th>Infrared 4.5</th>
+										<th>Infrared 5.8</th>
+										<th>Infrared 8.0</th>
+										<th>Infrared J</th>
+										<th>Infrared H</th>
+										<th>Infrared K</th>
+										<th>Radio 1.4</th>
+										<th>Method</th>
+										<th>Redshift result</th>
 
-</body>
-         @endsection
+									</tr>
+									</thead>
+									<tbody>
+
+									@php
+										$calculations = DB::select('SELECT redshifts.*, redshift_result, method_name FROM calculations
+											INNER JOIN redshifts ON calculations.galaxy_id = redshifts.calculation_id
+											INNER JOIN methods on calculations.method_id = methods.method_id
+											WHERE redshifts.job_id = '.$uniqueJobId);
+									@endphp
+									@foreach($calculations as $calculation)
+									<tr>
+										<td>{{ $calculation->assigned_calc_id }}</td>
+										<td>{{ $calculation->optical_u }}</td>
+										<td>{{ $calculation->optical_v }}</td>
+										<td>{{ $calculation->optical_g }}</td>
+										<td>{{ $calculation->optical_r }}</td>
+										<td>{{ $calculation->optical_i }}</td>
+										<td>{{ $calculation->optical_z }}</td>
+										<td>{{ $calculation->infrared_three_six }}</td>
+										<td>{{ $calculation->infrared_four_five }}</td>
+										<td>{{ $calculation->infrared_five_eight }}</td>
+										<td>{{ $calculation->infrared_eight_zero }}</td>
+										<td>{{ $calculation->infrared_J }}</td>
+										<td>{{ $calculation->infrared_H }}</td>
+										<td>{{ $calculation->infrared_K }}</td>
+										<td>{{ $calculation->radio_one_four }}</td>
+										<td>{{ $calculation->method_name }}</td>
+										<td>{{ $calculation->redshift_result }}</td>
+									</tr>
+									@endforeach
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>
+
+					@endforeach
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+	</body>
+@endsection

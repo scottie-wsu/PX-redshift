@@ -28,16 +28,15 @@ class redshiftsSeeder extends Seeder
 
 		foreach(range(1,125) as $index){
 
-			//print_r($jobUserId['user_id']);
-
-			//$jobUserId = (array)$jobUserId;
-
-
-			//$jobUserId = Jobs::select('user_id')->where('job_id', $jobCounter)->first()->toArray();
-			//print_r($jobUserId['user_id']);
-			//$jobCounter = $jobCounter+1;
-			//$jobUserId = (array)$jobUserId;
-
+			//here we're creating redshifts that are always unique galaxy IDs with unique data,
+			//but in reality these may be duplicates due to having to create multiple redshift
+			//rows with the same data (but unique primary key ids not created here) to be able
+			//to do multiple methods per galaxy. While the calculations table may be able to
+			//reference the same galaxy_id with a unique primary key id real_calculation_id
+			//and have a different method_id for each row with the same galaxy_id, this would
+			//mean that the status field for the redshift would have to reflect the status of ALL
+			//methods being used on that galaxy, which may be very different and reduces granularity
+			//of information available. just lots of issues in general with that approach
 			redshifts::create([
 				'assigned_calc_id' => $faker->randomNumber($nbDigits = 5), //FK
 				'optical_u' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),

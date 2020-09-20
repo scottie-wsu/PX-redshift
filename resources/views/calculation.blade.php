@@ -21,11 +21,22 @@
         h2 {
             display: inline-block;
         }
+					input[type='checkbox'] {
+						float: left;
+						width: 20px;
+					}
+					input[type='checkbox'] + label {
+						display: block;
+						width: 10%;
+					}
+
+
+
 	</style>
 </head>
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
     <div class="container">
-        <a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">Shift</h2></a>
+        <a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -82,12 +93,29 @@
 
 
   <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
-        <div class="wrapper wrapper--w680">
+        <div class="wrapper" style="width:70%">
             <div class="card card-4">
                 <div class="card-body" >
                     <h2 class="title">Calculation Form</h2>
                     <form name="form1" method="POST" action="{{ route('calculation.index') }}" style="align-items:center;">
                         @csrf
+
+																					<div class="row">
+																						<div class="col-5">
+																							<label class="label text-sm-left">Job Name</label>
+																							<input id="job_name" type="text" class="input--style-4" name="job_name" value="{{ old('job_name') }}" required autocomplete="job_name" autofocus>
+																						</div>
+																					</div>
+																				<br>
+																					<div class="row">
+																					<div class="col-12">
+																								<label class="label text-md-left">Job Description (optional)</label>
+																								<input id="job_description" type="text" class="input--style-4" name="job_description" value="{{ old('job_description') }}" autofocus>
+																					</div>
+																					</div>
+																					<br>
+																					<br>
+
                         <div class="row">
                             <div class="col-4">
                                 <div class="input-group">
@@ -192,31 +220,36 @@
                                 </div>
                             </div>
                         </div>
+						<div class="row">
+								<label class="label text-md-left">Calculation Method</label>
+								<br>
+								<br>
+						</div>
+								<div>
+											@foreach($checkboxes as $checkbox)
+													<div class="row">
+														<input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" >
+															<label title="{{$checkbox->method_description}}" class="form-check-label" style="padding-left: 1em; line-height: 1em" for="methods[]">{{ $checkbox->method_name}}</label>
 
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="input-group" style="text-align:center">
-                                    <label class="label text-md-right">Calculation Method</label>
-                                        @foreach($checkboxes as $checkbox)
-                                        <input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" > <label for="methods[]">{{ $checkbox->method_name}}</label></br>
-                                        @endforeach
+													</div>
+													<br>
+											@endforeach
 
-                                <!-- This script updates the hidden inputs further below to match the inputs the user changes -->
-                                    <script>
-                                        function update_var(element) {
-                                        var methodValue = element.value;
-                                        fileFunctionName = "method_id_for_files";
-                                	    document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
-                                    }
-                                    </script>
-                                </div>
+											<!-- This script updates the hidden inputs further below to match the inputs the user changes -->
+											<script>
+													function update_var(element) {
+													var methodValue = element.value;
+													fileFunctionName = "method_id_for_files";
+													document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
+													}
+											</script>
+								</div>
 
-                            </div>
-                          </div>
+
+
 
                         <div class="p-t-15" style="margin-left:33%">
                             <button class="btn btn--radius-2 btn--blue" type="submit">Calculate</button>
-
                         </div>
                     </form>
 
@@ -250,7 +283,7 @@
 
                             <div class="input-group-append" style="padding-left:15px">
                                 <button class ="btn_upload btn--radius-2 btn--blue" style="height:92%" type="submit" value="Upload">Submit File</button>
-  							</div>
+  																									</div>
                              </form>
 
                     	</div>
@@ -260,4 +293,7 @@
     </div>
 
 
+
+
  @endsection
+

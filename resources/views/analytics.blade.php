@@ -53,22 +53,74 @@
 @endsection
 
 @section('content')
-	<div style="width:75%;">
-		{!! $chartjs->render() !!}
-	</div>
-	<div style="width:75%;">
-		{!! $chartjs1->render() !!}
-	</div>
+		<div class="chart1  col" style="width:400px;height:400px">
+			{!! $charts[0]->render() !!}
+		</div>
+		<div class="chart2  col" style="width:400px;height:400px">
+			{!! $charts[1]->render() !!}
+		</div>
+
+		<div class="chart3" style="width:400px;height:400px">
+			{!! $charts[2]->render() !!}
+		</div>
+		<div class="chart4" style="width:400px;height:400px">
+			{!! $charts[3]->render() !!}
+		</div>
+
+
     @php
-        use App\methods;
+        use App\redshifts;
         use App\calculations;
         use Illuminate\Support\Facades\DB;
         use Carbon\Carbon;
 
+		$read = redshifts::select('calculation_id')->where('status', 'READ')->get()->count();
+		$completed = redshifts::select('calculation_id')->where('status', 'COMPLETED')->get()->count();
+		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
+		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
+
+		$working = $processing+$submitted;
+		//print_r($working);
+		$set = $processing+$submitted+$completed;
+		$percentage = $working/$set;
+		$progress = (1-$percentage)*100;
+		//	src="https://code.jquery.com/jquery-3.5.1.js"
+		//	<script src="vendor/pace/pace-1.0.2.js"></script>
 
 
+	@endphp
+	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
+
+	<div style="width:240px;">
 
 
+		<span id="mycount">
+			@php print_r("Number of calculations currently queued: " . $submitted) @endphp
+		</span>
 
-    @endphp
+		<!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
+		<script>
+			function getCount() {
+
+				$.ajax({
+					type: "GET",
+					url: "{{ route('ajaxcounts') }}",
+				})
+					.done(function( data ) {
+						$('#mycount').html(data);
+						setTimeout(getCount, 1000);
+					});
+
+
+			}
+			getCount();
+
+		</script>
+		<br>
+		@php print_r("Number of calculations currently processing: " . $processing) @endphp
+		<br>
+
+
+	</div>
+
 @endsection

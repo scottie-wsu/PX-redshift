@@ -22,7 +22,7 @@ class calculationsSeeder extends Seeder
 
 		foreach(range(1,500) as $index){
 			calculations::create([
-				"galaxy_id" => $faker->randomElement($redshifts),
+				"galaxy_id" => $faker->unique()->randomElement($redshifts),
 				"method_id" => $faker->randomElement($methods),
 				"redshift_result" => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999)
 			]);

@@ -17,11 +17,13 @@ Route::get('/', function () {
 Route::get('/guest','guestController@index')->name('guest')->middleware('guest');
 Route::post('/guest','guestController@store')->middleware('guest');
 Route::any('/search','CalculationController@search')->name('search');
-
+Route::get('/myaccount', 'MyAccountController@show')->name('MyAccount');
+Route::post('/myaccount', 'MyAccountController@update')->name('MyAccountUpdate');
 
 
 Route::get('/csv', 'CalculationController@export')->name('csv');
 
+//csv file submit
 Route::post('/upload', 'CalculationController@import')->name('upload');
 
 Route::resource('/calculation', 'CalculationController');
