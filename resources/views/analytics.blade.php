@@ -18,10 +18,12 @@
             outline: none;
             font-size: 15px;
         }
+
         /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
         .active, .collapsible:hover {
             background-color: #ccc;
         }
+
         /* Style the collapsible content. Note: hidden by default */
         .content {
             padding: 0 18px;
@@ -31,17 +33,6 @@
         }
         .admin{
             color: lightskyblue;
-        }
-        .one {
-            margin-right:15%;
-            float: left;
-        }
-        .two {
-            margin-right:15%;
-            float:right;
-        }
-        .three {
-            width: 25%;
         }
     </style>
     <div class="container-fluid">
@@ -59,62 +50,77 @@
     </h2>
 </div>
 
-
-
 @endsection
 
 @section('content')
-    <div class = "one">
-        {!! $chartjs->render() !!}
-    </div>
-    <div class = "two">
-        {!! $chartjs1->render() !!}
-    </div>
-    <div class = "three">
-        {!! $chartjs2->render() !!}
-    </div>
-    <div class = "three">
-        {!! $chartjs3->render() !!}
-    </div>
+		<div class="chart1  col" style="width:400px;height:400px">
+			{!! $charts[0]->render() !!}
+		</div>
+		<div class="chart2  col" style="width:400px;height:400px">
+			{!! $charts[1]->render() !!}
+		</div>
+
+		<div class="chart3" style="width:400px;height:400px">
+			{!! $charts[2]->render() !!}
+		</div>
+		<div class="chart4" style="width:400px;height:400px">
+			{!! $charts[3]->render() !!}
+		</div>
+
+
     @php
-    $redshiftCount = App\redshifts::count();
-        Widget::add()->to('before_content')->type('div')->class('row')->content([
-        Widget::add()
-            ->type('progress')
-            ->class('card border-0 text-white bg-success')
-            ->progressClass('progress-bar')
-            ->value($redshiftCount. ' Redshifts Counted')
-            ->progress(80)
-            ->onlyHere()
-        ]);
-    @endphp
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <div style="width:75%;">
+        use App\redshifts;
+        use App\calculations;
+        use Illuminate\Support\Facades\DB;
+        use Carbon\Carbon;
 
-    <span id="mycount">
-            @php print_r("Number of calculations currently queued: " . $submitted)
-        </span>
+		$read = redshifts::select('calculation_id')->where('status', 'READ')->get()->count();
+		$completed = redshifts::select('calculation_id')->where('status', 'COMPLETED')->get()->count();
+		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
+		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
 
-        <!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
-        <script>
-            function getCount() {
-
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('ajaxcounts') }}",
-                })
-                    .done(function( data ) {
-                        $('#mycount').html(data);
-                        setTimeout(getCount, 1000);
-                    });
+		$working = $processing+$submitted;
+		//print_r($working);
+		$set = $processing+$submitted+$completed;
+		$percentage = $working/$set;
+		$progress = (1-$percentage)*100;
+		//	src="https://code.jquery.com/jquery-3.5.1.js"
+		//	<script src="vendor/pace/pace-1.0.2.js"></script>
 
 
-            }
-            getCount();
+	@endphp
+	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
 
-        </script>
+	<div style="width:240px;">
+
+
+		<span id="mycount">
+			@php print_r("Number of calculations currently queued: " . $submitted) @endphp
+		</span>
+
+		<!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
+		<script>
+			function getCount() {
+
+				$.ajax({
+					type: "GET",
+					url: "{{ route('ajaxcounts') }}",
+				})
+					.done(function( data ) {
+						$('#mycount').html(data);
+						setTimeout(getCount, 1000);
+					});
+
+
+			}
+			getCount();
+
+		</script>
+		<br>
+		@php print_r("Number of calculations currently processing: " . $processing) @endphp
+		<br>
+
+
+	</div>
+
 @endsection
-
-
-
-

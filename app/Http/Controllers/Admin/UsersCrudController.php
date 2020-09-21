@@ -76,8 +76,8 @@ class UsersCrudController extends CrudController
 
         ////hides current user from listing
         //$this->crud->addClause('where', 'id', '!=', auth()->id());
-        //because the guestuser right now is id 4 in users table
-		$this->crud->addClause('where', 'id', '!=', 4);
+        //because the guestuser right now is id 1 in users table
+		$this->crud->addClause('where', 'id', '!=', 1);
 
     }
 

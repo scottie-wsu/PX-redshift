@@ -21,7 +21,11 @@ Route::group([
     Route::get('users/{id}/reset', 'UsersCrudController@reset');
 
     Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
-    Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
+	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
+	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
+	Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');
+
+	Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');
     Route::get('charts/method-use', 'Charts\MethodUseChartController@response')->name('charts.method-use.index');
     Route::get('charts/weekly-method-use-chart', 'Charts\WeeklyMethodUseChartChartController@response')->name('charts.weekly-method-use-chart.index');

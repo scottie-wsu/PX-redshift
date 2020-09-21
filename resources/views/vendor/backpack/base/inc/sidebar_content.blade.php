@@ -10,7 +10,7 @@
 <a class="nav-link nav-dropdown-toggle" href="#"><i class="nav-icon la la-cogs"></i> Analytics</a>
 <ul class="nav-dropdown-items">
     <li class="nav-item"><a class="nav-link" href='{{ backpack_url('analytics') }}'><i class="nav-icon la la-chart-bar"></i> Quick plots</a></li>
-    <li class="nav-item"><a class="nav-link" href='{{ backpack_url('analytics1') }}'><i class="nav-icon la la-chart-bar"></i> Choose your data</a></li>
+    <li class="nav-item"><a class="nav-link" href='{{ backpack_url('plotting') }}'><i class="nav-icon la la-chart-bar"></i> Choose your data</a></li>
 </ul>
 </li>
 
