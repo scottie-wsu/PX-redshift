@@ -69,7 +69,6 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-          					max: 10,
           					min: 0
 						}
 					}, {
@@ -77,7 +76,6 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'right',
 						ticks: {
-          					max: 110,
           					min: 0
 						}
       					}]
@@ -128,18 +126,9 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-          					max: 100,
           					min: 0
 						}
-					}, {
-        				id: 'B',
-        				type: 'linear',
-        				position: 'right',
-						ticks: {
-          					max: 100,
-          					min: 0
-						}
-      					}]
+					}]
 				}
 			}");
 
