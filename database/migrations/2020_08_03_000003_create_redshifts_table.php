@@ -32,10 +32,10 @@ class CreateRedshiftsTable extends Migration
             $table->double('radio_one_four', 16, 8);
             $table->text('status');
             $table->integer('job_id')->unsigned();
-			$table->integer('user_id')->unsigned()->default(1);
+			//$table->integer('user_id')->unsigned()->default(1);
             $table->timestamps();
-            $table->foreign('user_id', 'redshifts_ibfk_1')->references('user_id')->on('jobs');
-			$table->foreign('job_id', 'redshifts_ibfk_2')->references('job_id')->on('jobs');
+            //$table->foreign('user_id', 'redshifts_ibfk_1')->references('user_id')->on('jobs');
+			$table->foreign('job_id', 'redshifts_ibfk_1')->references('job_id')->on('jobs');
 
 		});
     }

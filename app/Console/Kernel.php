@@ -30,8 +30,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function() {
-            echo 'test1' . PHP_EOL;
-
             //creating a timestamp one minute before the check, so that only calculations
             //submitted in the past minute are considered
             //TODO: check this works
@@ -40,21 +38,24 @@ class Kernel extends ConsoleKernel
             //selecting user emails from calculations that have been submitted to DB by api team
             $query = user::SELECT('email')
                 //->FROM('users')
-                ->JOIN('redshifts', 'redshifts.user_id', '=', 'users.id')
+				->JOIN('jobs', 'jobs.user_id', '=', 'users.id')
+                ->JOIN('redshifts', 'redshifts.job_id', '=', 'jobs.job_id')
                 ->JOIN('calculations', function($join) use ($time1){
                     $join->on('redshifts.calculation_id', '=', 'calculations.galaxy_id')
                         ->where('calculations.created_at', '>=',  $time1);
                 })->get();
-            $message = "test email";
-            echo dump($query) . PHP_EOL;
+			//Mail::to($query)->send(new CalcCompleteMail());
 
-            if($query->empty()){
-                Mail::to('scott.tripney@gmail.com')->send($message);
+			$message = "test email";
+			echo $query . PHP_EOL;
+            if(isset($query)){
+                Mail::to($query)->send(new CalcCompleteMail());
             }
             else{
-                Mail::to('scott.tripney@gmail.com')->send(new CalcCompleteMail());
-            }
-        })->everyMinute();
+                Mail::to($query)->send(new CalcCompleteMail());
+			}
+
+		})->everyMinute();
     }
 
     /**

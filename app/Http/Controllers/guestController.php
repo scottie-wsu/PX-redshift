@@ -42,27 +42,30 @@ class guestController extends Controller
      */
     public function store(Request $request)
     {
+    	$galaxy = array();
 
-		$galaxy = new redshifts();
-		$galaxy->assigned_calc_ID = $request->input('assigned_calc_ID');
-		$galaxy->optical_u = $request->input('optical_u');
-		$galaxy->optical_v = $request->input('optical_v');
-		$galaxy->optical_g = $request->input('optical_g');
-		$galaxy->optical_r = $request->input('optical_r');
-		$galaxy->optical_i = $request->input('optical_i');
-		$galaxy->optical_z = $request->input('optical_z');
-		$galaxy->infrared_three_six = $request->input('infrared_three_six');
-		$galaxy->infrared_four_five = $request->input('infrared_four_five');
-		$galaxy->infrared_five_eight = $request->input('infrared_five_eight');
-		$galaxy->infrared_eight_zero = $request->input('infrared_eight_zero');
-		$galaxy->infrared_J = $request->input('infrared_J');
-		$galaxy->infrared_H = $request->input('infrared_H');
-		$galaxy->infrared_K = $request->input('infrared_K');
-		$galaxy->radio_one_four = $request->input('radio_one_four');
+		$galaxy[0] = new redshifts();
+		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
+		$galaxy[0]->optical_u = $request->input('optical_u');
+		$galaxy[0]->optical_v = $request->input('optical_v');
+		$galaxy[0]->optical_g = $request->input('optical_g');
+		$galaxy[0]->optical_r = $request->input('optical_r');
+		$galaxy[0]->optical_i = $request->input('optical_i');
+		$galaxy[0]->optical_z = $request->input('optical_z');
+		$galaxy[0]->infrared_three_six = $request->input('infrared_three_six');
+		$galaxy[0]->infrared_four_five = $request->input('infrared_four_five');
+		$galaxy[0]->infrared_five_eight = $request->input('infrared_five_eight');
+		$galaxy[0]->infrared_eight_zero = $request->input('infrared_eight_zero');
+		$galaxy[0]->infrared_J = $request->input('infrared_J');
+		$galaxy[0]->infrared_H = $request->input('infrared_H');
+		$galaxy[0]->infrared_K = $request->input('infrared_K');
+		$galaxy[0]->radio_one_four = $request->input('radio_one_four');
+		$galaxy[0]->toJson();
 
+		$galaxy[1] = new redshifts();
+		$galaxy[1]->methods = $request->input('methods');
 		//todo - this is reliant on guest being id 1 in the users table.
-		$galaxy->user_ID = 1;
-		$galaxy->methods = $request->input('methods');
+		$galaxy[1]->user_ID = 1;
 
 		//todo - this is reliant on guest being id 1 in the users table.
 		$userEmail = User::select('email')->where('id', 1)->first();
@@ -71,10 +74,10 @@ class guestController extends Controller
 		$key = "5rCBIs9Km!!cacr1";
 		$iv = "123hasdba036vpax";
 		$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
-		$galaxy->token = $tokenData;
-
+		$galaxy[1]->token = $tokenData;
+		$galaxy[1]->toJson();
 		//setting up all required API data to send via JSON
-		$dataJSON[0] = $galaxy->toJSON();
+		$dataJSON = $galaxy;
 		////initialising the guzzle client
 		$urlAPI = 'http://127.0.0.1:5000';
 		$client = new Client(['base_uri' => $urlAPI]);
