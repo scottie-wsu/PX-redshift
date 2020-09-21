@@ -17,7 +17,8 @@ class CreateCalculationsTable extends Migration
             $table->increments('real_calculation_id');
             $table->integer('galaxy_id')->unsigned();
             $table->integer('method_id')->unsigned();
-            $table->double('redshift_result', 16,8);
+            $table->double('redshift_result', 16,8)->nullable();
+            $table->text('redshift_alt_result')->nullable();
             $table->timestamps();
             $table->foreign('galaxy_id', 'calculations_ibfk_1')->references('calculation_id')->on('redshifts');
             $table->foreign('method_id', 'calculations_ibfk_2')->references('method_id')->on('methods');

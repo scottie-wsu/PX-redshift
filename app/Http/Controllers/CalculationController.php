@@ -48,7 +48,6 @@ class CalculationController extends Controller
  		$lineCount = count(file($target_file));
 		//$str = array();
         $galaxy =  array();
-        $galaxy_ID = array();
         $i = 0;
         $lineCounter = 0;
 
@@ -73,7 +72,7 @@ class CalculationController extends Controller
                 $galaxy[$i]->infrared_H =  floatval($data[12]);
                 $galaxy[$i]->infrared_K =  floatval($data[13]);
                 $galaxy[$i]->radio_one_four =  floatval($data[14]);
-                $galaxy[$i]->user_ID = auth()->id();
+                //$galaxy[$i]->user_ID = auth()->id();
                 $galaxy[$i]->toJson();
                 $i++;
             }
@@ -94,6 +93,7 @@ class CalculationController extends Controller
         $arrayCount = count($galaxy);
         $galaxy[$arrayCount] = new redshifts();
         $galaxy[$arrayCount]->methods = $methodRequests;
+        $galaxy[$arrayCount]->user_ID = auth()->id();
 
         //creating token logic - todo, add a way to pull hashed password with selectraw (bad sec?)
         $userEmail = User::select('email')->where('id', auth()->id())->first();
@@ -142,7 +142,7 @@ class CalculationController extends Controller
 			$pages=20;
 			$q = $req->input('q');
 			$user = calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-			 ->where('redshifts.user_ID', auth()->id())->where(function ($query) use ($q)  {
+			 ->where('jobs.user_ID', auth()->id())->where(function ($query) use ($q)  {
 			$query->orWhere('assigned_calc_ID','LIKE','%'.$q.'%')
 			->orWhere('redshifts.optical_u','LIKE','%'.$q.'%')->
 			orWhere('redshifts.optical_v','LIKE','%'.$q.'%')->
@@ -171,24 +171,28 @@ class CalculationController extends Controller
 
     public function store(Request $request){
 
-        $galaxy = new redshifts();
-		$galaxy->assigned_calc_ID = $request->input('assigned_calc_ID');
-    	$galaxy->optical_u = $request->input('optical_u');
-    	$galaxy->optical_v = $request->input('optical_v');
-    	$galaxy->optical_g = $request->input('optical_g');
-    	$galaxy->optical_r = $request->input('optical_r');
-    	$galaxy->optical_i = $request->input('optical_i');
-    	$galaxy->optical_z = $request->input('optical_z');
-    	$galaxy->infrared_three_six = $request->input('infrared_three_six');
-    	$galaxy->infrared_four_five = $request->input('infrared_four_five');
-    	$galaxy->infrared_five_eight = $request->input('infrared_five_eight');
-    	$galaxy->infrared_eight_zero = $request->input('infrared_eight_zero');
-    	$galaxy->infrared_J = $request->input('infrared_J');
-    	$galaxy->infrared_H = $request->input('infrared_H');
-    	$galaxy->infrared_K = $request->input('infrared_K');
-        $galaxy->radio_one_four = $request->input('radio_one_four');
-    	$galaxy->user_ID = auth()->id();
-    	$galaxy->methods = $request->input('methods');
+  		$galaxy = array();
+        $galaxy[0] = new redshifts();
+		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
+    	$galaxy[0]->optical_u = $request->input('optical_u');
+    	$galaxy[0]->optical_v = $request->input('optical_v');
+    	$galaxy[0]->optical_g = $request->input('optical_g');
+    	$galaxy[0]->optical_r = $request->input('optical_r');
+    	$galaxy[0]->optical_i = $request->input('optical_i');
+    	$galaxy[0]->optical_z = $request->input('optical_z');
+    	$galaxy[0]->infrared_three_six = $request->input('infrared_three_six');
+    	$galaxy[0]->infrared_four_five = $request->input('infrared_four_five');
+    	$galaxy[0]->infrared_five_eight = $request->input('infrared_five_eight');
+    	$galaxy[0]->infrared_eight_zero = $request->input('infrared_eight_zero');
+    	$galaxy[0]->infrared_J = $request->input('infrared_J');
+    	$galaxy[0]->infrared_H = $request->input('infrared_H');
+    	$galaxy[0]->infrared_K = $request->input('infrared_K');
+        $galaxy[0]->radio_one_four = $request->input('radio_one_four');
+		$galaxy[0]->toJson();
+
+        $galaxy[1] = new redshifts();
+		$galaxy[1]->methods = $request->input('methods');
+		$galaxy[1]->user_ID = auth()->id();
 
         $userEmail = User::select('email')->where('id', auth()->id())->first();
         $mergeData = $userEmail . " : " . random_bytes(32);
@@ -197,13 +201,11 @@ class CalculationController extends Controller
         $iv = "123hasdba036vpax";
         $tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
 
-        $galaxy->token = $tokenData;
-
-        //$calculate->method_id = (int)$request->input('methods');
-        //return(dump($galaxy));
+        $galaxy[1]->token = $tokenData;
+		$galaxy[1]->toJson();
 
         //setting up all required API data to send via JSON
-        $dataJSON[0] = $galaxy->toJSON();
+        $dataJSON = $galaxy;
         //$dataJSON[1] = $galaxy[1]->toJSON();
 
         //return(dump($dataJSON));

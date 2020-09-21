@@ -24,7 +24,8 @@ class calculationsSeeder extends Seeder
 			calculations::create([
 				"galaxy_id" => $faker->unique()->randomElement($redshifts),
 				"method_id" => $faker->randomElement($methods),
-				"redshift_result" => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999)
+				"redshift_result" => $faker->randomFloat($nBMaxDecimals=3, $min = 0, $max = 10),
+				"redshift_alt_result" => $faker->domainName()
 			]);
 		}
     }

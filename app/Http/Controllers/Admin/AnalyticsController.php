@@ -19,9 +19,9 @@ class AnalyticsController extends Controller
 		//dump($institutionLabels->keys()->toArray());
 		//dump($institutionCountTotal->toArray());
 
-		$jobCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
+		$jobCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
-		$jobCountPerUser = DB::select('SELECT name, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY redshifts.user_id');
+		$jobCountPerUser = DB::select('SELECT name, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY jobs.user_id');
 
 
 

@@ -21,7 +21,7 @@ class redshifts extends Model
 
         'assigned_calc_id', 'optical_u', 'optical_v', 'optical_g', 'optical_r', 'optical_i', 'optical_z',
 		'infrared_three_six', 'infrared_four_five', 'infrared_five_eight', 'infrared_eight_zero',
-		'infrared_J', 'infrared_H' ,'infrared_K', 'radio_one_four', 'status', 'job_id', 'user_id'
+		'infrared_J', 'infrared_H' ,'infrared_K', 'radio_one_four', 'status', 'job_id'
 
     ];
 }

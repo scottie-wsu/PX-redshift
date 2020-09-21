@@ -16,9 +16,10 @@ class CreateMethodsTable extends Migration
     {
         Schema::create('methods', function (Blueprint $table) {
             $table->increments('method_id');
-            $table->string('method_name')->nullable();
+            $table->string('method_name');
             $table->text('python_script_path');
-            $table->text('method_description');
+            $table->text('method_description')->nullable();
+            $table->text('removed')->nullable();
             $table->timestamps();
         });
         DB::table('methods')->insert(array(

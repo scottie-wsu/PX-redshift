@@ -25,7 +25,8 @@ class redshiftsSeeder extends Seeder
 		$jobs2 = array_slice($jobs, 12, 12);
 		$jobs3 = array_slice($jobs, 24, 12);
 		$jobs4 = array_slice($jobs, 36, 12);
-
+		$max = 10;
+		$nBMaxDecimals = 5;
 		foreach(range(1,125) as $index){
 
 			//here we're creating redshifts that are always unique galaxy IDs with unique data,
@@ -39,20 +40,20 @@ class redshiftsSeeder extends Seeder
 			//of information available. just lots of issues in general with that approach
 			redshifts::create([
 				'assigned_calc_id' => $faker->randomNumber($nbDigits = 5), //FK
-				'optical_u' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_v' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_g' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_r' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_i' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_z' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_J' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_H' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_K' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'radio_one_four' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
+				'optical_u' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_v' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_g' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_r' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_i' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_z' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_J' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_H' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_K' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'radio_one_four' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
 				'status' => 'READ',
 				//'job_count' => 125-$index,
 				//'job_id' => Jobs::select('job_id')->where('job_id', $jobs1[$i])->first(),
@@ -61,11 +62,11 @@ class redshiftsSeeder extends Seeder
 				//'user_id' => $jobUserId['user_id']
 			]);
 
-			$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
-			$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
-			redshifts::where('calculation_id', $index)->update([
-				'user_id' => $jobUserId['user_id']
-			]);
+			//$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
+			//$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
+			//redshifts::where('calculation_id', $index)->update([
+			//	'user_id' => $jobUserId['user_id']
+			//]);
 
 
 
@@ -74,20 +75,20 @@ class redshiftsSeeder extends Seeder
 		foreach(range(126,250) as $index){
 			redshifts::create([
 				'assigned_calc_id' => $faker->randomNumber($nbDigits = 5), //FK
-				'optical_u' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_v' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_g' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_r' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_i' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_z' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_J' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_H' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_K' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'radio_one_four' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
+				'optical_u' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_v' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_g' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_r' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_i' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_z' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_J' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_H' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_K' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'radio_one_four' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
 				'status' => 'COMPLETED',
 				//'job_count' => 250-$index,
 				//'job_id' => Jobs::select('job_id')->where('job_id', $jobs1[$i])->first(),
@@ -96,31 +97,31 @@ class redshiftsSeeder extends Seeder
 				//'user_id' => $jobUserId[0]
 			]);
 
-			$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
-			$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
-			redshifts::where('calculation_id', $index)->update([
-				'user_id' => $jobUserId['user_id']
-			]);
+			//$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
+			//$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
+			//redshifts::where('calculation_id', $index)->update([
+			//	'user_id' => $jobUserId['user_id']
+			//]);
 		}
 
 		foreach(range(251,375) as $index){
 
 			redshifts::create([
 				'assigned_calc_id' => $faker->randomNumber($nbDigits = 5), //FK
-				'optical_u' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_v' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_g' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_r' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_i' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_z' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_J' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_H' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_K' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'radio_one_four' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
+				'optical_u' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_v' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_g' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_r' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_i' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_z' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_J' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_H' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_K' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'radio_one_four' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
 				'status' => 'PROCESSING',
 				//'job_count' => 375-$index,
 				//'job_id' => Jobs::select('job_id')->where('job_id', $jobs1[$i])->first(),
@@ -129,11 +130,11 @@ class redshiftsSeeder extends Seeder
 				//'user_id' => $jobUserId[0]
 			]);
 
-			$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
-			$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
-			redshifts::where('calculation_id', $index)->update([
-				'user_id' => $jobUserId['user_id']
-			]);
+			//$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
+			//$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
+			//redshifts::where('calculation_id', $index)->update([
+			//	'user_id' => $jobUserId['user_id']
+			//]);
 		}
 
 
@@ -141,20 +142,20 @@ class redshiftsSeeder extends Seeder
 
 			redshifts::create([
 				'assigned_calc_id' => $faker->randomNumber($nbDigits = 5), //FK
-				'optical_u' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_v' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_g' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_r' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_i' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'optical_z' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_J' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_H' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'infrared_K' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
-				'radio_one_four' => $faker->randomFloat($nBMaxDecimals=8, $min = 0, $max = 99999999),
+				'optical_u' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_v' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_g' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_r' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_i' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'optical_z' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_three_six' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_four_five' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_five_eight' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_eight_zero' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_J' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_H' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'infrared_K' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
+				'radio_one_four' => $faker->randomFloat($nBMaxDecimals, $min = 0, $max),
 				'status' => 'SUBMITTED',
 				//'job_id' => Jobs::select('job_id')->where('job_id', $jobs1[$i])->first(),
 				'job_id' => $faker->randomElement($jobs4),
@@ -162,11 +163,11 @@ class redshiftsSeeder extends Seeder
 				//'user_id' => $jobUserId[0]
 			]);
 
-			$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
-			$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
-			redshifts::where('calculation_id', $index)->update([
-				'user_id' => $jobUserId['user_id']
-			]);
+			//$redshiftJobId = redshifts::select('job_id')->where('calculation_id', $index)->first();
+			//$jobUserId = Jobs::select('user_id')->where('job_id', $redshiftJobId['job_id'])->first();
+			//redshifts::where('calculation_id', $index)->update([
+			//	'user_id' => $jobUserId['user_id']
+			//]);
 		}
     }
 }
