@@ -227,21 +227,6 @@ class AnalyticsController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	public function plotting(){
 		$test = 'test';
 		return view('plotting', compact($test));
@@ -335,7 +320,7 @@ class AnalyticsController extends Controller
         				position: 'left',
 
 					}, {
-        				id: 'B',
+        				id: 'B',z
         				type: 'linear',
         				position: 'right',
 

@@ -34,6 +34,14 @@
         .admin{
             color: lightskyblue;
         }
+
+        .chart2 {
+            float: right;
+        }
+
+        .chart4 {
+            float: right;
+        }
     </style>
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="d-none d-lg-block">
@@ -69,6 +77,20 @@
 
 
     @php
+
+    $redshiftCount = App\redshifts::count();
+        Widget::add()->to('before_content')->type('div')->class('row')->content([
+
+        Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-success')
+            ->progressClass('progress-bar')
+            ->value($redshiftCount. ' Redshifts Counted')
+            ->progress(80)
+            ->onlyHere()
+
+        ]);
+        
         use App\redshifts;
         use App\calculations;
         use Illuminate\Support\Facades\DB;
