@@ -123,7 +123,7 @@ class AnalyticsController extends Controller
 
 		$chartjs1 = app()->chartjs
 
-			->name('lineChartTest1')
+			->name('Chart for Jobs')
 			->type('bar')
 			->size(['width' => 400, 'height' => 400])
 			->labels($institutionLabels->keys()->toArray())
@@ -173,8 +173,46 @@ class AnalyticsController extends Controller
         ])
         ->options([]);
 
+        $chartjs3 = app()->chartjs
 
-		return view('analytics', compact('chartjs','chartjs1','chartjs2'));
+			->name('Redshifts')
+			->type('bar')
+			->size(['width' => 400, 'height' => 400])
+			->labels($redshiftsPluck->keys()->toArray())
+			->datasets([
+				[
+					"label" => "Redshifts Completed",
+					"yAxisID" => "A",
+					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'borderColor' => "rgba(38, 185, 154, 0.7)",
+					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
+					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
+					"pointHoverBackgroundColor" => "#fff",
+					"pointHoverBorderColor" => "rgba(220,220,220,1)",
+					//not sure if toArray is necessary but it works either way
+					'data' => $redshiftArray->toArray(),
+
+				],
+
+			])
+			//for some reason it needs the ticks values to be set
+			//todo - find the max value in the datasets and set max value to that
+			->optionsRaw("{
+    			scales: {
+      				yAxes: [{
+        				id: 'A',
+        				type: 'linear',
+        				position: 'left',
+        				ticks: {
+          					min: 0
+						}
+						
+					}]
+				}
+			}");
+
+
+		return view('analytics', compact('chartjs','chartjs1','chartjs2','chartjs3'));
 		//return(dump($label));
 	}
 
