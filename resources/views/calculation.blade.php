@@ -91,6 +91,10 @@
     </div>
 </nav>
 
+@php
+	$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->where('removed', 'NO')->get();
+@endphp
+
 
   <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
         <div class="wrapper" style="width:70%">
@@ -100,21 +104,37 @@
                     <form name="form1" method="POST" action="{{ route('calculation.index') }}" style="align-items:center;">
                         @csrf
 
-																					<div class="row">
-																						<div class="col-5">
-																							<label class="label text-sm-left">Job Name</label>
-																							<input id="job_name" type="text" class="input--style-4" name="job_name" value="{{ old('job_name') }}" required autocomplete="job_name" autofocus>
-																						</div>
-																					</div>
-																				<br>
-																					<div class="row">
-																					<div class="col-12">
-																								<label class="label text-md-left">Job Description (optional)</label>
-																								<input id="job_description" type="text" class="input--style-4" name="job_description" value="{{ old('job_description') }}" autofocus>
-																					</div>
-																					</div>
-																					<br>
-																					<br>
+						<div class="row">
+							<div class="col-5">
+								<div class="input-group">
+								<label class="label text-sm-left">Job Name</label>
+								<input onchange="update_var1(this)" id="job_name" type="text" class="input--style-4" name="job_name" required autocomplete="job_name" autofocus>
+								</div>
+							</div>
+						</div>
+						<script>
+							function update_var1(element) {
+								var jobNameValue = element.value;
+								document.getElementById("job_nameFile").value = jobNameValue;
+							}
+						</script>
+					<br>
+						<div class="row">
+						<div class="col-12">
+								<div class="input-group">
+									<label class="label text-md-left">Job Description (optional)</label>
+									<input onchange="update_var2(this)" id="job_description" type="text" class="input--style-4" name="job_description" value="{{ old('job_description') }}" autofocus>
+								</div>
+							</div>
+						</div>
+						<script>
+							function update_var2(element) {
+								var jobDescValue = element.value;
+								document.getElementById("job_descriptionFile").value = jobDescValue;
+							}
+						</script>
+						<br>
+						<br>
 
                         <div class="row">
                             <div class="col-4">
@@ -268,10 +288,13 @@
 
                                     @endphp
 
+									<input id="job_nameFile" type="hidden" name="job_nameFile">
+									<input id="job_descriptionFile" type="hidden" name="job_descriptionFile">
+
                             	    @csrf
                                     <input type="file" class="custom-file-input" id="fileInput" name="fileToUpload">
 
-   							 	    <label id = "inputLabel" class="custom-file-label" for="fileInput">Choose File
+   							 	    <label id = "inputLabel" class="custom-file-label" for="fileInput">Choose .csv file
                                     <script>
                                     document.getElementById('fileInput').onchange = function () {
   									    document.getElementById('inputLabel').innerHTML = this.value.replace(/.*[\/\\]/, '');
@@ -283,10 +306,20 @@
 
                             <div class="input-group-append" style="padding-left:15px">
                                 <button class ="btn_upload btn--radius-2 btn--blue" style="height:92%" type="submit" value="Upload">Submit File</button>
-  																									</div>
+							</div>
                              </form>
 
                     	</div>
+
+					@if($errors->any())
+						<div class="alert alert-warning"> {{ $errors->first() }}</div>
+					@endif
+					@if(isset($_GET['methodFail']))
+						<div class="alert alert-warning"> At least one method must be selected.</div>
+					@endif
+					@if(isset($_GET['dataFail']))
+						<div class="alert alert-warning"> At least one row with all input fields filled must be submitted.</div>
+					@endif
                 </div>
             </div>
         </div>

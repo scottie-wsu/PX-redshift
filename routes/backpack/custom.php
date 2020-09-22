@@ -17,10 +17,12 @@ Route::group([
 
     Route::crud('calculations', 'CalculationsCrudController');
     Route::crud('methods', 'MethodsCrudController');
-    Route::crud('users', 'UsersCrudController');
+	Route::get('methods/{id}/softDelete', 'MethodsCrudController@softDelete');
+	Route::crud('users', 'UsersCrudController');
     Route::get('users/{id}/reset', 'UsersCrudController@reset');
 
-    Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
+
+	Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
 	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
 	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
 	Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');

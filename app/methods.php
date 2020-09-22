@@ -12,7 +12,7 @@ class methods extends Model
 
     protected $fillable = [
 
-      'method_id', 'method_name', 'python_script_path', 'created_at', 'updated_at',
+      'method_id', 'method_name', 'python_script_path', 'created_at', 'updated_at', 'removed',
 
     ];
 

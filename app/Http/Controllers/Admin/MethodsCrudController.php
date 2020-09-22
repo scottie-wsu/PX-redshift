@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 use mysql_xdevapi\Exception;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Prologue\Alerts\Facades\Alert;
+
 
 
 
@@ -24,7 +26,7 @@ class MethodsCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+    //use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
@@ -37,7 +39,18 @@ class MethodsCrudController extends CrudController
         CRUD::setModel(\App\Models\Methods::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/methods');
         CRUD::setEntityNameStrings('methods', 'methods');
-    }
+		$this->crud->addButtonFromView('line', 'softdelete', 'softdelete', 'beginning');
+
+	}
+
+	public function softDelete()
+	{
+		$param = Route::current()->parameter('id');
+		Methods::where('method_id', $param)->update(['removed' => "YES"]);
+
+		Alert::success('test removed')->flash();
+		return back();
+	}
 
     /**
      * Define what happens when the List operation is loaded.
@@ -47,32 +60,19 @@ class MethodsCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        $count = Methods::count();
-        //doing the file rename logic here as it isn't possible in the model file
+		CRUD::column('method_name')->type('text');
+		CRUD::column('method_description')->type('text');
+		CRUD::column('python_script_path')->type('text');
 
+		$this->crud->addClause('where', 'removed', '=', "NO");
 
-		$blank = new Methods;
-
-
-		//dump($blank->isDirty());
-
-
-
-
-
-
-
-        CRUD::column('method_name')->type('text');
-        //CRUD::column('python_script_path')->type('file');
-        CRUD::column('method_description')->type('text');
-        CRUD::column('python_script_path')->type('text');
-
-        //dump($count);
+		//dump($count);
 
     }
 
     protected function setupShowOperation()
     {
+
         $this->crud->set('show.setFromDb', false);
 
         $this->crud->addColumn(

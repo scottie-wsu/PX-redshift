@@ -28,6 +28,8 @@ Route::post('/upload', 'CalculationController@import')->name('upload');
 
 Route::resource('/calculation', 'CalculationController');
 Route::get('/home', 'HomeController@index')->name('home');
+Route::post('/home', 'HomeController@fail')->name('homefail');
+
 
 Route::get('/history', 'CalculationController@home')->name('history');
 

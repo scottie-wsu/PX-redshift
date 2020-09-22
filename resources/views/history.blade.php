@@ -70,8 +70,8 @@
 						</li>
 					@endif
 					<li class="nav-item">
-						<div style = "background: coral; border-radius: 20px;">
-							<a class="nav-link" href="{{ route('csv') }}">{{ __('Download History') }}</a>
+						<div style = "background: dodgerblue; border-radius: 20px;">
+							<a style="color: white" class="nav-link" href="{{ route('csv') }}">{{ __('Download History') }}</a>
 						</div>
 					</li>
 

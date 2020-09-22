@@ -75,9 +75,12 @@ class UsersCrudController extends CrudController
         $this->crud->allowAccess(['read', 'update']);
 
         ////hides current user from listing
-        //$this->crud->addClause('where', 'id', '!=', auth()->id());
-        //because the guestuser right now is id 1 in users table
+        $this->crud->addClause('where', 'id', '!=', auth()->id());
+        //hide guest from listing
 		$this->crud->addClause('where', 'id', '!=', 1);
+
+		//because the guestuser right now is id 1 in users table
+		//$this->crud->addClause('where', 'id', '!=', 1);
 
     }
 
@@ -170,11 +173,11 @@ class UsersCrudController extends CrudController
 
 			];
 		}
-
-
-
+		$this->crud->addField('name');
+		$this->crud->addField('institution');
         $this->crud->addFields($fields);
-        $this->crud->removeSaveActions(['save_and_new', 'save_and_edit']);
+
+        $this->crud->removeSaveActions(['save_and_new', 'save_and_edit', 'save_and_preview']);
 
 
     }
