@@ -34,6 +34,7 @@
         .admin{
             color: lightskyblue;
         }
+
     </style>
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="d-none d-lg-block">
@@ -47,28 +48,49 @@
         <small id="datatable_info_stack" class="animated fadeIn" style="display: inline-flex;"><div class="dataTables_info" id="crudTable_info" role="status" aria-live="polite">Here's your breakdown of how the site is being used.</div></small>-->
         <span class="text-capitalize">Quick plots</span>
 <small id="datatable_info_stack" class="animated fadeIn" style="display: inline-flex;"><div class="dataTables_info" id="crudTable_info" role="status" aria-live="polite">Here's a quick summary of how the site is being used.</div></small>
+
     </h2>
 </div>
 
 @endsection
 
 @section('content')
-		<div class="chart1  col" style="width:400px;height:400px">
+
+<div class="container">
+    <div class="row">
+		<div class="col">
 			{!! $charts[0]->render() !!}
 		</div>
-		<div class="chart2  col" style="width:400px;height:400px">
+		<div class="col" >
 			{!! $charts[1]->render() !!}
 		</div>
 
-		<div class="chart3" style="width:400px;height:400px">
+		<div class="col" >
 			{!! $charts[2]->render() !!}
 		</div>
-		<div class="chart4" style="width:400px;height:400px">
+		<div class="col">
 			{!! $charts[3]->render() !!}
 		</div>
+    </div>
+
+    </div>
 
 
     @php
+
+    $jobCount = App\Jobs::count();
+    $redshiftCount = App\redshifts::count();
+        Widget::add()->to('before_content')->type('div')->class('row')->content([
+
+        Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-success')
+            ->progressClass('progress-bar')
+            ->value($redshiftCount. ' Redshifts Counted out of ' . $jobCount. ' Jobs')
+            ->onlyHere()
+
+        ]);
+
         use App\redshifts;
         use App\calculations;
         use Illuminate\Support\Facades\DB;

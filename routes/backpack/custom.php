@@ -29,5 +29,6 @@ Route::group([
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');
     Route::get('charts/method-use', 'Charts\MethodUseChartController@response')->name('charts.method-use.index');
     Route::get('charts/weekly-method-use-chart', 'Charts\WeeklyMethodUseChartChartController@response')->name('charts.weekly-method-use-chart.index');
+Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');
     Route::get('charts/redshifts', 'Charts\RedshiftsChartController@response')->name('charts.redshifts.index');
 }); // this should be the absolute last line of this file
