@@ -51,6 +51,17 @@ class CalculationController extends Controller
         $i = 0;
         $lineCounter = 0;
 
+		//creating job entry in the database
+		$userId = auth()->id();
+		$job = new Jobs();
+		$job->job_name = $request->input('job_name');
+		$job->job_description = $request->input('job_description');
+		$job->user_id = $userId;
+		$job->save();
+		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
+		$jobId = $lastJob->job_id;
+
+
         while($lineCounter < $lineCount){
             $data = fgetcsv($file, $delimiter= ",");
             //checking if first element is numeric so that a header rows isn't submitted
@@ -91,7 +102,9 @@ class CalculationController extends Controller
         }
 
         $arrayCount = count($galaxy);
+        //creating metadata row for API
         $galaxy[$arrayCount] = new redshifts();
+        $galaxy[$arrayCount]->job_id = $jobId;
         $galaxy[$arrayCount]->methods = $methodRequests;
         $galaxy[$arrayCount]->user_ID = auth()->id();
 
@@ -171,6 +184,17 @@ class CalculationController extends Controller
 
     public function store(Request $request){
 
+		//creating job entry in the database
+		$userId = auth()->id();
+		$job = new Jobs();
+		$job->job_name = $request->input('job_name');
+		$job->job_description = $request->input('job_description');
+		$job->user_id = $userId;
+		$job->save();
+		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
+		$jobId = $lastJob->job_id;
+
+		//creating data for http json request
   		$galaxy = array();
         $galaxy[0] = new redshifts();
 		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
@@ -190,7 +214,9 @@ class CalculationController extends Controller
         $galaxy[0]->radio_one_four = $request->input('radio_one_four');
 		$galaxy[0]->toJson();
 
+		//creating metadata row for API
         $galaxy[1] = new redshifts();
+		$galaxy[1]->job_id = $jobId;
 		$galaxy[1]->methods = $request->input('methods');
 		$galaxy[1]->user_ID = auth()->id();
 
@@ -204,19 +230,18 @@ class CalculationController extends Controller
         $galaxy[1]->token = $tokenData;
 		$galaxy[1]->toJson();
 
+
+
         //setting up all required API data to send via JSON
         $dataJSON = $galaxy;
-        //$dataJSON[1] = $galaxy[1]->toJSON();
-
-        //return(dump($dataJSON));
         ////initialising the guzzle client
         $urlAPI = 'http://127.0.0.1:5000';
         $client = new Client(['base_uri' => $urlAPI]);
         ////writing the code to send data to the API
         $client->request('POST', '/', ['json' => $dataJSON]);
 
-     	//$red_result=$calculate->redshift_result;
-        return redirect('/history');
+     	//todo - redirect to waiter page
+        return redirect('/home');
 
 
     }
