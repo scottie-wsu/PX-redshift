@@ -70,14 +70,24 @@ class AnalyticsController extends Controller
         				position: 'left',
 						ticks: {
           					min: 0
-						}
-					}, {
+						},
+						 scaleLabel: {
+                                display: true,
+                                labelString: 'Users per institution'
+                            }
+
+					}, 
+					{
         				id: 'B',
         				type: 'linear',
         				position: 'right',
 						ticks: {
           					min: 0
-						}
+						},
+						scaleLabel: {
+                                display: true,
+                                labelString: 'Jobs completed per institution'
+                            }
       					}]
 				}
 			}");
@@ -101,20 +111,6 @@ class AnalyticsController extends Controller
 					//not sure if toArray is necessary but it works either way
 					'data' => collect($jobCountPerUser)->pluck('total')->toArray(),
 				],
-				/*
-
-				[
-					"label" => "Jobs completed",
-					"yAxisID" => "B",
-					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
-					'borderColor' => "rgba(200, 34, 154, 0.7)",
-					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
-					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
-					"pointHoverBackgroundColor" => "#fff",
-					"pointHoverBorderColor" => "rgba(220,220,220,1)",
-					'data' => collect($jobCountPerUser)->pluck('total')->toArray(),
-				]
-				*/
 
 			])
 			//for some reason it needs the ticks values to be set
@@ -127,7 +123,12 @@ class AnalyticsController extends Controller
         				position: 'left',
 						ticks: {
           					min: 0
-						}
+						},
+						scaleLabel: {
+                                display: true,
+                                labelString: 'Amount of Jobs completed'
+                            }
+
 					}]
 				}
 			}");
@@ -188,7 +189,7 @@ class AnalyticsController extends Controller
 		$chartjs3 = app()->chartjs
 
 			->name('lineChartTest3')
-			->type('line')
+			->type('horizontalBar')
 			->size(['width' => 400, 'height' => 200])
 			->labels($institutionLabels1->keys()->toArray())
 			->datasets([
@@ -206,7 +207,18 @@ class AnalyticsController extends Controller
 			])
 			//for some reason it needs the ticks values to be set
 			//todo - find the max value in the datasets and set max value to that
-			->optionsRaw([]);
+			->optionsRaw("{
+    			scales: {
+      				xAxes: [{
+        				id: 'A',
+        				type: 'linear',
+						ticks: {
+							max: 10,
+          					min: 0
+						}
+					}]
+				}
+			}");
 
 		$charts = [$chartjs, $chartjs1, $chartjs2, $chartjs3];
 

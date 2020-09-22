@@ -48,6 +48,7 @@
         <small id="datatable_info_stack" class="animated fadeIn" style="display: inline-flex;"><div class="dataTables_info" id="crudTable_info" role="status" aria-live="polite">Here's your breakdown of how the site is being used.</div></small>-->
         <span class="text-capitalize">Quick plots</span>
 <small id="datatable_info_stack" class="animated fadeIn" style="display: inline-flex;"><div class="dataTables_info" id="crudTable_info" role="status" aria-live="polite">Here's a quick summary of how the site is being used.</div></small>
+
     </h2>
 </div>
 
@@ -77,15 +78,15 @@
 
     @php
 
+    $jobCount = App\Jobs::count();
     $redshiftCount = App\redshifts::count();
-        Widget::add()->to('after_content')->type('div')->class('row')->content([
+        Widget::add()->to('before_content')->type('div')->class('row')->content([
 
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-success')
             ->progressClass('progress-bar')
-            ->value($redshiftCount. ' Redshifts Counted')
-            ->progress(80)
+            ->value($redshiftCount. ' Redshifts Counted out of ' . $jobCount. ' Jobs')
             ->onlyHere()
 
         ]);
