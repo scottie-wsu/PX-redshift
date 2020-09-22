@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs;
 use App\redshifts;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use GuzzleHttp\Client;
@@ -42,8 +44,18 @@ class guestController extends Controller
      */
     public function store(Request $request)
     {
-    	$galaxy = array();
+		//creating job entry in the database
+		$userId = 1;
+		$job = new Jobs();
+		$job->job_name = "guest job name";
+		$job->job_description = "guest job description";
+		$job->user_id = $userId;
+		$job->save();
+		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
+		$jobId = $lastJob->job_id;
 
+		//creating data to send in http json request
+    	$galaxy = array();
 		$galaxy[0] = new redshifts();
 		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
 		$galaxy[0]->optical_u = $request->input('optical_u');
@@ -63,6 +75,7 @@ class guestController extends Controller
 		$galaxy[0]->toJson();
 
 		$galaxy[1] = new redshifts();
+		$galaxy[1]->job_id = $jobId;
 		$galaxy[1]->methods = $request->input('methods');
 		//todo - this is reliant on guest being id 1 in the users table.
 		$galaxy[1]->user_ID = 1;
