@@ -213,7 +213,7 @@ class AnalyticsController extends Controller
         				id: 'A',
         				type: 'linear',
 						ticks: {
-							max: 10,
+							
           					min: 0
 						}
 					}]
