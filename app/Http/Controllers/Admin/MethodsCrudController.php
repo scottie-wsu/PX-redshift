@@ -39,16 +39,16 @@ class MethodsCrudController extends CrudController
         CRUD::setModel(\App\Models\Methods::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/methods');
         CRUD::setEntityNameStrings('methods', 'methods');
-		$this->crud->addButtonFromView('line', 'softdelete', 'softdelete', 'beginning');
+		$this->crud->addButtonFromView('line', 'softDelete', 'softDelete', 'end');
 
 	}
 
 	public function softDelete()
 	{
+
 		$param = Route::current()->parameter('id');
 		Methods::where('method_id', $param)->update(['removed' => "YES"]);
-
-		Alert::success('test removed')->flash();
+		Alert::success('Method soft deleted.')->flash();
 		return back();
 	}
 
@@ -106,7 +106,9 @@ class MethodsCrudController extends CrudController
                 'type' => 'closure',
                 'function' => function($entry) {
                     if ($entry->created_at) {
-                        return $entry->created_at;
+						$sqlDate = strtotime($entry->created_at);
+						$newDate = date("jS M Y, g:i:sA", $sqlDate);
+						return $newDate;
                     }
                 }
             ]
@@ -118,10 +120,11 @@ class MethodsCrudController extends CrudController
                 'label' => 'Last updated at',
                 'type' => 'closure',
                 'function' => function($entry){
-                    if($entry->updated_at > $entry->created_at){
-                        return $entry->updated_at;
-
-                    }
+					if ($entry->updated_at != $entry->created_at) {
+						$sqlDate = strtotime($entry->updated_at);
+						$newDate = date("jS M Y, g:i:sA", $sqlDate);
+						return $newDate;
+					}
                 }
             ]
         );

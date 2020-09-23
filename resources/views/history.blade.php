@@ -173,7 +173,10 @@
 							<tr class="view">
 								<td>{{ $job->job_name }}</td>
 								<td>{{ $job->job_description }}</td>
-								<td>{{ $job->created_at }}</td>
+								<td>@php
+									$sqlDate = strtotime($job->created_at);
+									echo date("jS M Y, g:i:sA", $sqlDate);
+								@endphp</td>
 								<td>{{ $interval }}</td>
 							</tr>
 							<tr class="fold">
