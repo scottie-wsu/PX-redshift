@@ -35,60 +35,63 @@
 	</style>
 </head>
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
-    <div class="container">
-        <a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+	<div class="container">
+		<a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <!-- Left Side Of Navbar -->
-            <ul class="navbar-nav mr-auto">
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<!-- Left Side Of Navbar -->
+			<ul class="navbar-nav mr-auto">
 
-            </ul>
+			</ul>
 
-            <!-- Right Side Of Navbar -->
-            <ul class="navbar-nav ml-auto" >
-                <!-- Authentication Links -->
+			<!-- Right Side Of Navbar -->
+			<ul class="navbar-nav ml-auto" >
+				<!-- Authentication Links -->
 
-                @php
-                    use App\User;
-                    use Illuminate\Support\Facades\Auth;
-                    //dump()
-                    $user = Auth::user();
-                    $check = User::select('level')->where('id', $user->id)->get();
-                    $userChecker = $check[0]->level;
-                    //return ($userChecker == 1);
-                @endphp
+				@php
+					use App\User;
+					use Illuminate\Support\Facades\Auth;
+					$user = Auth::user();
+					$check = User::select('level')->where('id', $user->id)->get();
+					$userChecker = $check[0]->level;
 
-                @if($userChecker==1)
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
-                    </li>
-                @endif
+					//return ($userChecker == 1);
+				@endphp
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>
+				@if($userChecker==1)
+					<li class="nav-item">
+						<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
+					</li>
+				@endif
 
-                </li>
-                <li class="nav-item">
+				<li class="nav-item">
+					<a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>
 
-                    <a class="nav-link" href="{{ route('logout') }}"
-                       onclick="event.preventDefault();
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{{ route('MyAccount') }}">{{ __('My Account') }}</a>
+
+				</li>
+				<li class="nav-item">
+
+					<a class="nav-link" href="{{ route('logout') }}"
+					   onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                        {{ __('Logout') }}
-                    </a>
+						{{ __('Logout') }}
+					</a>
 
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
+					<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+						@csrf
+					</form>
 
-                </li>
-                <h4 class="nav-link"> {{ Auth::user()->name }} </h4>
+				</li>
 
-            </ul>
-        </div>
-    </div>
+			</ul>
+		</div>
+	</div>
 </nav>
 
 @php

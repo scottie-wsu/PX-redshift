@@ -1,14 +1,36 @@
 @extends('layouts.app_boot')
 @section('title','My Account')
-
+@section('after_styles')
+	<style media="screen">
+		.backpack-profile-form .required::after {
+			content: ' *';
+			color: red;
+		}
+		.noty_theme__light{
+			color: white;
+		}
+	</style>
+@endsection
 
 
 
 @section('header')
+@php
+	header("Cache-Control: no-cache, must-revalidate"); //HTTP 1.1
+
+@endphp
 
 @endsection
 
 @section('content')
+
+
+
+
+	<script src="{{ asset('js/noty.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/noty.css') }}">
+
+
 
 
 
@@ -38,9 +60,7 @@
 				display: block;
 				width: 10%;
 			}
-			body {
-				overflow: hidden;
-			}
+
 
 		</style>
 	</head>
@@ -82,6 +102,10 @@
 
 					</li>
 					<li class="nav-item">
+						<a class="nav-link" href="{{ route('MyAccount') }}">{{ __('My Account') }}</a>
+
+					</li>
+					<li class="nav-item">
 
 						<a class="nav-link" href="{{ route('logout') }}"
 						   onclick="event.preventDefault();
@@ -94,89 +118,119 @@
 						</form>
 
 					</li>
-					<h4 class="nav-link"> {{ Auth::user()->name }} </h4>
 
 				</ul>
 			</div>
 		</div>
 	</nav>
 
-
+@php $userForm = Auth::user() @endphp
 	<div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
-		<div class="wrapper" style="width:70%">
-			<div class="card card-4">
+		<div class="wrapper" style="width:70%;">
+			<div class="card card-2">
 				<div class="card-body" >
-					<form name="form1" method="POST" action="{{ route('MyAccountUpdate') }}" style="align-items:center;">
-						{!! csrf_field() !!}
-						<div class="card-body backpack-profile-form bold-labels">
-							<div class="row">
-								<div class="card-body backpack-profile-form bold-labels">
-									<div class="row">
-										<div class="col-md-6 form-group">
-											@php
-												if(isset($user1)){
-													$userForm = $user1;
-												}
-												else{
-													$userForm = Auth::user();
-												}
-												$label = 'Name';
-												$field = 'name';
-											@endphp
-											<label class="required">{{ $label }}</label>
-											<input required class="form-control" type="text" name="{{ $field }}" value="{{ $userForm->$field }}">
-										</div>
+				<h3>My Account</h3>
+					@if (session('success'))
+						<script>
+							new Noty({
+								type: 'success',
+								text: 'Account information updated successfully.',
+								layout: 'topCenter',
+								theme: 'light',
+								closeWith: ['button', 'click']
+							}).show();
+						</script>
 
-										<div class="col-md-6 form-group">
-											@php
-												$label = 'Email';
-												$field = 'email';
-											@endphp
-											<label class="required">{{ $label }}</label>
-											<input required class="form-control" type="text" name="{{ $field }}" value="{{ $userForm->$field }}">
-										</div>
-
-										<div class="col-md-6 form-group">
-											@php
-												$label = 'Institution';
-												$field = 'institution';
-											@endphp
-											<label class="required">{{ $label }}</label>
-											<input required class="form-control" type="text" name="{{ $field }}" value="{{ $userForm->$field }}">
-										</div>
-
-										<input type="hidden" name="id" id="id" value="{{ auth()->id() }}">
-
-										<button class ="btn_upload btn--radius-2 btn--blue" type="submit">Update details</button>
+					@endif
+					
 
 
-										</div>
-
-									</div>
-								</div>
+					@if ($errors->count())
+						<br>
+						<div class="col-lg-8">
+							<div class="alert alert-danger">
+								<ul class="mb-1">
+									@foreach ($errors->all() as $e)
+										<li>{{ $e }}</li>
+									@endforeach
+								</ul>
 							</div>
-					</form>
+						</div>
+					@endif
 				</div>
 
 
 
+
+				{{-- UPDATE INFO FORM --}}
+				<div class="col-md-12">
+					<form class="form" action="{{ route('MyAccountUpdate') }}" method="post">
+
+						{!! csrf_field() !!}
+
+						<div class="card padding-10">
+							<div class="card-header">
+								<b>Update Account Info</b>
+
+							</div>
+
+							<div class="card-body backpack-profile-form bold-labels">
+								<div class="row">
+									<div class="col-sm-4 form-group">
+										@php
+											$label = 'Name';
+											$field = 'name';
+										@endphp
+										<label class="required">{{ $label }}</label>
+										<input required class="form-control" type="text" name="{{ $field }}" value="{{ $userForm->$field }}">
+									</div>
+
+									<div class="col-sm-4 form-group">
+										@php
+											$label = 'Email';
+											$field = 'email';
+										@endphp
+										<label class="required">{{ $label }}</label>
+										<input required class="form-control" type="email" name="{{ $field }}" value="{{ $userForm->$field }}">
+									</div>
+
+									<div class="col-sm-4 form-group">
+										@php
+											$label = 'Institution';
+											$field = 'institution';
+										@endphp
+										<label class="required">{{ $label }}</label>
+										<input required class="form-control" type="text" name="{{ $field }}" value="{{ $userForm->$field }}">
+									</div>
+
+								</div>
+							</div>
+
+							<div class="card-footer">
+								<button type="submit" class="btn btn-success"><i class="la la-save"></i> Save changes</button>
+							</div>
+						</div>
+
+					</form>
+				</div>
+				<br>
 				{{-- CHANGE PASSWORD FORM --}}
-				<div class="col-lg-8">
-					<form class="form" action="{{ route('backpack.account.password') }}" method="post">
+				<div class="col-lg-12">
+					<form class="form" action="{{ route('MyAccountPassword') }}" method="post">
 
 						{!! csrf_field() !!}
 
 						<div class="card padding-10">
 
 							<div class="card-header">
-								{{ trans('backpack::base.change_password') }}
+								<b>Change password</b>
 							</div>
 
 							<div class="card-body backpack-profile-form bold-labels">
 								<div class="row">
 									<div class="col-md-4 form-group">
 										@php
-											$label = trans('backpack::base.old_password');
+											$label = 'Old password';
 											$field = 'old_password';
 										@endphp
 										<label class="required">{{ $label }}</label>
@@ -185,7 +239,7 @@
 
 									<div class="col-md-4 form-group">
 										@php
-											$label = trans('backpack::base.new_password');
+											$label = 'New password';
 											$field = 'new_password';
 										@endphp
 										<label class="required">{{ $label }}</label>
@@ -194,7 +248,7 @@
 
 									<div class="col-md-4 form-group">
 										@php
-											$label = trans('backpack::base.confirm_password');
+											$label = 'Confirm password';
 											$field = 'confirm_password';
 										@endphp
 										<label class="required">{{ $label }}</label>
@@ -204,14 +258,12 @@
 							</div>
 
 							<div class="card-footer">
-								<button type="submit" class="btn btn-success"><i class="la la-save"></i> {{ trans('backpack::base.change_password') }}</button>
-								<a href="{{ backpack_url() }}" class="btn">{{ trans('backpack::base.cancel') }}</a>
+								<button type="submit" class="btn btn-success"><i class="la la-save"></i>  Change password </button>
 							</div>
-
 						</div>
-
 					</form>
 				</div>
+				<br>
 
 
 

@@ -18,7 +18,9 @@ Route::get('/guest','guestController@index')->name('guest')->middleware('guest')
 Route::post('/guest','guestController@store')->middleware('guest');
 Route::any('/search','CalculationController@search')->name('search');
 Route::get('/myaccount', 'MyAccountController@show')->name('MyAccount');
-Route::post('/myaccount', 'MyAccountController@update')->name('MyAccountUpdate');
+Route::post('/myaccount', 'MyAccountController@postChangePasswordForm')->name('MyAccountPassword');
+//Route::post('/myaccount1', 'MyAccountController@update')->name('MyAccountUpdate');
+Route::post('/myaccount1', 'MyAccountController@postAccountInfoForm')->name('MyAccountUpdate');
 
 
 Route::get('/csv', 'CalculationController@export')->name('csv');
