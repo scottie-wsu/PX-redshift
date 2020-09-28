@@ -72,7 +72,7 @@
         </nav>
 
 @php
-	$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->where('removed', 'NO')->get();
+	$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->where('removed', 0)->get();
 @endphp
 <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
 	<div class="wrapper" style="width:70%">
