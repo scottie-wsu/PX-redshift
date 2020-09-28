@@ -69,20 +69,20 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-          					min: 0
+							beginAtZero: true
 						},
 						 scaleLabel: {
                                 display: true,
                                 labelString: 'Users per institution'
                             }
 
-					}, 
+					},
 					{
         				id: 'B',
         				type: 'linear',
         				position: 'right',
 						ticks: {
-          					min: 0
+							beginAtZero: true
 						},
 						scaleLabel: {
                                 display: true,
@@ -122,7 +122,7 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-          					min: 0
+							beginAtZero: true
 						},
 						scaleLabel: {
                                 display: true,
@@ -172,52 +172,120 @@ class AnalyticsController extends Controller
 		//
 		//redshift result chart
 		//
+		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+
+		//counting total redshifts
+		$redshiftTotalCount = count($redshiftResultsPerInstitution);
+		//creating a new array with no associativity/keys, just values
+		$newArray = array_column($redshiftResultsPerInstitution, 'redshift_result');
+		//sorting the new array into ascending numerical order
+		sort($newArray);
+		$arraySliced = array();
+
+		//figuring out how many bins. Using Sturges' formula
+		$binSize = round((log($redshiftTotalCount, 2))+1);
+		//bincount here represents what range of values goes into one bin.
+		//e.g. binsize of 10 means bincount = 1, so 0-1, 1-2, etc are bins
+		$binCount = 10/$binSize;
+		for($i=0; $i<$binSize-1; $i++){
+			$arraySliced[0] = 0;
+			//looping over all the sorted redshifts
+			for($j=0; $j<$redshiftTotalCount; $j++){
+				//probably a better way to do this.
+				//writes arraysliced on every loop, which is what defines
+				//our bin cutoff points in terms of index
+				if($newArray[$j] <= $binCount*($i+1)){
+					$arraySliced[$i+1] = $j+1;
+				}
+			}
+		}
+
+		//building the array of data, which is simply the count of results in each bin
+		$arrayFinal = array();
+
+		for($i=0;$i<$binSize;$i++){
+			if($i<$binSize-1){
+				//slicelength is counting how many results are in each bin
+				$sliceLength = $arraySliced[$i+1]-$arraySliced[$i];
+			}
+			else{
+				//this is the case for the final bin length
+				$sliceLength = $redshiftTotalCount-$arraySliced[$i];
+			}
+			//finally, for our final values for each bin, we just take
+			//write each bin's slicelength (count) into an array
+			$arrayFinal[$i] = $sliceLength;
+		}
 
 
-		$institutionLabels1 = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
-		//$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
-		$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
-		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+		$binLabels = array();
+		for($i=0;$i<=$binSize+1;$i++){
+			if($i==0){
+				$binLabels[$i] = 0;
+			}
+			else{
+				$binLabels[$i] = round(($binCount*$i), 2);
+			}
+		}
 
 
-
-
-
-		$calculationCountPerInstitution = $redshiftResultsPerInstitution;
-
+		$binLabelsMax = $binLabels[$binSize-1];
 
 		$chartjs3 = app()->chartjs
 
 			->name('lineChartTest3')
-			->type('horizontalBar')
+			->type('bar')
 			->size(['width' => 400, 'height' => 200])
-			->labels($institutionLabels1->keys()->toArray())
+			//->labels($institutionLabels1->keys()->toArray())
+			->labels($binLabels)
 			->datasets([
 				[
 					"label" => "Redshift result frequency",
 					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
-					'borderColor' => "rgba(200, 34, 154, 0.7)",
+					'borderColor' => "rgba(200, 34, 154, 0.0)",
 					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
 					"pointHoverBackgroundColor" => "#fff",
-					"pointHoverBorderColor" => "rgba(220,220,220,1)",
-					'data' => collect($calculationCountPerInstitution)->pluck('total')->toArray(),
+					"pointHoverBorderColor" => "rgba(220,220,220,0.0)",
+					'barPercentage' => 1.0,
+					'categoryPercentage' => 1.0,
+					'data' => $arrayFinal,
 				]
 
 			])
-			//for some reason it needs the ticks values to be set
-			//todo - find the max value in the datasets and set max value to that
 			->optionsRaw("{
     			scales: {
-      				xAxes: [{
+      				yAxes: [{
         				id: 'A',
         				type: 'linear',
 						ticks: {
-							
-          					min: 0
+							beginAtZero: true
 						}
-					}]
+					}],
+				  xAxes: [{
+					display: false,
+					ticks: {
+						max: " . ($binLabelsMax) . ",
+					}
+					 }, {
+						display: true,
+						ticks: {
+							autoSkip: false,
+							max: " . ($binLabels[$binSize]) . ",
+						}
+					  }],
+				},
+								tooltips: {
+					titleFontSize: 16,
+					callbacks: {
+						title: function(tooltipItem, data) {
+							var increment = ". $binLabels[1] .";
+							var calc = (tooltipItem[0].xLabel)+increment;
+							return tooltipItem[0].xLabel + ' - ' + calc.toFixed(2);
+						}
+					}
 				}
+
 			}");
 
 		$charts = [$chartjs, $chartjs1, $chartjs2, $chartjs3];

@@ -23,7 +23,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-    	$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->get();
+    	$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->where('removed', 0)->get();
         return view('calculation', compact("checkboxes"));
     }
+
+	public function fail(Request $request)
+	{
+		$msg = $request;
+		return(dump($msg));
+		$checkboxes = DB::table('methods')->select('method_id','python_script_path','method_name', 'method_description')->where('removed', 0)->get();
+		return view('calculation', compact("checkboxes"));
+	}
+
 }
