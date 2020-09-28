@@ -38,15 +38,41 @@ class CalculationController extends Controller
 
 
     public function import(Request $request){
+  		$jobName = $request->input('job_nameFile');
 
+		if(!(isset($jobName))){
+			return back()->withErrors("Job name is a required field.");
+		}
+
+  		//method selection check logic
+		$methodCount = methods::count();
+		$y = 0;
+		for($i=1;$i<$methodCount+1;$i++){
+			if($request->input('method_id_for_files'.$i)!= null){
+				$methodRequests[$y] = $request->input('method_id_for_files'.$i);
+				$y = $y+1;
+			}
+		}
+
+		if($y == 0){
+			return back()->withErrors("At least one method must be selected.");
+		}
+
+
+		//file upload logic
       	$target_dir = "temp/";
-	 	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-	  	$uploadOk = 1;
-		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+      	$clientFile = basename($_FILES["fileToUpload"]["name"]);
+      	$explodedClientFile = explode(".", $clientFile);
+      	$explodedCount = count($explodedClientFile);
+      	if($explodedClientFile[$explodedCount-1] != "csv"){
+			return back()->withErrors("Filetype must be .csv.");
+      		//return \Redirect::route('home1')->with($msg);
+		}
+
+	 	$target_file = $target_dir . $clientFile;
 	    move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
  		$file = fopen($target_file, "r");
  		$lineCount = count(file($target_file));
-		//$str = array();
         $galaxy =  array();
         $i = 0;
         $lineCounter = 0;
@@ -54,82 +80,91 @@ class CalculationController extends Controller
 		//creating job entry in the database
 		$userId = auth()->id();
 		$job = new Jobs();
-		$job->job_name = $request->input('job_name');
-		$job->job_description = $request->input('job_description');
+		$job->job_name = $request->input('job_nameFile');
+		$job->job_description = $request->input('job_descriptionFile');
 		$job->user_id = $userId;
 		$job->save();
 		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
 		$jobId = $lastJob->job_id;
 
-
         while($lineCounter < $lineCount){
-            $data = fgetcsv($file, $delimiter= ",");
-            //checking if first element is numeric so that a header rows isn't submitted
-            if(is_numeric($data[0])){ //sizeof($data) > 14 &&
-                $galaxy[$i] = new redshifts();
-                //should we be assigning assigned_calc_id if it's a primary key?
-                $galaxy[$i]->assigned_calc_ID = $data[0];
-                $galaxy[$i]->optical_u = floatval($data[1]);
-                $galaxy[$i]->optical_v = floatval($data[2]);
-                $galaxy[$i]->optical_g = floatval($data[3]);
-                $galaxy[$i]->optical_r = floatval($data[4]);
-                $galaxy[$i]->optical_i = floatval($data[5]);
-                $galaxy[$i]->optical_z =  floatval($data[6]);
-                $galaxy[$i]->infrared_three_six = floatval($data[7]);
-                $galaxy[$i]->infrared_four_five =  floatval($data[8]);
-                $galaxy[$i]->infrared_five_eight =  floatval($data[9]);
-                $galaxy[$i]->infrared_eight_zero =  floatval($data[10]);
-                $galaxy[$i]->infrared_J =  floatval($data[11]);
-                $galaxy[$i]->infrared_H =  floatval($data[12]);
-                $galaxy[$i]->infrared_K =  floatval($data[13]);
-                $galaxy[$i]->radio_one_four =  floatval($data[14]);
-                //$galaxy[$i]->user_ID = auth()->id();
-                $galaxy[$i]->toJson();
-                $i++;
+			$skipFlag = 0;
+			$data = fgetcsv($file, $delimiter= ",");
+            //checking if first data element is numeric so that a header row isn't submitted
+            if(is_numeric($data[1])){
+            	//this logic checks that every data column has a value, and that value is a number
+            	for($x=1;$x<=14;$x++){
+            		if(!(isset($data[$x]) && is_numeric($data[$x]))){
+            			$skipFlag = 1;
+					}
+				}
+
+            	//is it worth finding some way to notify a user some rows were invalid?
+            	if($skipFlag != 1){
+					$galaxy[$i] = new redshifts();
+					$galaxy[$i]->assigned_calc_ID = $data[0];
+					$galaxy[$i]->optical_u = floatval($data[1]);
+					$galaxy[$i]->optical_v = floatval($data[2]);
+					$galaxy[$i]->optical_g = floatval($data[3]);
+					$galaxy[$i]->optical_r = floatval($data[4]);
+					$galaxy[$i]->optical_i = floatval($data[5]);
+					$galaxy[$i]->optical_z =  floatval($data[6]);
+					$galaxy[$i]->infrared_three_six = floatval($data[7]);
+					$galaxy[$i]->infrared_four_five =  floatval($data[8]);
+					$galaxy[$i]->infrared_five_eight =  floatval($data[9]);
+					$galaxy[$i]->infrared_eight_zero =  floatval($data[10]);
+					$galaxy[$i]->infrared_J =  floatval($data[11]);
+					$galaxy[$i]->infrared_H =  floatval($data[12]);
+					$galaxy[$i]->infrared_K =  floatval($data[13]);
+					$galaxy[$i]->radio_one_four =  floatval($data[14]);
+					$galaxy[$i]->toJson();
+					$i++;
+				}
+
             }
             $lineCounter++;
   		}
 		fclose($file);
 
-        $methodCount = methods::count();
-        $x = 0;
 
-        for($i=1;$i<$methodCount+1;$i++){
-            if($request->input('method_id_for_files'.$i)!= null){
-                $methodRequests[$x] = $request->input('method_id_for_files'.$i);
-                $x = $x+1;
-            }
-        }
 
         $arrayCount = count($galaxy);
-        //creating metadata row for API
-        $galaxy[$arrayCount] = new redshifts();
-        $galaxy[$arrayCount]->job_id = $jobId;
-        $galaxy[$arrayCount]->methods = $methodRequests;
-        $galaxy[$arrayCount]->user_ID = auth()->id();
 
-        //creating token logic - todo, add a way to pull hashed password with selectraw (bad sec?)
-        $userEmail = User::select('email')->where('id', auth()->id())->first();
-        $mergeData = $userEmail . " : " . random_bytes(32);
-        $cipherMethod = "aes-128-cbc";
-        $key = "5rCBIs9Km!!cacr1";
-        $iv = "123hasdba036vpax";
-        $tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
+		//only create a request if there is at least 1 valid galaxy created in the loop above
+		if($arrayCount > 0){
+			//creating metadata row for API
+			$galaxy[$arrayCount] = new redshifts();
+			$galaxy[$arrayCount]->job_id = $jobId;
+			$galaxy[$arrayCount]->methods = $methodRequests;
+			$galaxy[$arrayCount]->user_ID = auth()->id();
 
-        $galaxy[$arrayCount]->token = $tokenData;
-        //$galaxy[$arrayCount]->method_id = 1;
-        $galaxy[$arrayCount]->toJson();
+			//creating token logic
+			$userEmail = User::select('email')->where('id', auth()->id())->first();
+			$mergeData = $userEmail . " : " . random_bytes(32);
+			$cipherMethod = "aes-128-cbc";
+			$key = "5rCBIs9Km!!cacr1";
+			$iv = "123hasdba036vpax";
+			$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
 
-        //setting up all required API data to send via JSON.
-        //using a copied variable here in case more processing needs to be done in future
-        $dataJSON = $galaxy;
-        ////initialising the guzzle client
-        $urlAPI = 'http://127.0.0.1:5000';
-        $client = new Client(['base_uri' => $urlAPI]);
-        ////writing the code to send data to the API
-        $client->request('POST', '/', ['json' => $dataJSON]);
+			$galaxy[$arrayCount]->token = $tokenData;
+			//$galaxy[$arrayCount]->method_id = 1;
+			$galaxy[$arrayCount]->toJson();
 
-        return redirect('/history');
+			//setting up all required API data to send via JSON.
+			//using a copied variable here in case more processing needs to be done in future
+			$dataJSON = $galaxy;
+			////initialising the guzzle client
+			$urlAPI = 'http://127.0.0.1:5000';
+			$client = new Client(['base_uri' => $urlAPI]);
+			////writing the code to send data to the API
+			$client->request('POST', '/', ['json' => $dataJSON]);
+
+			return redirect('/history');
+		}
+		else{
+			return back()->withErrors("At least one valid galaxy must be submitted.");
+		}
+
     }
 
     //building /history page

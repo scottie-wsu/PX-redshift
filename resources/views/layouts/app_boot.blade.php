@@ -29,6 +29,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/table.js') }}" defer></script>
+	<script src="{{ asset('js/noty.min.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -59,6 +60,7 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/util.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/noty.css') }}">
 
 <!--===============================================================================================-->
 

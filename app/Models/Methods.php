@@ -22,7 +22,7 @@ class Methods extends Model
     protected $primaryKey = 'method_id';
     protected $fillable = [
 
-        'method_name', 'python_script_path', 'method_description', 'created_at', 'updated_at',
+        'method_name', 'python_script_path', 'method_description', 'created_at', 'updated_at', 'removed',
 
     ];
 
@@ -86,16 +86,10 @@ class Methods extends Model
 		if ($request->hasFile($attribute_name) &&
 			$this->{$attribute_name} &&
 			$this->{$attribute_name} != null) {
-			\Storage::disk('public')->append('originalName.yy', '1');
-			\Storage::disk('public')->append('originalName.yy', $this->{$attribute_name});
 
 			\Storage::disk($disk)->delete($this->{$attribute_name});
 			$this->attributes[$attribute_name] = null;
-			\Storage::disk('public')->append('originalName.yy', '2');
 
-			\Storage::disk('public')->append('originalName.yy', $this->{$attribute_name});
-			\Storage::disk('public')->append('originalName.yy', '3');
-			\Storage::disk('public')->append('originalName.yy', $this->attributes[$attribute_name]);
 
 		}
 
