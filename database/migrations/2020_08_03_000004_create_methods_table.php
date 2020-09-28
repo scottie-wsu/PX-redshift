@@ -19,7 +19,7 @@ class CreateMethodsTable extends Migration
             $table->string('method_name');
             $table->text('python_script_path');
             $table->text('method_description')->nullable();
-            $table->text('removed')->default("NO");
+            $table->boolean('removed')->default(FALSE);
             $table->timestamps();
         });
         DB::table('methods')->insert(array(

@@ -47,7 +47,7 @@ class MethodsCrudController extends CrudController
 	{
 
 		$param = Route::current()->parameter('id');
-		Methods::where('method_id', $param)->update(['removed' => "YES"]);
+		Methods::where('method_id', $param)->update(['removed' => 1]);
 		Alert::success('Method soft deleted.')->flash();
 		return back();
 	}
@@ -64,7 +64,7 @@ class MethodsCrudController extends CrudController
 		CRUD::column('method_description')->type('text');
 		CRUD::column('python_script_path')->type('text');
 
-		$this->crud->addClause('where', 'removed', '=', "NO");
+		$this->crud->addClause('where', 'removed', '=', 0);
 
 		//dump($count);
 
