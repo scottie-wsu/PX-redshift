@@ -69,7 +69,8 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							stepSize: 1
 						},
 						 scaleLabel: {
                                 display: true,
