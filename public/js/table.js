@@ -99,7 +99,7 @@ $(document).ready(function() {
 			"orderFixed":{
 				"post":[[0, 'asc'], [16, 'asc']]
 			}, */
-			"order": [[0, 'asc']],
+			"orderFixed": [[0, 'asc']],
 			"rowsGroup": {"startRender":null, "endRender":null, "dataSrc":0},
 			"dom": '<"filterSearch">rtip'
 		});
