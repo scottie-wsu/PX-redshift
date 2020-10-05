@@ -252,9 +252,7 @@
 								<div>
 											@foreach($checkboxes as $checkbox)
 													<div class="row">
-														<input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" >
-															<label title="{{$checkbox->method_description}}" class="form-check-label" style="padding-left: 1em; line-height: 1em" for="methods[]">{{ $checkbox->method_name}}</label>
-
+															<label title="{{$checkbox->method_description}}" class="form-check-label" style="padding-left: 1em; line-height: 1em"><input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" >{{ $checkbox->method_name}}</label>
 													</div>
 													<br>
 											@endforeach
