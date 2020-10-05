@@ -1,6 +1,5 @@
 
 <nav class="navbar navbar-expand-md" >
-	<div class="container">
 	<ul class="navbar-nav ml-auto" >
 <li class="nav-item">
 
@@ -25,6 +24,5 @@
 					</a>
 				</li>
 </ul>
-</div>
 
 </nav>
