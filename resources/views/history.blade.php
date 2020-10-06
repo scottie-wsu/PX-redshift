@@ -10,14 +10,19 @@
 		</style>
 	</head>
 
+
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
 	<div class="overflow-auto">
 		<div class="table-responsive">
-				<table class="fold-table">
+				<table id="historyTableOuter" class="fold-table display">
 					<thead>
 					<tr>
-						<th>Job name</th><th>Description</th><th>Submitted at</th><th>Duration</th>
+						<!-- <th></th> -->
+						<th>Job name</th>
+						<th>Description</th>
+						<th>Submitted at</th>
+						<th>Duration</th>
 					</tr>
 					</thead>
 					@foreach($jobs as $job)
@@ -89,6 +94,7 @@
 
 							<tbody>
 							<tr class="view">
+								<!-- <td></td> -->
 								<td>{{ $job->job_name }}</td>
 								<td>{{ $job->job_description }}</td>
 								<td>@php
@@ -98,11 +104,13 @@
 								<td>{{ $interval }}</td>
 							</tr>
 							<tr class="fold">
-								<td colspan="7">
+							<!-- <td style="display: none"></td> -->
+								<td colspan="7" >
 									<div class="fold-content">
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
-										<table>
+										
+										<table  id="historyTableInner" class="display">
 											<thead>
 											<tr>
 												<th>Galaxy ID</th>
@@ -122,7 +130,6 @@
 												<th>Radio 1.4</th>
 												<th>Method</th>
 												<th>Redshift result</th>
-
 											</tr>
 											</thead>
 											<tbody>
@@ -158,6 +165,10 @@
 										</table>
 									</div>
 								</td>
+								<td style="display: none"></td>
+    							<td style="display: none"></td>
+    							<td style="display: none"></td>
+								
 							</tr>
 
 						@endif
