@@ -107,7 +107,7 @@ class MethodsCrudController extends CrudController
                 'function' => function($entry) {
                     if ($entry->created_at) {
 						$sqlDate = strtotime($entry->created_at);
-						$newDate = date("jS M Y, g:i:sA", $sqlDate);
+						$newDate = date("g:i:sA, jS M Y", $sqlDate);
 						return $newDate;
                     }
                 }
@@ -122,7 +122,7 @@ class MethodsCrudController extends CrudController
                 'function' => function($entry){
 					if ($entry->updated_at != $entry->created_at) {
 						$sqlDate = strtotime($entry->updated_at);
-						$newDate = date("jS M Y, g:i:sA", $sqlDate);
+						$newDate = date("g:i:sA, jS M Y", $sqlDate);
 						return $newDate;
 					}
                 }
