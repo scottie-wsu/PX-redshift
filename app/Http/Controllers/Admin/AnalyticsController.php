@@ -69,12 +69,14 @@ class AnalyticsController extends Controller
         				type: 'linear',
         				position: 'left',
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							stepSize: 1
 						},
 						 scaleLabel: {
                                 display: true,
-                                labelString: 'Users per institution'
-                            }
+                                labelString: 'Users per institution',
+                                fontColor: 'rgba(38, 185, 154, 2)'
+                            },
 
 					},
 					{
@@ -84,9 +86,13 @@ class AnalyticsController extends Controller
 						ticks: {
 							beginAtZero: true
 						},
+						gridLines: {
+        					display: false,
+      					},
 						scaleLabel: {
                                 display: true,
-                                labelString: 'Jobs completed per institution'
+                                labelString: 'Jobs completed per institution',
+                                fontColor: 'rgba(200, 34, 154, 2)'
                             }
       					}]
 				}
@@ -126,7 +132,9 @@ class AnalyticsController extends Controller
 						},
 						scaleLabel: {
                                 display: true,
-                                labelString: 'Amount of Jobs completed'
+                                labelString: 'Amount of Jobs completed',
+                                fontColor: 'rgba(38, 185, 154, 2)'
+
                             }
 
 					}]
