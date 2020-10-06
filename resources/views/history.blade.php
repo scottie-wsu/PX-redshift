@@ -1,4 +1,4 @@
-@extends('layouts.app_boot')
+@extends('layouts.app')
 @section('title','History')
 @section('content')
 
@@ -9,66 +9,6 @@
 			}
 		</style>
 	</head>
-
-	<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
-		<div class="container">
-			<a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<!-- Left Side Of Navbar -->
-				<ul class="navbar-nav mr-auto">
-
-				</ul>
-
-				<!-- Right Side Of Navbar -->
-				<ul class="navbar-nav ml-auto" >
-					<!-- Authentication Links -->
-
-					@php
-						use App\User;
-						use Illuminate\Support\Facades\Auth;
-						$user = Auth::user();
-						$check = User::select('level')->where('id', $user->id)->get();
-						$userChecker = $check[0]->level;
-
-						//return ($userChecker == 1);
-					@endphp
-
-					@if($userChecker==1)
-						<li class="nav-item">
-							<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
-						</li>
-					@endif
-
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>
-
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('MyAccount') }}">{{ __('My Account') }}</a>
-
-					</li>
-					<li class="nav-item">
-
-						<a class="nav-link" href="{{ route('logout') }}"
-						   onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-							{{ __('Logout') }}
-						</a>
-
-						<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-							@csrf
-						</form>
-
-					</li>
-
-				</ul>
-			</div>
-		</div>
-	</nav>
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
@@ -89,14 +29,14 @@
 							//checks that a job actually has some redshifts
 							$jobCounterNullCheck = DB::select('SELECT job_id, count(*) as total
 									FROM redshifts
-									WHERE job_id = '.$uniqueJobId);
+									WHERE job_id = '.$uniqueJobId .' GROUP BY job_id');
 
 							//checks that all redshifts in a job have completed
 							if($jobCounterNullCheck[0]->total != 0){
 								$jobCounter = DB::select('SELECT job_id, count(*) as total
 									FROM redshifts
 									WHERE (status = "PROCESSING" OR status = "SUBMITTED")
-									AND job_id = '.$uniqueJobId);
+									AND job_id = '.$uniqueJobId .' GROUP BY job_id');
 							}
 
 
@@ -139,7 +79,7 @@
 							else{
 								//setting skipflag as continues don't work within the else statement
 								//skipflag is 0 ONLY when NO redshifts in a job are submitted/processing,
-								// AND when there is at least redshift associated with the job to prevent fresh
+								// AND when there is at 1 least redshift associated with the job to prevent fresh
 								//jobs that have not had values written by the API breaking the page
 								$skipFlag = 1;
 							}
@@ -153,7 +93,7 @@
 								<td>{{ $job->job_description }}</td>
 								<td>@php
 									$sqlDate = strtotime($job->created_at);
-									echo date("jS M Y, g:i:sA", $sqlDate);
+									echo date("g:i:sA, jS M Y", $sqlDate);
 								@endphp</td>
 								<td>{{ $interval }}</td>
 							</tr>
