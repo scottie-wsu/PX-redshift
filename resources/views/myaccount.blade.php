@@ -1,4 +1,4 @@
-@extends('layouts.app_boot')
+@extends('layouts.app')
 @section('title','My Account')
 @section('after_styles')
 	<style media="screen">
@@ -60,69 +60,13 @@
 				display: block;
 				width: 10%;
 			}
-
+			body{
+				overflow: hidden;
+			}
 
 		</style>
 	</head>
-	<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
-		<div class="container">
-			<a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-				<span class="navbar-toggler-icon"></span>
-			</button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<!-- Left Side Of Navbar -->
-				<ul class="navbar-nav mr-auto">
-
-				</ul>
-
-				<!-- Right Side Of Navbar -->
-				<ul class="navbar-nav ml-auto" >
-					<!-- Authentication Links -->
-
-					@php
-						use App\User;
-						use Illuminate\Support\Facades\Auth;
-						$user = Auth::user();
-						$check = User::select('level')->where('id', $user->id)->get();
-						$userChecker = $check[0]->level;
-
-						//return ($userChecker == 1);
-					@endphp
-
-					@if($userChecker==1)
-						<li class="nav-item">
-							<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
-						</li>
-					@endif
-
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>
-
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('MyAccount') }}">{{ __('My Account') }}</a>
-
-					</li>
-					<li class="nav-item">
-
-						<a class="nav-link" href="{{ route('logout') }}"
-						   onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-							{{ __('Logout') }}
-						</a>
-
-						<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-							@csrf
-						</form>
-
-					</li>
-
-				</ul>
-			</div>
-		</div>
-	</nav>
 
 @php $userForm = Auth::user() @endphp
 	<div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
@@ -142,7 +86,7 @@
 						</script>
 
 					@endif
-					
+
 
 
 					@if ($errors->count())

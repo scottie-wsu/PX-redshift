@@ -73,24 +73,16 @@
     <link  href="{{ asset('vendor/select2/select2.min.css') }}" rel="stylesheet" media="all">
     <link  href="{{ asset('vendor/datepicker/daterangepicker.css') }}" rel="stylesheet" media="all">
 
-    <!-- External table scripts and css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/RowGroup-1.1.2/css/rowGroup.bootstrap.min.css') }}">
-    <script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
-    <script src="{{ asset('vendor/RowGroup-1.1.2/js/dataTables.rowGroup.min.js') }}" defer></script>
-    
-		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" defer>
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" defer>
 
-    
-    
 </head>
 <style>
 nav-items{
 font-size: 15px;
 }
 </style>
+
+
+
 <body>
   @yield('content')
 

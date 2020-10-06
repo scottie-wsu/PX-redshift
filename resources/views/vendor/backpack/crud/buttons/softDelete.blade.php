@@ -6,8 +6,8 @@
 
 		function deleteEntry1() {
 			Swal.fire({
-				title: 'Soft delete this method?',
-				text: "You can revert this action later by setting the removed status for this method's row in the database to 0.",
+				title: 'Disable this method?',
+				text: "This action cannot be undone.",
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
