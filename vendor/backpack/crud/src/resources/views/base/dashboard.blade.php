@@ -8,7 +8,7 @@ function getCount1() {
 			})
 	.done(function( data ) {
 			$('#mycount1').html(data);
-			setTimeout(getCount1, 1000);
+			setTimeout(getCount1, 2000);
 			});
 			}
 			getCount1();
@@ -22,7 +22,7 @@ function getCount2() {
 			})
 	.done(function( data ) {
 			$('#mycount2').html(data);
-			setTimeout(getCount2, 1000);
+			setTimeout(getCount2, 2000);
 			});
 			}
 			getCount2();
@@ -36,7 +36,7 @@ function getCount3() {
 			})
 	.done(function( data ) {
 			$('#mycount3').html(data);
-			setTimeout(getCount3, 1000);
+			setTimeout(getCount3, 2000);
 			});
 			}
 			getCount3();
@@ -50,7 +50,7 @@ function getCount4() {
 			})
 	.done(function( data ) {
 			$('#mycount4').html(data);
-			setTimeout(getCount4, 1000);
+			setTimeout(getCount4, 2000);
 			});
 			}
 			getCount4();
@@ -64,7 +64,7 @@ function getCount5() {
 			})
 	.done(function( data ) {
 			$('#mycount5').html(data);
-			setTimeout(getCount5, 1000);
+			setTimeout(getCount5, 2000);
 			});
 			}
 			getCount5();
@@ -78,7 +78,7 @@ function getCount6() {
 			})
 	.done(function( data ) {
 			$('#mycount6').html(data);
-			setTimeout(getCount6, 1000);
+			setTimeout(getCount6, 2000);
 			});
 			}
 			getCount6();
