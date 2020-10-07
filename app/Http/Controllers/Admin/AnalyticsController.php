@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\redshifts;
 use App\methods;
+use App\Jobs;
 
 class AnalyticsController extends Controller
 {
@@ -416,10 +417,10 @@ class AnalyticsController extends Controller
 	public function ajaxCounts(){
 		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
 		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
-		$jobCount = App\Jobs::count();
-    	$redshiftCount = App\redshifts::count();
-    	$usersCount = App\User::count();
-    	$methodCount = App\methods::count();
+		$jobCount = Jobs::select('job_id')->get()->count();
+    	$redshiftCount = redshifts::select('calculation_id')->get()->count();
+    	$usersCount = User::select('id')->get()->count();
+    	$methodCount = methods::select('method_id')->get()->count();
 
 		$result = [$submitted, $processing, $jobCount, $redshiftCount, $usersCount, $methodCount];
 		echo $result[1];

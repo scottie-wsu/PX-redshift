@@ -20,12 +20,17 @@
 
 
 @php
-	$jobCount = App\Jobs::count();
-    $redshiftCount = App\redshifts::count();
-    $usersCount = App\User::count();
-    $methodCount = App\methods::count();
 
-    use App\redshifts;
+use App\User;
+use App\redshifts;
+use App\methods;
+use App\Jobs;
+
+	$jobCount = Jobs::select('job_id')->get()->count();
+    $redshiftCount = redshifts::select('calculation_id')->get()->count();
+    $usersCount = User::select('id')->get()->count();
+    $methodCount = methods::select('method_id')->get()->count();
+
         use App\calculations;
         use Illuminate\Support\Facades\DB;
         use Carbon\Carbon;
