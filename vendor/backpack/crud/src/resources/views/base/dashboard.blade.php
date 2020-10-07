@@ -48,26 +48,39 @@
             ->type('progress')
             ->class('card border-0 text-white bg-success text-center ')
             ->progressClass('progress-bar')
-            ->value($redshiftCount. ' Redshifts Counted out of ' . $jobCount. ' Jobs')
+            ->value("<span id='mycount'>$redshiftCount</span> Redshifts Completed ")
+            ->onlyHere(),
+
+         Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-warning text-center ')
+            ->progressClass('progress-bar')
+            ->value("<span id='mycount'>$jobCount</span> Jobs Submitted")
             ->onlyHere(),
 
         Widget::add()
             ->type('progress')
-            ->class('card border-0 text-white bg-success text-center ')
-            ->value($usersCount. ' Users Registerd')
+            ->class('card border-0 text-white bg-info text-center ')
+            ->value("<span id='mycount'>$usersCount</span> Users Registered")
             ->onlyHere(),
 
         Widget::add()
             ->type('progress')
-            ->class('card border-0 text-white bg-success text-center ')
-            ->value($methodCount. ' Methods Registered')
+            ->class('card border-0 text-white bg-danger text-center ')
+            ->value("<span id='mycount'>$methodCount</span> Methods Available")
             ->onlyHere(),  
  
         Widget::add()
             ->type('progress')
-            ->class('card border-0 text-white bg-success text-center ')
-            ->value("<span id='mycount'>$submitted</span> Jobs Submitted")
+            ->class('card border-0 text-white bg-primary text-center ')
+            ->value("<span id='mycount'>$submitted</span> Galaxies Submitted")
             ->onlyHere(),  
+
+         Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-dark text-center ')
+            ->value("<span id='mycount'>$processing</span> Galaxies Processing")
+            ->onlyHere(),     
 	]);
 @endphp
 @section('content')

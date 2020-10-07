@@ -416,8 +416,13 @@ class AnalyticsController extends Controller
 	public function ajaxCounts(){
 		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
 		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
-		$result = [$submitted, $processing];
-		echo $result[0];
+		$jobCount = App\Jobs::count();
+    	$redshiftCount = App\redshifts::count();
+    	$usersCount = App\User::count();
+    	$methodCount = App\methods::count();
+
+		$result = [$submitted, $processing, $jobCount, $redshiftCount, $usersCount, $methodCount];
+		echo $result[1];
 	}
 
 }
