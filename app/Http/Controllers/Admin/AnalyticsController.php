@@ -430,7 +430,7 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts3(){
-		$jobCount = Jobs::select('job_id')->get()->count()
+		$jobCount = Jobs::select('job_id')->get()->count();
 		$result = $jobCount;
 		echo $result;
 	}

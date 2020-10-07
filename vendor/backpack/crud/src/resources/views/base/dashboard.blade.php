@@ -1,87 +1,87 @@
 @extends(backpack_view('blank'))
 <script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
 <script>
-function getCount() {
+function getCount1() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts1') }}",
 			})
 	.done(function( data ) {
 			$('#mycount1').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount1, 1000);
 			});
 			}
-			getCount();
+			getCount1();
 </script>
 
 <script>
-function getCount() {
+function getCount2() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts2') }}",
 			})
 	.done(function( data ) {
 			$('#mycount2').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount2, 1000);
 			});
 			}
-			getCount();
+			getCount2();
 </script>
 
 <script>
-function getCount() {
+function getCount3() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts3') }}",
 			})
 	.done(function( data ) {
 			$('#mycount3').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount3, 1000);
 			});
 			}
-			getCount();
+			getCount3();
 </script>
 
 <script>
-function getCount() {
+function getCount4() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts4') }}",
 			})
 	.done(function( data ) {
 			$('#mycount4').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount4, 1000);
 			});
 			}
-			getCount();
+			getCount4();
 </script>
 
 <script>
-function getCount() {
+function getCount5() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts5') }}",
 			})
 	.done(function( data ) {
 			$('#mycount5').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount5, 1000);
 			});
 			}
-			getCount();
+			getCount5();
 </script>
 
 <script>
-function getCount() {
+function getCount6() {
 	$.ajax({
 			type: "GET",
 			url: "{{ route('ajaxcounts6') }}",
 			})
 	.done(function( data ) {
 			$('#mycount6').html(data);
-			setTimeout(getCount, 1000);
+			setTimeout(getCount6, 1000);
 			});
 			}
-			getCount();
+			getCount6();
 </script>
 
 		
