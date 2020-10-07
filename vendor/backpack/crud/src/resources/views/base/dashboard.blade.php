@@ -1,22 +1,91 @@
 @extends(backpack_view('blank'))
 <script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
 <script>
-			function getCount() {
-
-				$.ajax({
-					type: "GET",
-					url: "{{ route('ajaxcounts') }}",
-				})
-					.done(function( data ) {
-						$('#mycount').html(data);
-						setTimeout(getCount, 1000);
-					});
-
-
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts1') }}",
+			})
+	.done(function( data ) {
+			$('#mycount1').html(data);
+			setTimeout(getCount, 1000);
+			});
 			}
 			getCount();
+</script>
 
-		</script>
+<script>
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts2') }}",
+			})
+	.done(function( data ) {
+			$('#mycount2').html(data);
+			setTimeout(getCount, 1000);
+			});
+			}
+			getCount();
+</script>
+
+<script>
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts3') }}",
+			})
+	.done(function( data ) {
+			$('#mycount3').html(data);
+			setTimeout(getCount, 1000);
+			});
+			}
+			getCount();
+</script>
+
+<script>
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts4') }}",
+			})
+	.done(function( data ) {
+			$('#mycount4').html(data);
+			setTimeout(getCount, 1000);
+			});
+			}
+			getCount();
+</script>
+
+<script>
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts5') }}",
+			})
+	.done(function( data ) {
+			$('#mycount5').html(data);
+			setTimeout(getCount, 1000);
+			});
+			}
+			getCount();
+</script>
+
+<script>
+function getCount() {
+	$.ajax({
+			type: "GET",
+			url: "{{ route('ajaxcounts6') }}",
+			})
+	.done(function( data ) {
+			$('#mycount6').html(data);
+			setTimeout(getCount, 1000);
+			});
+			}
+			getCount();
+</script>
+
+		
+
 
 
 @php
@@ -53,38 +122,38 @@ use App\Jobs;
             ->type('progress')
             ->class('card border-0 text-white bg-success text-center ')
             ->progressClass('progress-bar')
-            ->value("<span id='mycount'>$redshiftCount</span> Redshifts Completed ")
+            ->value("<span id='mycount4'>$redshiftCount</span> Redshifts Completed ")
             ->onlyHere(),
 
          Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-warning text-center ')
             ->progressClass('progress-bar')
-            ->value("<span id='mycount'>$jobCount</span> Jobs Submitted")
+            ->value("<span id='mycount3'>$jobCount</span> Jobs Submitted")
             ->onlyHere(),
 
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-info text-center ')
-            ->value("<span id='mycount'>$usersCount</span> Users Registered")
+            ->value("<span id='mycount5'>$usersCount</span> Users Registered")
             ->onlyHere(),
 
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-danger text-center ')
-            ->value("<span id='mycount'>$methodCount</span> Methods Available")
+            ->value("<span id='mycount6'>$methodCount</span> Methods Available")
             ->onlyHere(),  
  
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-primary text-center ')
-            ->value("<span id='mycount'>$submitted</span> Galaxies Submitted")
+            ->value("<span id='mycount1'>$submitted</span> Galaxies Submitted")
             ->onlyHere(),  
 
          Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-dark text-center ')
-            ->value("<span id='mycount'>$processing</span> Galaxies Processing")
+            ->value("<span id='mycount2'>$processing</span> Galaxies Processing")
             ->onlyHere(),     
 	]);
 @endphp

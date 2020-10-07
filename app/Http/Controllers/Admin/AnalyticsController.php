@@ -414,15 +414,45 @@ class AnalyticsController extends Controller
 		return view('plotting', compact('chartjs'));
 	}
 
-	public function ajaxCounts(){
+
+	public function ajaxCounts1(){
 		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
+
+		$result = [$submitted];
+		echo $result[1];
+	}
+
+	public function ajaxCounts2(){
 		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
-		$jobCount = Jobs::select('job_id')->get()->count();
+
+		$result = [$processing];
+		echo $result[1];
+	}
+
+	public function ajaxCounts3(){
+		$jobCount = Jobs::select('job_id')->get()->count()
+		$result = [$jobCount];
+		echo $result[1];
+	}
+
+	public function ajaxCounts4(){
     	$redshiftCount = redshifts::select('calculation_id')->get()->count();
+
+		$result = [$redshiftCount];
+		echo $result[1];
+	}
+
+	public function ajaxCounts5(){
     	$usersCount = User::select('id')->get()->count();
+
+		$result = [$usersCount];
+		echo $result[1];
+	}
+
+	public function ajaxCounts6(){
     	$methodCount = methods::select('method_id')->get()->count();
 
-		$result = [$submitted, $processing, $jobCount, $redshiftCount, $usersCount, $methodCount];
+		$result = [$methodCount];
 		echo $result[1];
 	}
 

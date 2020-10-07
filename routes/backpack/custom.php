@@ -25,12 +25,16 @@ Route::group([
 	Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
 	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
 	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
-	Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');
+	Route::get('analytics1', 'AnalyticsController@ajaxCounts1')->name('ajaxcounts1');
+    Route::get('analytics2', 'AnalyticsController@ajaxCounts2')->name('ajaxcounts2');
+    Route::get('analytics3', 'AnalyticsController@ajaxCounts3')->name('ajaxcounts3');
+    Route::get('analytics4', 'AnalyticsController@ajaxCounts4')->name('ajaxcounts4');
+    Route::get('analytics5', 'AnalyticsController@ajaxCounts5')->name('ajaxcounts5');
+    Route::get('analytics6', 'AnalyticsController@ajaxCounts6')->name('ajaxcounts6');
 
 	Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');
     Route::get('charts/method-use', 'Charts\MethodUseChartController@response')->name('charts.method-use.index');
     Route::get('charts/weekly-method-use-chart', 'Charts\WeeklyMethodUseChartChartController@response')->name('charts.weekly-method-use-chart.index');
-Route::get('analytics1', 'AnalyticsController@ajaxCounts')->name('ajaxcounts');
     Route::get('charts/redshifts', 'Charts\RedshiftsChartController@response')->name('charts.redshifts.index');
 }); // this should be the absolute last line of this file
