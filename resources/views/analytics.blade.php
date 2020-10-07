@@ -3,8 +3,11 @@
 
 @section('header')
     <style>
+        
         div{
             padding-bottom: 45px;
+            background-color:white;
+            opacity: 0.9;
         }
         /* Style the button that is used to open and close the collapsible content */
         .collapsible {
@@ -56,7 +59,7 @@
 
 @section('content')
 
-<div class="container">
+<div class="container" id="charts">
     <div class="row">
 		<div class="col">
 			{!! $charts[0]->render() !!}
