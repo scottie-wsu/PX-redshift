@@ -32,26 +32,26 @@
 							$jobCounterNullCheck = 0;
 
 							//checks that a job actually has some redshifts
-							$jobCounterNullCheck = DB::select('SELECT job_id, count(*) as total
-									FROM redshifts
-									WHERE job_id = '.$uniqueJobId .' GROUP BY job_id');
+							$jobCounterNullCheck = DB::table('redshifts')->where('job_id', $uniqueJobId)->count();
 
-							//checks that all redshifts in a job have completed
-							if($jobCounterNullCheck[0]->total != 0){
-								$jobCounter = DB::select('SELECT job_id, count(*) as total
-									FROM redshifts
-									WHERE (status = "PROCESSING" OR status = "SUBMITTED")
-									AND job_id = '.$uniqueJobId .' GROUP BY job_id');
+							//checks that all? redshifts in a job have completed
+							if($jobCounterNullCheck != 0){
+								$jobCounter = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
 							}
 
+							if(isset($jobCounter[0])){
+								$jobCounterNullFlag = 0;
+							}
+							else{
+								$jobCounterNullFlag = 1;
+							}
 
-
-
+							//return(dump($jobCounterNullCheck[0]->total));
 
 							//basically, only show results where ALL redshifts in a job have had the status flag set to
 							//COMPLETED OR READ, which is the indication from the API that the calculation row for the redshift
 							//has been written.
-							if(($jobCounter[0]->total == 0) && ($jobCounterNullCheck != 0)){
+							if(($jobCounter == true) && ($jobCounterNullCheck != 0)){
 
 
 								$jobCreatedAt = $job->created_at;
@@ -109,7 +109,7 @@
 									<div class="fold-content">
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
-										
+
 										<table  id="historyTableInner" class="display">
 											<thead>
 											<tr>
@@ -168,7 +168,7 @@
 								<td style="display: none"></td>
     							<td style="display: none"></td>
     							<td style="display: none"></td>
-								
+
 							</tr>
 
 						@endif
