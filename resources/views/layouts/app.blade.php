@@ -57,7 +57,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/select2/select2.min.css') }}">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/daterangepicker/daterangepicker.css') }}">
-	
+
 	    <!-- External table scripts and css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/RowGroup-1.1.2/css/rowGroup.bootstrap.min.css') }}">
     <script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
@@ -122,18 +122,31 @@
 				@php
 					use App\User;
 					use Illuminate\Support\Facades\Auth;
+					use Illuminate\Support\Facades\DB;
+
+					//admin check logic
 					$user = Auth::user();
 					$check = User::select('level')->where('id', $user->id)->get();
 					$userChecker = $check[0]->level;
 
+					//jobs processing check logic
+					$jobCheck = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
+
 					//return ($userChecker == 1);
 				@endphp
+
+				@if($jobCheck == true)
+					<li class="nav-item">
+						<b><a class="nav-link" href="{{ route('progress') }}">{{ __('Calculation progress') }}</a></b>
+					</li>
+				@endif
 
 				@if($userChecker==1)
 					<li class="nav-item">
 						<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
 					</li>
 				@endif
+
 
 				<li class="nav-item">
 					<a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>

@@ -134,8 +134,6 @@ class CalculationController extends Controller
 		}
 		fclose($file);
 
-
-
 		$arrayCount = count($galaxy);
 
 		//only create a request if there is at least 1 valid galaxy created in the loop above
@@ -159,16 +157,20 @@ class CalculationController extends Controller
 			$galaxy[$arrayCount]->token = $tokenData;
 			$galaxy[$arrayCount]->toJson();
 
-			//setting up all required API data to send via JSON.
-			//using a copied variable here in case more processing needs to be done in future
+			//setting up all required API data to send via JSON
 			$dataJSON = $galaxy;
 			////initialising the guzzle client
-			$urlAPI = 'http://127.0.0.1:5000';
-			$client = new Client(['base_uri' => $urlAPI]);
+			$urlAPI = '127.0.0.1:5000/';
+			$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 			////writing the code to send data to the API
-			$client->request('POST', '/', ['json' => $dataJSON]);
+			try{
+				$response = $client->request('POST', '', ['json' => $dataJSON]);
+			} catch(Exception $e) {
+				//todo - return home alert with msg
+				dd($e->getBody());
+			}
 
-			return redirect('/history');
+			return redirect('/progress');
 		}
 		else{
 			return back()->withErrors("At least one valid galaxy must be submitted.");
@@ -180,17 +182,17 @@ class CalculationController extends Controller
 	public function home(){
 		$pages=20;
 
-
-		//else{
-		$calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-			->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
-		//}
+		//don't think this is actually needed anymore so commenting out just in case
+		//$calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
+			//->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
 
 		$userId = auth()->id();
 		//FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 		$jobs = DB::select('SELECT job_id, job_name, job_description, user_id, created_at FROM jobs WHERE user_id = '.$userId);
 
-		return view('history', compact('calculations', 'jobs'));
+		//return view('history', compact('calculations', 'jobs'));
+		return view('history', compact('jobs'));
+
 	}
 
 	public function search(Request $req)
@@ -280,18 +282,49 @@ class CalculationController extends Controller
 		//setting up all required API data to send via JSON
 		$dataJSON = $galaxy;
 		////initialising the guzzle client
-		$urlAPI = '127.0.0.1:5000';
+		$urlAPI = '127.0.0.1:5000/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
 		try{
-			$response = $client->request('POST', '/', ['json' => $dataJSON]);
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
 		} catch(Exception $e) {
 			//todo - return home alert with msg
 			dd($e->getBody());
 		}
-		//todo - redirect to waiter page
-		return redirect('/home');
+
+		return redirect('/progress');
 
 
 	}
+
+
+	public function progress(Request $request){
+		//todo in the progress.blade - make the counter look good and include some kind of spinning loading circle/some other visual feedback that something is happening,
+		//todo in the progress.blade - create logic to display a button that links to the history page when the counter = 0
+		//todo in the progress.blade - if you finish those two, make some kind of progress bar that has a max value equal to the value on pageload, and readjust max value if another job is submitted
+
+		$userId = auth()->id();
+
+		$inProgress = count(DB::select("SELECT status FROM redshifts
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			INNER JOIN users on jobs.user_id = users.id
+			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
+			AND users.id = " . $userId));
+
+		//return(dump($inProgress));
+		return(view('progress', compact('inProgress')));
+
+	}
+
+	public function progressAjax(Request $request){
+		$userId = auth()->id();
+		$count = count(DB::select("SELECT status FROM redshifts
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			INNER JOIN users on jobs.user_id = users.id
+			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
+			AND users.id = " . $userId));
+
+		echo $count;
+	}
+
 }
