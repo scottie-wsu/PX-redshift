@@ -142,7 +142,13 @@ use App\Jobs;
             ->type('progress')
             ->class('card border-0 text-white bg-danger text-center ')
             ->value("<span id='mycount6'>$methodCount</span> Methods Available")
-            ->onlyHere(),  
+            ->onlyHere(),
+
+         Widget::add() // filler
+            ->type('progress')
+            ->class('')
+            ->value('')
+            ->onlyHere(),   
  
         Widget::add()
             ->type('progress')
