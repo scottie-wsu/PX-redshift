@@ -4,8 +4,7 @@
 @section('header')
     <style>
         
-        div{
-            padding-bottom: 45px;
+        #charts{
             background-color:white;
             opacity: 0.9;
         }
