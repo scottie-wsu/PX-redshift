@@ -164,4 +164,7 @@ use App\Jobs;
 	]);
 @endphp
 @section('content')
+<iframe class="wwt-embed" src="https://web.wwtassets.org/embed/1/wwt/?cred=no"  style="width: 100%; height: 550px;">
+  <p>Cannot display WorldWide Telescope because your browser does not support iframes.</p>
+
 @endsection
