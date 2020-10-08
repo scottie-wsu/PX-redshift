@@ -35,6 +35,8 @@ Route::post('/home', 'HomeController@fail')->name('homefail');
 
 Route::get('/history', 'CalculationController@home')->name('history');
 
+Route::get('/progress', 'CalculationController@progress')->name('progress');
+Route::get('/progressAjax', 'CalculationController@progressAjax')->name('progressAjax');
 
 
 
