@@ -8,11 +8,16 @@
 				display: inline-block;
 			}
 		</style>
+
 	</head>
+
 
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
+	<div style = "background: dodgerblue; border-radius: 20px;">
+		<a class="nav-link" href="{{ route('zipAll') }}">{{ __('Download zip of all results') }}</a>
+	</div>
 	<div class="overflow-auto">
 		<div class="table-responsive">
 				<table id="historyTableOuter" class="fold-table display">
@@ -23,6 +28,7 @@
 						<th>Description</th>
 						<th>Submitted at</th>
 						<th>Duration</th>
+						<th>Download files</th>
 					</tr>
 					</thead>
 					@foreach($jobs as $job)
@@ -91,7 +97,7 @@
 						@endphp
 
 						@if($skipFlag == 0)
-
+							@csrf
 							<tbody>
 							<tr class="view">
 								<!-- <td></td> -->
@@ -102,6 +108,26 @@
 									echo date("g:i:sA, jS M Y", $sqlDate);
 								@endphp</td>
 								<td>{{ $interval }}</td>
+								@php
+										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+											INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+											INNER JOIN jobs on redshifts.job_id = jobs .job_id
+											INNER JOIN users on jobs.user_id = users.id
+											WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
+		  									AND calculations.redshift_alt_result LIKE '%alt_result%'
+											AND users.id = " . auth()->id()));
+
+								@endphp
+									@if($altCount>0)
+									<td>
+										<form action="{{ route("zipJob") }}" method="post">
+											@csrf
+											<button name="job_id" value="{{ $job->job_id }}">Download</button>
+										</form>
+									</td>
+									@endif
+
+
 							</tr>
 							<tr class="fold">
 							<!-- <td style="display: none"></td> -->

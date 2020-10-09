@@ -7,15 +7,10 @@ use App\calculations;
 use App\methods;
 use App\User;
 use Illuminate\Http\Request;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RedshiftExport;
 use Maatwebsite\Excel\Facades\Excel;
 use GuzzleHttp\Client;
-use function MongoDB\BSON\toJSON;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\CalcCompleteMail;
 use App\Jobs;
 
 
@@ -31,9 +26,71 @@ class CalculationController extends Controller
 		return view('calculation');
 	}
 
-	public function export(){
-		$str =  'redshift_result' . date('Y-m-d_h:m:s',time()) . '.csv';
-		return Excel::download(new RedshiftExport, $str);
+	public function zipAll(){
+		$zipFileName = 'CompleteResultsWithFiles_' . date('Y-m-d_h-m-s',time()) . '.zip';
+		$zip = new \ZipArchive();
+		$zip->open($zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+		$userId = auth()->id();
+		//todo - may possibly need to include redshifts.status in the select on the server
+		//todo - will need to add another LIKE command, possibly http if files are being stored on another server
+		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+			INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+			INNER JOIN jobs on redshifts.job_id = jobs .job_id
+			INNER JOIN users on jobs.user_id = users.id
+			WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
+		  	AND calculations.redshift_alt_result LIKE '%alt_result%'
+			AND users.id = " . $userId);
+
+		foreach($dbFiles as $file){
+			$filename = $file->redshift_alt_result;
+			$path = \Storage::disk('public')->path($filename);
+			$internalZipPath = explode("alt_result/",$filename);
+			$zip->addFile($path, $internalZipPath[1]);
+		}
+		$str =  'Complete_Results_'. date('Y-m-d_h-m-s',time()) . '.csv';
+		$numericResultsCSV = Excel::store(new RedshiftExport, $str, 'public');
+		$path = \Storage::disk('public')->path($str);
+		$zip->addFile($path, $str);
+		$zip->close();
+		\Storage::disk('public')->delete($str);
+		return response()->download($zipFileName)->deleteFileAfterSend(true);
+
+	}
+
+	public function zipJob(Request $request){
+		$jobId = $request->job_id;
+		$jobName = DB::select("SELECT job_name FROM jobs WHERE job_id = " . $jobId);
+		$zipFileName = $jobName[0]->job_name . '_Results_' . date('Y-m-d_h-m-s',time()) . '.zip';
+		$zip = new \ZipArchive();
+		$zip->open($zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+		$userId = auth()->id();
+		//todo - may possibly need to include redshifts.status in the select on the server
+		//todo - will need to add another LIKE command, possibly http if files are being stored on another server
+		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM calculations
+			INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			INNER JOIN users on jobs.user_id = users.id
+			WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
+		  	AND calculations.redshift_alt_result LIKE '%alt_result%'
+		  	AND jobs.job_id = " . $jobId . "
+			AND users.id = " . $userId);
+
+		foreach($dbFiles as $file){
+			$filename = $file->redshift_alt_result;
+			$path = \Storage::disk('public')->path($filename);
+			$internalZipPath = explode("alt_result/",$filename);
+			$zip->addFile($path, $internalZipPath[1]);
+		}
+		$str =  $jobName[0]->job_name . '_Results_'. date('Y-m-d_h-m-s',time()) . '.csv';
+		$numericResultsCSV = Excel::store(new RedshiftExport, $str, 'public');
+		$path = \Storage::disk('public')->path($str);
+		$zip->addFile($path, $str);
+		$zip->close();
+		\Storage::disk('public')->delete($str);
+		return response()->download($zipFileName)->deleteFileAfterSend(true);
+
 	}
 
 
@@ -160,14 +217,12 @@ class CalculationController extends Controller
 			//setting up all required API data to send via JSON
 			$dataJSON = $galaxy;
 			////initialising the guzzle client
-			$urlAPI = '127.0.0.1:5000/';
+			$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 			$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 			////writing the code to send data to the API
-			try{
-				$response = $client->request('POST', '', ['json' => $dataJSON]);
-			} catch(Exception $e) {
-				//todo - return home alert with msg
-				dd($e->getBody());
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+			if($response->getStatusCode() != 200){
+				return back()->withErrors("Upload failed. Try again later.");
 			}
 
 			return redirect('/progress');
@@ -282,21 +337,18 @@ class CalculationController extends Controller
 		//setting up all required API data to send via JSON
 		$dataJSON = $galaxy;
 		////initialising the guzzle client
-		$urlAPI = '127.0.0.1:5000/';
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
-		try{
-			$response = $client->request('POST', '', ['json' => $dataJSON]);
-		} catch(Exception $e) {
-			//todo - return home alert with msg
-			dd($e->getBody());
+		$response = $client->request('POST', '', ['json' => $dataJSON]);
+		if($response->getStatusCode() != 200){
+			return back()->withErrors("Upload failed. Try again later.");
 		}
 
 		return redirect('/progress');
 
 
 	}
-
 
 	public function progress(Request $request){
 		//todo in the progress.blade - make the counter look good and include some kind of spinning loading circle/some other visual feedback that something is happening,
@@ -326,5 +378,6 @@ class CalculationController extends Controller
 
 		echo $count;
 	}
+
 
 }

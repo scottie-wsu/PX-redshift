@@ -22,9 +22,6 @@ Route::post('/myaccount', 'MyAccountController@postChangePasswordForm')->name('M
 //Route::post('/myaccount1', 'MyAccountController@update')->name('MyAccountUpdate');
 Route::post('/myaccount1', 'MyAccountController@postAccountInfoForm')->name('MyAccountUpdate');
 
-
-Route::get('/csv', 'CalculationController@export')->name('csv');
-
 //csv file submit
 Route::post('/upload', 'CalculationController@import')->name('upload');
 
@@ -37,6 +34,9 @@ Route::get('/history', 'CalculationController@home')->name('history');
 
 Route::get('/progress', 'CalculationController@progress')->name('progress');
 Route::get('/progressAjax', 'CalculationController@progressAjax')->name('progressAjax');
+
+Route::get('/zipAll', 'CalculationController@zipAll')->name('zipAll');
+Route::post('/zipJob', 'CalculationController@zipJob')->name('zipJob');
 
 
 
