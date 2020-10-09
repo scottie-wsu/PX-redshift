@@ -32,13 +32,13 @@ class Methods extends Model
     	$request = \Request::instance();
         $attribute_name = "python_script_path";
 
-        //test logic, can remove
-		if($request->hasFile($attribute_name)){
-			if($request->file($attribute_name)->isValid()){
-				$new_file_name = $request->file($attribute_name)->getClientOriginalName();
-				\Storage::disk('public')->put('originalName', $new_file_name);
-			}
-		}
+        ////test logic, can remove
+		//if($request->hasFile($attribute_name)){
+			//if($request->file($attribute_name)->isValid()){
+				//$new_file_name = $request->file($attribute_name)->getClientOriginalName();
+				//\Storage::disk('public')->put('originalName', $new_file_name);
+			//}
+		//}
 
 		//
 		// BEGIN VERSIONING LOGIC
