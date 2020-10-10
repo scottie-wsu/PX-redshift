@@ -38,6 +38,9 @@ Route::get('/progressAjax', 'CalculationController@progressAjax')->name('progres
 Route::get('/zipAll', 'CalculationController@zipAll')->name('zipAll');
 Route::post('/zipJob', 'CalculationController@zipJob')->name('zipJob');
 
+Route::get('/fetch-status', 'CalcStatusController@fetchStatus');
+Route::post('/process', 'CalcStatusController@process');
+
 
 
 
