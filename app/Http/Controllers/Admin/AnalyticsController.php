@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\redshifts;
 use App\methods;
+use App\Jobs;
 
 class AnalyticsController extends Controller
 {
@@ -413,11 +414,46 @@ class AnalyticsController extends Controller
 		return view('plotting', compact('chartjs'));
 	}
 
-	public function ajaxCounts(){
+
+	public function ajaxCounts1(){
 		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
+
+		$result = $submitted;
+		echo $result;
+	}
+
+	public function ajaxCounts2(){
 		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
-		$result = [$submitted, $processing];
-		echo $result[0];
+
+		$result = $processing;
+		echo $result;
+	}
+
+	public function ajaxCounts3(){
+		$jobCount = Jobs::select('job_id')->get()->count();
+		$result = $jobCount;
+		echo $result;
+	}
+
+	public function ajaxCounts4(){
+    	$redshiftCount = redshifts::select('calculation_id')->get()->count();
+
+		$result = $redshiftCount;
+		echo $result;
+	}
+
+	public function ajaxCounts5(){
+    	$usersCount = User::select('id')->get()->count();
+
+		$result = $usersCount;
+		echo $result;
+	}
+
+	public function ajaxCounts6(){
+    	$methodCount = methods::select('method_id')->get()->count();
+
+		$result = $methodCount;
+		echo $result;
 	}
 
 }
