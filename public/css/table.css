@@ -102,6 +102,11 @@ tr.shown td.details-control {
 	padding-left: 10px;
 }
 
+/* .alwaysGroup{
+    display: inline-block;
+    vertical-align: middle;
+} */
+
 /* table.dataTable {
 	width: 100%;
 	margin: 0 auto;
