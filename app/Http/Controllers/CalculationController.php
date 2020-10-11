@@ -357,26 +357,57 @@ class CalculationController extends Controller
 
 		$userId = auth()->id();
 
-		$inProgress = count(DB::select("SELECT status FROM redshifts
-			INNER JOIN jobs on redshifts.job_id = jobs.job_id
-			INNER JOIN users on jobs.user_id = users.id
+		$jobsIncomplete = DB::select("SELECT DISTINCT jobs.job_id, job_name, jobs.created_at FROM jobs
+			INNER JOIN redshifts on jobs.job_id = redshifts.job_id
 			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
-			AND users.id = " . $userId));
+			AND jobs.user_id = " . $userId ."
+			ORDER BY jobs.created_at DESC;");
 
-		//return(dump($inProgress));
-		return(view('progress', compact('inProgress')));
+
+		//return(dump($countsArray));
+		return(view('progress', compact('jobsIncomplete')));
 
 	}
 
 	public function progressAjax(Request $request){
 		$userId = auth()->id();
-		$count = count(DB::select("SELECT status FROM redshifts
+
+		$countsArray = [];
+		$countsMaxArray = [];
+		$jobsIncomplete = array_column(DB::select("SELECT DISTINCT jobs.job_id, job_name FROM jobs
+			INNER JOIN redshifts on jobs.job_id = redshifts.job_id
+			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
+			AND jobs.user_id = " . $userId), 'job_id');
+
+		foreach($jobsIncomplete as $jobId){
+			$count = count(DB::select("SELECT status FROM redshifts
 			INNER JOIN jobs on redshifts.job_id = jobs.job_id
 			INNER JOIN users on jobs.user_id = users.id
 			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
-			AND users.id = " . $userId));
+			AND jobs.job_id = " . $jobId ."
+			ORDER BY jobs.created_at DESC;"));
+			array_push($countsArray, $count);
 
-		echo $count;
+			$countMax = count(DB::select("SELECT status FROM redshifts
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			INNER JOIN users on jobs.user_id = users.id
+			WHERE jobs.job_id = " . $jobId ."
+			ORDER BY jobs.created_at DESC;"));
+			array_push($countsMaxArray, $countMax);
+		}
+
+
+
+		//$count = count(DB::select("SELECT status FROM redshifts
+			//INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			//INNER JOIN users on jobs.user_id = users.id
+			//WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
+			//AND users.id = " . $userId));
+
+		//echo ("[".$count.",".$userId."]");
+		//$var = [$count, $maxCount];
+		//echo(json_encode($var));
+		echo json_encode(array($countsArray, $countsMaxArray));
 	}
 
 
