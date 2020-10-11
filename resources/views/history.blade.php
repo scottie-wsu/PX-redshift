@@ -7,6 +7,31 @@
 			h2 {
 				display: inline-block;
 			}
+			.historyButton {
+				background: deepskyblue;
+				border-radius: 10px;
+				position: relative;
+				left: 10px;
+				width:220px;
+				height:50px;
+				display: block;
+				line-height: 50px;
+				color: lightgrey;
+				text-align: center;
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-left: 1px;
+				margin-top: 10px;
+				font-size: 16px;
+				opacity: 1.0;
+				transition: 0.3s;
+			}
+			.historyButton:hover {
+				opacity: 1.0;
+				color: white;
+				background: dodgerblue;
+
+			}
 		</style>
 
 	</head>
@@ -15,9 +40,8 @@
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
-	<div style = "background: dodgerblue; border-radius: 20px;">
-		<a class="nav-link" href="{{ route('zipAll') }}">{{ __('Download zip of all results') }}</a>
-	</div>
+	<a class="historyButton" href="{{ route('zipAll') }}">{{ __('Download all results') }}</a>
+
 	<div class="overflow-auto">
 		<div class="table-responsive">
 				<table id="historyTableOuter" class="fold-table display">
@@ -156,12 +180,13 @@
 												<th>Radio 1.4</th>
 												<th>Method</th>
 												<th>Redshift result</th>
+												<th>Redshift file result</th>
 											</tr>
 											</thead>
 											<tbody>
 
 											@php
-												$calculations = DB::select('SELECT redshifts.*, redshift_result, method_name FROM calculations
+												$calculations = DB::select('SELECT redshifts.*, redshift_result, redshift_alt_result, method_name FROM calculations
 													INNER JOIN redshifts ON calculations.galaxy_id = redshifts.calculation_id
 													INNER JOIN methods on calculations.method_id = methods.method_id
 													WHERE redshifts.job_id = '.$uniqueJobId);
@@ -185,6 +210,11 @@
 													<td>{{ $calculation->radio_one_four }}</td>
 													<td>{{ $calculation->method_name }}</td>
 													<td>{{ $calculation->redshift_result }}</td>
+													@php
+														if(isset($calculation->redshift_alt_result)){
+															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
+														}
+													@endphp
 												</tr>
 											@endforeach
 											</tbody>
@@ -196,6 +226,7 @@
     							<td style="display: none"></td>
 
 							</tr>
+
 
 						@endif
 
