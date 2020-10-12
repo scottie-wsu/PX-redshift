@@ -220,8 +220,16 @@ class CalculationController extends Controller
 			$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 			$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 			////writing the code to send data to the API
-			$response = $client->request('POST', '', ['json' => $dataJSON]);
-			if($response->getStatusCode() != 200){
+			///
+			//$response = $client->request('POST', '', ['json' => $dataJSON]);
+			//if($response->getStatusCode() != 200){
+				//return back()->withErrors("Upload failed. Try again later.");
+			//}
+
+			try{
+				$client->request('POST', '', ['json' => $dataJSON]);
+			}
+			catch(\GuzzleHttp\Exception\ConnectException $e){
 				return back()->withErrors("Upload failed. Try again later.");
 			}
 
@@ -285,6 +293,27 @@ class CalculationController extends Controller
 
 	public function store(Request $request){
 
+		$jobName = $request->input('job_name');
+
+		if(!(isset($jobName))){
+			return back()->withErrors("Job name is a required field.");
+		}
+
+		//method selection check logic
+		$methodCount = methods::count();
+		$y = 0;
+		for($i=1;$i<$methodCount+1;$i++){
+			if($request->input('method_id_for_files'.$i)!= null){
+				$methodRequests[$y] = $request->input('method_id_for_files'.$i);
+				$y = $y+1;
+			}
+		}
+
+		if($y == 0){
+			return back()->withErrors("At least one method must be selected.");
+		}
+
+
 		//creating job entry in the database
 		$userId = auth()->id();
 		$job = new Jobs();
@@ -340,8 +369,16 @@ class CalculationController extends Controller
 		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
-		$response = $client->request('POST', '', ['json' => $dataJSON]);
-		if($response->getStatusCode() != 200){
+
+		//$response = $client->request('POST', '', ['json' => $dataJSON]);
+		//if($response->getStatusCode() != 200){
+			//return back()->withErrors("Upload failed. Try again later.");
+		//}
+
+		try{
+			$client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
 			return back()->withErrors("Upload failed. Try again later.");
 		}
 
