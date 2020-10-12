@@ -133,7 +133,7 @@
 								@endphp</td>
 								<td>{{ $interval }}</td>
 								@php
-										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM calculations
 											INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 											INNER JOIN jobs on redshifts.job_id = jobs .job_id
 											INNER JOIN users on jobs.user_id = users.id

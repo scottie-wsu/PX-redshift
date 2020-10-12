@@ -34,7 +34,7 @@ class CalculationController extends Controller
 		$userId = auth()->id();
 		//todo - may possibly need to include redshifts.status in the select on the server
 		//todo - will need to add another LIKE command, possibly http if files are being stored on another server
-		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM calculations
 			INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 			INNER JOIN jobs on redshifts.job_id = jobs .job_id
 			INNER JOIN users on jobs.user_id = users.id
