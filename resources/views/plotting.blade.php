@@ -141,5 +141,9 @@
 		if(isset($chartjs)){
 			echo('	<div style="width:75%;">'.$chartjs->render(). '</div>');
 		}
+
+		$jobCountPerUser = DB::table('jobs')->select('user_id')->groupBy('user_id')->count();
+		dump($jobCountPerUser);
+
 	@endphp
 @endsection

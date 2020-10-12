@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\User;
 use App\redshifts;
 use App\methods;
+use App\Jobs;
+
 
 class AnalyticsController extends Controller
 {
@@ -328,7 +330,7 @@ class AnalyticsController extends Controller
 
 		//todo - REMEMBER THAT REDSHIFT_RESULT MAY NOT BE A SINGLE NUMBER IN THE FINAL VERSION - NEED TO IMPLEMENT WHERE RESULT IS NUMERIC CODE
 		//todo - this is the finished queries for left/right data
-		//$jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
+		//
 		//$calculationCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
 		//$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
 		//todo - this is the end of the finished queries
@@ -338,6 +340,10 @@ class AnalyticsController extends Controller
 
 
 
+
+		$jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
+
+		//$jobCountPerUser = DB::table('jobs')->select('user_id')->join("jobs.user_id", "users.id")->count();
 
 		//$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
 		//$institutionCountTotal = $institutionCount->pluck('total');
@@ -352,6 +358,7 @@ class AnalyticsController extends Controller
 
 
 		$calculationCountPerInstitution = $redshiftResultsPerInstitution;
+		$calculationCountPerInstitution = $jobCountPerUser;
 
 
 		$chartjs = app()->chartjs
@@ -375,7 +382,7 @@ class AnalyticsController extends Controller
 				],
 
 				[
-					"label" => "Jobs completed per institution",
+					"label" => "Job count per institution",
 					"yAxisID" => "B",
 					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
 					'borderColor' => "rgba(200, 34, 154, 0.7)",
@@ -397,7 +404,7 @@ class AnalyticsController extends Controller
         				position: 'left',
 
 					}, {
-        				id: 'B',z
+        				id: 'B',
         				type: 'linear',
         				position: 'right',
 

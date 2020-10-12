@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b83ef170ea5930c8176e4cf09ed36a40",
+    "content-hash": "f0f87dde1b16b2e8a179a2ae4c7d27f0",
     "packages": [
         {
             "name": "backpack/crud",
@@ -7984,7 +7984,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.1.3"
+        "php": "^7.1.3",
+        "ext-gd": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"

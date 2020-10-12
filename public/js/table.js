@@ -24,7 +24,6 @@ return 'I can see the CHILD ROW!!!';
     ],
     "order": [[1, 'asc']]
 		});
-
 			$('#historyTableOuter tbody').on('click', 'td.details-control', function () {
 				var tr = $(this).closest('tr');
 				var row = tableOuter.row( tr );
@@ -95,14 +94,19 @@ $(document).ready(function() {
 			"searching": true,
 			"fixedHeader": true,
 			"responsive": true,
-/* 			"order": [[0, 'asc'], [16, 'asc']],
+			/* "order": [[0, 'asc'], [16, 'asc']], */
 			"orderFixed":{
-				"post":[[0, 'asc'], [16, 'asc']]
-			}, */
-			"orderFixed": [[0, 'asc']],
-			"rowsGroup": {"startRender":null, "endRender":null, "dataSrc":0},
-			"dom": '<"filterSearch">rtip'
+				"post":[[0, 'asc']]
+			},
+			/* "orderFixed": [[15, 'asc']], */
+			
+			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
+			"dom": '<"filterSearch"><"alwaysGroup">rtip'
 		});
+		
+
+		
+		
 		$("div.filterSearch").html('<div class="row">\
 											<div class="col-md-5">\
 											<select class="form-control" id="search-column">\
@@ -129,8 +133,30 @@ $(document).ready(function() {
 											<input class="form-control" type="text" id="search-by-column" placeholder="Search...">\
 											</div>\
 										</div>');
+/* 		$("div.alwaysGroup").html('<label for="alwaysGroupCheckBox">\
+															<input type="checkbox" name="alwaysGroupCheckBox" id="alwaysGroupCheckBox"\
+															value="groupByID" checked> Always Group By Galaxy ID\
+															</label>');		 */						
 		
+		
+/* 		function alwaysGroup(table){
+				if(document.getElementById('alwaysGroupCheckBox').checked){
+					table.rowGroup().enable().draw();
+					table.column('15').order( ['asc' ] ).draw();
+				}
+				else{
+					table.rowGroup().disable().draw();
+					table.order.draw();
+				}
+			} 
+			
+			$('#alwaysGroupCheckBox').on('click', function(){
+				alwaysGroup(table);
+			});
+		 */
+		
+
+
 		searchByColumn(table);
 		
 } );
-
