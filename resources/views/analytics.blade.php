@@ -3,8 +3,10 @@
 
 @section('header')
     <style>
-        div{
-            padding-bottom: 45px;
+        
+        #charts{
+            background-color:white;
+            opacity: 0.9;
         }
         /* Style the button that is used to open and close the collapsible content */
         .collapsible {
@@ -56,7 +58,7 @@
 
 @section('content')
 
-<div class="container">
+<div class="container" id="charts">
     <div class="row">
 		<div class="col">
 			{!! $charts[0]->render() !!}
@@ -75,74 +77,5 @@
 
     </div>
 
-
-    @php
-
-    $jobCount = App\Jobs::count();
-    $redshiftCount = App\redshifts::count();
-        Widget::add()->to('before_content')->type('div')->class('row')->content([
-
-        Widget::add()
-            ->type('progress')
-            ->class('card border-0 text-white bg-success')
-            ->progressClass('progress-bar')
-            ->value($redshiftCount. ' Redshifts Counted out of ' . $jobCount. ' Jobs')
-            ->onlyHere()
-
-        ]);
-
-        use App\redshifts;
-        use App\calculations;
-        use Illuminate\Support\Facades\DB;
-        use Carbon\Carbon;
-
-		$read = redshifts::select('calculation_id')->where('status', 'READ')->get()->count();
-		$completed = redshifts::select('calculation_id')->where('status', 'COMPLETED')->get()->count();
-		$processing = redshifts::select('calculation_id')->where('status', 'PROCESSING')->get()->count();
-		$submitted = redshifts::select('calculation_id')->where('status', 'SUBMITTED')->get()->count();
-
-		$working = $processing+$submitted;
-		//print_r($working);
-		$set = $processing+$submitted+$completed;
-		$percentage = $working/$set;
-		$progress = (1-$percentage)*100;
-		//	src="https://code.jquery.com/jquery-3.5.1.js"
-		//	<script src="vendor/pace/pace-1.0.2.js"></script>
-
-
-	@endphp
-	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
-
-	<div style="width:240px;">
-
-
-		<span id="mycount">
-			@php print_r("Number of calculations currently queued: " . $submitted) @endphp
-		</span>
-
-		<!-- search for pace in bundle.js for options. this.el=document.createElement("div"), was removed -->
-		<script>
-			function getCount() {
-
-				$.ajax({
-					type: "GET",
-					url: "{{ route('ajaxcounts') }}",
-				})
-					.done(function( data ) {
-						$('#mycount').html(data);
-						setTimeout(getCount, 1000);
-					});
-
-
-			}
-			getCount();
-
-		</script>
-		<br>
-		@php print_r("Number of calculations currently processing: " . $processing) @endphp
-		<br>
-
-
-	</div>
 
 @endsection
