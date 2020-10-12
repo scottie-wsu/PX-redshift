@@ -38,6 +38,8 @@ Route::get('/progressAjax', 'CalculationController@progressAjax')->name('progres
 Route::get('/zipAll', 'CalculationController@zipAll')->name('zipAll');
 Route::post('/zipJob', 'CalculationController@zipJob')->name('zipJob');
 
+Route::get('/guestAjax', 'guestController@guestAjax')->name('guestAjax')->middleware('guest');
+Route::get('/guestResult', 'guestController@guestResult')->name('guestResult')->middleware('guest');
 
 
 

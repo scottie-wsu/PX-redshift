@@ -21,14 +21,14 @@
         h2 {
             display: inline-block;
         }
-					input[type='checkbox'] {
-						float: left;
-						width: 20px;
-					}
-					input[type='checkbox'] + label {
-						display: block;
-						width: 10%;
-					}
+		input[type='checkbox'] {
+			float: left;
+			width: 20px;
+		}
+		input[type='checkbox'] + label {
+			display: block;
+			width: 10%;
+		}
 
 
 
@@ -209,7 +209,14 @@
 											</script>
 								</div>
 
+						<!-- creating hidden inputs that mirror the visible inputs in the single input form -->
+						@php
+							$count = \App\methods::count();
+							for($i=1;$i<$count+1;$i++){
+								echo '<input style="display:none" id="method_id_for_files'.$i.'" name="method_id_for_files'.$i.'" type="checkbox" value="'.$i.'">';
+							}
 
+						@endphp
 
 
                         <div class="p-t-15" style="margin-left:33%">
