@@ -44,7 +44,7 @@
 
 	<div class="overflow-auto">
 		<div class="table-responsive">
-				<table id="historyTableOuter" class="fold-table display">
+				<table id="historyTableOuter" class="fold-table">
 					<thead>
 					<tr>
 						<!-- <th></th> -->
@@ -142,15 +142,16 @@
 											AND users.id = " . auth()->id()));
 
 								@endphp
+								<td>
 									@if($altCount>0)
-									<td>
+									
 										<form action="{{ route("zipJob") }}" method="post">
 											@csrf
 											<button name="job_id" value="{{ $job->job_id }}">Download</button>
 										</form>
-									</td>
+									
 									@endif
-
+									</td>
 
 							</tr>
 							<tr class="fold">
@@ -210,11 +211,13 @@
 													<td>{{ $calculation->radio_one_four }}</td>
 													<td>{{ $calculation->method_name }}</td>
 													<td>{{ $calculation->redshift_result }}</td>
+													<td>
 													@php
 														if(isset($calculation->redshift_alt_result)){
-															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
+															echo ('<a href="' . $calculation->redshift_alt_result . '">Show');
 														}
 													@endphp
+													</td>
 												</tr>
 											@endforeach
 											</tbody>
@@ -224,7 +227,7 @@
 								<td style="display: none"></td>
     							<td style="display: none"></td>
     							<td style="display: none"></td>
-
+								<td style="display: none"></td>							
 							</tr>
 
 
