@@ -15,7 +15,7 @@ class AnalyticsController extends Controller
 {
 	public function custom()
 	{
-		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
+		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->distinct('institution')->groupBy('institution')->get();
 		$institutionCountTotal = $institutionCount->pluck('total');
 		$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
 		//dump($institutionLabels->keys()->toArray());
@@ -23,7 +23,7 @@ class AnalyticsController extends Controller
 
 		$jobCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
-		$jobCountPerUser = DB::select('SELECT name, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY jobs.user_id, users.name');
+		$jobCountPerUser = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
 
 
@@ -39,7 +39,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Users per institution",
 					"yAxisID" => "A",
-					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'backgroundColor' => "rgba(38, 185, 154, 1)",
 					'borderColor' => "rgba(38, 185, 154, 0.7)",
 					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
@@ -52,7 +52,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Jobs completed per institution",
 					"yAxisID" => "B",
-					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
+					'backgroundColor' => "rgba(200, 34, 154, 1)",
 					'borderColor' => "rgba(200, 34, 154, 0.7)",
 					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
