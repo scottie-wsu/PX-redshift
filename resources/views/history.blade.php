@@ -1,4 +1,4 @@
-@extends('layouts.app_boot')
+@extends('layouts.app')
 @section('title','History')
 @section('content')
 
@@ -7,77 +7,52 @@
 			h2 {
 				display: inline-block;
 			}
+			.historyButton {
+				background: deepskyblue;
+				border-radius: 10px;
+				position: relative;
+				left: 10px;
+				width:220px;
+				height:50px;
+				display: block;
+				line-height: 50px;
+				color: lightgrey;
+				text-align: center;
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-left: 1px;
+				margin-top: 10px;
+				font-size: 16px;
+				opacity: 1.0;
+				transition: 0.3s;
+			}
+			.historyButton:hover {
+				opacity: 1.0;
+				color: white;
+				background: dodgerblue;
+
+			}
 		</style>
+
 	</head>
 
-	<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm" >
-		<div class="container">
-			<a class="nav-link" href="{{ route('home') }}"><h2 id="redshift" style="color:red">Red</h2><h2 id="redshiftEstimator">shift</h2></a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-				<span class="navbar-toggler-icon"></span>
-			</button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<!-- Left Side Of Navbar -->
-				<ul class="navbar-nav mr-auto">
-
-				</ul>
-
-				<!-- Right Side Of Navbar -->
-				<ul class="navbar-nav ml-auto" >
-					<!-- Authentication Links -->
-
-					@php
-						use App\User;
-						use Illuminate\Support\Facades\Auth;
-						$user = Auth::user();
-						$check = User::select('level')->where('id', $user->id)->get();
-						$userChecker = $check[0]->level;
-
-						//return ($userChecker == 1);
-					@endphp
-
-					@if($userChecker==1)
-						<li class="nav-item">
-							<a class="nav-link" href="{{ backpack_url('/') }}">{{ __('Admin Panel') }}</a>
-						</li>
-					@endif
-
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('history') }}">{{ __('History') }}</a>
-
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('MyAccount') }}">{{ __('My Account') }}</a>
-
-					</li>
-					<li class="nav-item">
-
-						<a class="nav-link" href="{{ route('logout') }}"
-						   onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-							{{ __('Logout') }}
-						</a>
-
-						<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-							@csrf
-						</form>
-
-					</li>
-
-				</ul>
-			</div>
-		</div>
-	</nav>
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
+	<a class="historyButton" href="{{ route('zipAll') }}">{{ __('Download all results') }}</a>
+
 	<div class="overflow-auto">
 		<div class="table-responsive">
-				<table class="fold-table">
+				<table id="historyTableOuter" class="fold-table display">
 					<thead>
 					<tr>
-						<th>Job name</th><th>Description</th><th>Submitted at</th><th>Duration</th>
+						<!-- <th></th> -->
+						<th>Job name</th>
+						<th>Description</th>
+						<th>Submitted at</th>
+						<th>Duration</th>
+						<th>Download files</th>
 					</tr>
 					</thead>
 					@foreach($jobs as $job)
@@ -87,26 +62,26 @@
 							$jobCounterNullCheck = 0;
 
 							//checks that a job actually has some redshifts
-							$jobCounterNullCheck = DB::select('SELECT job_id, count(*) as total
-									FROM redshifts
-									WHERE job_id = '.$uniqueJobId);
+							$jobCounterNullCheck = DB::table('redshifts')->where('job_id', $uniqueJobId)->count();
 
-							//checks that all redshifts in a job have completed
-							if($jobCounterNullCheck[0]->total != 0){
-								$jobCounter = DB::select('SELECT job_id, count(*) as total
-									FROM redshifts
-									WHERE (status = "PROCESSING" OR status = "SUBMITTED")
-									AND job_id = '.$uniqueJobId);
+							//checks that all? redshifts in a job have completed
+							if($jobCounterNullCheck != 0){
+								$jobCounter = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
 							}
 
+							if(isset($jobCounter[0])){
+								$jobCounterNullFlag = 0;
+							}
+							else{
+								$jobCounterNullFlag = 1;
+							}
 
-
-
+							//return(dump($jobCounterNullCheck[0]->total));
 
 							//basically, only show results where ALL redshifts in a job have had the status flag set to
 							//COMPLETED OR READ, which is the indication from the API that the calculation row for the redshift
 							//has been written.
-							if(($jobCounter[0]->total == 0) && ($jobCounterNullCheck != 0)){
+							if(($jobCounter == true) && ($jobCounterNullCheck != 0)){
 
 
 								$jobCreatedAt = $job->created_at;
@@ -139,30 +114,53 @@
 							else{
 								//setting skipflag as continues don't work within the else statement
 								//skipflag is 0 ONLY when NO redshifts in a job are submitted/processing,
-								// AND when there is at least redshift associated with the job to prevent fresh
+								// AND when there is at 1 least redshift associated with the job to prevent fresh
 								//jobs that have not had values written by the API breaking the page
 								$skipFlag = 1;
 							}
 						@endphp
 
 						@if($skipFlag == 0)
-
+							@csrf
 							<tbody>
 							<tr class="view">
+								<!-- <td></td> -->
 								<td>{{ $job->job_name }}</td>
 								<td>{{ $job->job_description }}</td>
 								<td>@php
 									$sqlDate = strtotime($job->created_at);
-									echo date("jS M Y, g:i:sA", $sqlDate);
+									echo date("g:i:sA, jS M Y", $sqlDate);
 								@endphp</td>
 								<td>{{ $interval }}</td>
+								@php
+										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM calculations
+											INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+											INNER JOIN jobs on redshifts.job_id = jobs .job_id
+											INNER JOIN users on jobs.user_id = users.id
+											WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
+		  									AND calculations.redshift_alt_result LIKE '%alt_result%'
+											AND users.id = " . auth()->id()));
+
+								@endphp
+									@if($altCount>0)
+									<td>
+										<form action="{{ route("zipJob") }}" method="post">
+											@csrf
+											<button name="job_id" value="{{ $job->job_id }}">Download</button>
+										</form>
+									</td>
+									@endif
+
+
 							</tr>
 							<tr class="fold">
-								<td colspan="7">
+							<!-- <td style="display: none"></td> -->
+								<td colspan="7" >
 									<div class="fold-content">
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
-										<table>
+
+										<table  id="historyTableInner" class="display">
 											<thead>
 											<tr>
 												<th>Galaxy ID</th>
@@ -182,13 +180,13 @@
 												<th>Radio 1.4</th>
 												<th>Method</th>
 												<th>Redshift result</th>
-
+												<th>Redshift file result</th>
 											</tr>
 											</thead>
 											<tbody>
 
 											@php
-												$calculations = DB::select('SELECT redshifts.*, redshift_result, method_name FROM calculations
+												$calculations = DB::select('SELECT redshifts.*, redshift_result, redshift_alt_result, method_name FROM calculations
 													INNER JOIN redshifts ON calculations.galaxy_id = redshifts.calculation_id
 													INNER JOIN methods on calculations.method_id = methods.method_id
 													WHERE redshifts.job_id = '.$uniqueJobId);
@@ -212,13 +210,23 @@
 													<td>{{ $calculation->radio_one_four }}</td>
 													<td>{{ $calculation->method_name }}</td>
 													<td>{{ $calculation->redshift_result }}</td>
+													@php
+														if(isset($calculation->redshift_alt_result)){
+															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
+														}
+													@endphp
 												</tr>
 											@endforeach
 											</tbody>
 										</table>
 									</div>
 								</td>
+								<td style="display: none"></td>
+    							<td style="display: none"></td>
+    							<td style="display: none"></td>
+
 							</tr>
+
 
 						@endif
 

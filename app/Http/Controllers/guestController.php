@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs;
+use App\methods;
 use App\redshifts;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,39 +12,34 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use GuzzleHttp\Client;
 use App\User;
+use GuzzleHttp\Exception\RequestException;
 
 
 class guestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //$calculate->assigned_calc_ID = $request->input('assigned_calc_ID');
-    return view('guest');
+    	return view('guest');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+
+		//method selection check logic
+		$methodCount = methods::count();
+		$y = 0;
+		for($i=1;$i<$methodCount+1;$i++){
+			if($request->input('method_id_for_files'.$i)!= null){
+				$methodRequests[$y] = $request->input('method_id_for_files'.$i);
+				$y = $y+1;
+			}
+		}
+
+		if($y == 0){
+			return back()->withErrors("At least one method must be selected.");
+		}
+
 		//creating job entry in the database
 		$userId = 1;
 		$job = new Jobs();
@@ -89,64 +85,93 @@ class guestController extends Controller
 		$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
 		$galaxy[1]->token = $tokenData;
 		$galaxy[1]->toJson();
+
 		//setting up all required API data to send via JSON
 		$dataJSON = $galaxy;
 		////initialising the guzzle client
-		$urlAPI = 'http://127.0.0.1:5000';
-		$client = new Client(['base_uri' => $urlAPI]);
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
+		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
-		$client->request('POST', '/', ['json' => $dataJSON]);
+		try{
+			$client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
+			return back()->withErrors("Upload failed. Try again later.");
+		}
 
-
-		//todo - implement waiter page for guest too, then the link on that page when the calc
-		//todo - completes is just the result page (w/ updates) with the result
-		$red_result = 1;
-		return(dump($red_result));
-         return view('result',compact('red_result'));
+		$request->session()->forget('jobId');
+		$request->session()->put('jobId', $jobId);
+		return redirect('guestResult');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+    public function guestAjax(Request $request){
+		if($request->session()->exists('jobId')){
+			$job = $request->session()->get('jobId');
+		}
+		else{
+			return redirect('guest');
+		}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+		$status = DB::select("SELECT status FROM redshifts
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			WHERE jobs.job_id = " . $job);
+		if(isset($status[0]->status)){
+			if($status[0]->status == "COMPLETED" || $status[0]->status == "READ" ){
+				$result = DB::select("SELECT redshift_result, redshift_alt_result FROM calculations
+				INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+				INNER JOIN jobs on redshifts.job_id = jobs.job_id
+				WHERE jobs.job_id = " . $job);
+				$resultArray = [];
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+				if(isset($result[0]->redshift_result)){
+					$resultArray[0] = $result[0]->redshift_result;
+				}
+				if(isset($result[0]->redshift_alt_result)){
+					$resultArray[1] = $result[0]->redshift_alt_result;
+				}
+				return($resultArray);
+			}
+			else{
+				return "WAITING";
+			}
+		}
+		else{
+			return "WAITING";
+		}
+	}
+
+	public function guestResult(Request $request){
+    	if($request->session()->exists('jobId')){
+			$job = $request->session()->get('jobId');
+		}
+    	else{
+    		return redirect('guest');
+		}
+
+		$result = 0;
+
+		$status = DB::select("SELECT status FROM redshifts
+			INNER JOIN jobs on redshifts.job_id = jobs.job_id
+			WHERE jobs.job_id = " . $job);
+		if(isset($status[0]->status)){
+			if($status[0]->status == "COMPLETED" || $status[0]->status == "READ" ){
+				$result = DB::select("SELECT redshift_result, redshift_alt_result FROM calculations
+				INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+				INNER JOIN jobs on redshifts.job_id = jobs.job_id
+				WHERE jobs.job_id = " . $job);
+				//return($result[0]);
+			}
+			else{
+				//return($status[0]->status);
+			}
+		}
+		else{
+			//return "WAITING";
+		}
+		$jobId = $job;
+		return view('result', compact('status', 'result', 'jobId'));
+	}
+
+
 }

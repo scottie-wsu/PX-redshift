@@ -196,14 +196,26 @@
 					<div>
 						@foreach($checkboxes as $checkbox)
 							<div class="row">
-								<input name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" >
-								<label title="{{$checkbox->method_description}}" class="form-check-label" style="padding-left: 1em; line-height: 1em" for="methods[]">{{ $checkbox->method_name}}</label>
-
+								<label title="{{$checkbox->method_description}}" class="form-check-label" style="padding-left: 1em; line-height: 1em"><input onchange="update_var(this)" name="methods[]" type="checkbox" value="{{ $checkbox->method_id}}" >{{ $checkbox->method_name}}</label>
 							</div>
 							<br>
-					@endforeach
+						@endforeach
+						<!-- This script updates the hidden inputs further below to match the inputs the user changes -->
+							<script>
+								function update_var(element) {
+									var methodValue = element.value;
+									fileFunctionName = "method_id_for_files";
+									document.getElementById(fileFunctionName.concat(methodValue)).checked = element.checked;
+								}
+							</script>
+							<!-- creating hidden inputs that mirror the visible inputs in the single input form -->
+							@php
+								$count = \App\methods::count();
+								for($i=1;$i<$count+1;$i++){
+									echo '<input style="display:none" id="method_id_for_files'.$i.'" name="method_id_for_files'.$i.'" type="checkbox" value="'.$i.'">';
+								}
 
-
+							@endphp
 					</div>
 
 
@@ -214,7 +226,13 @@
 					</div>
 				</form>
 
-
+				<br>
+				@if($errors->any())
+					<div class="alert alert-warning"> {{ $errors->first() }}</div>
+				@endif
+				@if(isset($_GET['methodFail']))
+					<div class="alert alert-warning"> At least one method must be selected.</div>
+				@endif
 		</div>
 	</div>
 </div>
