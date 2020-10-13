@@ -145,7 +145,7 @@ class AnalyticsController extends Controller
 		//
 		//method breakdown chart
 		//
-		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
+		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations  INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
 
 		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
 		$colorArray =[
@@ -450,7 +450,7 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->get()->count();
+    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;
