@@ -40,8 +40,6 @@
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
 
-	<a class="historyButton" href="{{ route('zipAll') }}">{{ __('Download all results') }}</a>
-
 	<div class="overflow-auto">
 		<div class="table-responsive">
 				<table id="historyTableOuter" class="fold-table">
@@ -55,6 +53,11 @@
 						<th>Download files</th>
 					</tr>
 					</thead>
+
+					@php
+						$rowIndex = 0;
+					@endphp
+
 					@foreach($jobs as $job)
 						@php
 							$skipFlag = 0;
@@ -133,7 +136,7 @@
 								@endphp</td>
 								<td>{{ $interval }}</td>
 								@php
-										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+										$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM calculations
 											INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 											INNER JOIN jobs on redshifts.job_id = jobs .job_id
 											INNER JOIN users on jobs.user_id = users.id
@@ -160,8 +163,39 @@
 									<div class="fold-content">
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
+										
+										<div class="row">
+											<div class="col-md-5">
+											<select class="form-control" id="search-column{{ $rowIndex }}">
+												<option value="0">Galaxy ID</option>
+												<option value="1">Optical u</option>
+												<option value="2">Optical v</option>
+												<option value="3">Optical g</option>
+												<option value="4">Optical r</option>
+												<option value="5">Optical i</option>
+												<option value="6">Optical z</option>
+												<option value="7">Infrared 3.6</option>
+												<option value="8">Infrared 4.5</option>
+												<option value="9">Infrared 5.8</option>
+												<option value="10">Infrared 8.0</option>
+												<option value="11">Infrared J</option>
+												<option value="12">Infrared H</option>
+												<option value="13">Infrared K</option>
+												<option value="14">Radio 1.4</option>
+												<option value="15">Method</option>
+												<option value="16">Redshift result</option>
+											</select>
+											</div>
+											<div class="col-md-6">
+											<input class="form-control" type="text" id="search-by-column{{ $rowIndex }}" placeholder="Search...">
+											</div>
+										</div>
 
-										<table  id="historyTableInner" class="display">
+
+										<table  id="historyTableInner{{ $rowIndex }}" class="display">
+											@php $rowIndex = $rowIndex+1; @endphp
+											
+											
 											<thead>
 											<tr>
 												<th>Galaxy ID</th>
@@ -211,13 +245,11 @@
 													<td>{{ $calculation->radio_one_four }}</td>
 													<td>{{ $calculation->method_name }}</td>
 													<td>{{ $calculation->redshift_result }}</td>
-													<td>
 													@php
 														if(isset($calculation->redshift_alt_result)){
-															echo ('<a href="' . $calculation->redshift_alt_result . '">Show');
+															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
 														}
 													@endphp
-													</td>
 												</tr>
 											@endforeach
 											</tbody>
@@ -227,7 +259,7 @@
 								<td style="display: none"></td>
     							<td style="display: none"></td>
     							<td style="display: none"></td>
-								<td style="display: none"></td>							
+								<td style="display: none"></td>								
 							</tr>
 
 
@@ -242,4 +274,9 @@
 		</div>
 	</div>
 	</body>
+	@php $tnum = $rowIndex; @endphp
+	<script type="text/javascript">
+    	var numTables = '<?php echo $tnum ;?>';
+	</script>
+	
 @endsection
