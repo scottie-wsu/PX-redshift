@@ -84,7 +84,20 @@ function getCount6() {
 			getCount6();
 </script>
 
-		
+<script>
+    function getCount7() {
+        $.ajax({
+            type: "GET",
+            url: "{{ route('ajaxcounts7') }}",
+        })
+            .done(function( data ) {
+                $('#mycount7').html(data);
+                setTimeout(getCount7, 2000);
+            });
+    }
+    getCount7();
+</script>
+
 
 
 
@@ -98,7 +111,7 @@ use App\Jobs;
 	$jobCount = Jobs::select('job_id')->get()->count();
     $redshiftCount = redshifts::select('calculation_id')->get()->count();
     $usersCount = User::select('id')->get()->count();
-    $methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
+    $methodCount = methods::select('method_id')->get()->count();
 
         use App\calculations;
         use Illuminate\Support\Facades\DB;
@@ -148,21 +161,26 @@ use App\Jobs;
             ->type('progress')
             ->class('')
             ->value('')
-            ->onlyHere(),   
- 
+            ->onlyHere(),
+
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-primary text-center ')
             ->value("<span id='mycount1'>$submitted</span> Galaxies Submitted")
-            ->onlyHere(),  
+            ->onlyHere(),
 
          Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-dark text-center ')
             ->value("<span id='mycount2'>$processing</span> Galaxies Processing")
-            ->onlyHere(),     
+            ->onlyHere(),
+
+            Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-primary text-center ')
+            ->value("<span id='mycount7'>No response</span>")
+            ->onlyHere(),
 	]);
 @endphp
 @section('content')
-
 @endsection

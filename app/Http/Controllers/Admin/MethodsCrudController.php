@@ -141,7 +141,8 @@ class MethodsCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(MethodsRequest::class);
+		//this will go to the Requests/MethodsRequest.php file, which will in turn call the Rules/PyScript.php file that checks file ext
+		CRUD::setValidation(MethodsRequest::class);
 
         $fields[] = [
             'name' => 'python_script_path',
@@ -167,7 +168,10 @@ class MethodsCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        $fields[] = [
+    	//this will go to the Requests/MethodsRequest.php file, which will in turn call the Rules/PyScript.php file that checks file ext
+		CRUD::setValidation(MethodsRequest::class);
+
+		$fields[] = [
             'name' => 'python_script_path',
             'label' => 'Select python file to add.',
             'type' => 'upload',
