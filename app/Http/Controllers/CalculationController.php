@@ -220,19 +220,15 @@ class CalculationController extends Controller
 			$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 			$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 			////writing the code to send data to the API
-			///
-			//$response = $client->request('POST', '', ['json' => $dataJSON]);
-			//if($response->getStatusCode() != 200){
-				//return back()->withErrors("Upload failed. Try again later.");
-			//}
-
 			try{
-				$client->request('POST', '', ['json' => $dataJSON]);
+				$response = $client->request('POST', '', ['json' => $dataJSON]);
 			}
 			catch(\GuzzleHttp\Exception\ConnectException $e){
 				return back()->withErrors("Upload failed. Try again later.");
 			}
-
+			if($response->getStatusCode() != 200){
+				return back()->withErrors("Upload failed with error code ".$response->getStatusCode().". Try again later.");
+			}
 			return redirect('/progress');
 		}
 		else{
@@ -371,17 +367,17 @@ class CalculationController extends Controller
 		////writing the code to send data to the API
 
 		//$response = $client->request('POST', '', ['json' => $dataJSON]);
-		//if($response->getStatusCode() != 200){
-			//return back()->withErrors("Upload failed. Try again later.");
-		//}
+
 
 		try{
-			$client->request('POST', '', ['json' => $dataJSON]);
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
 		}
 		catch(\GuzzleHttp\Exception\ConnectException $e){
 			return back()->withErrors("Upload failed. Try again later.");
 		}
-
+		if($response->getStatusCode() != 200){
+			return back()->withErrors("Upload failed with error code ".$response->getStatusCode().". Try again later.");
+		}
 		return redirect('/progress');
 
 

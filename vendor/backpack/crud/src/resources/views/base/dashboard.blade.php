@@ -84,7 +84,20 @@ function getCount6() {
 			getCount6();
 </script>
 
-		
+<script>
+    function getCount7() {
+        $.ajax({
+            type: "GET",
+            url: "{{ route('ajaxcounts7') }}",
+        })
+            .done(function( data ) {
+                $('#mycount7').html(data);
+                setTimeout(getCount7, 2000);
+            });
+    }
+    getCount7();
+</script>
+
 
 
 
@@ -148,23 +161,26 @@ use App\Jobs;
             ->type('progress')
             ->class('')
             ->value('')
-            ->onlyHere(),   
- 
+            ->onlyHere(),
+
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-primary text-center ')
             ->value("<span id='mycount1'>$submitted</span> Galaxies Submitted")
-            ->onlyHere(),  
+            ->onlyHere(),
 
          Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-dark text-center ')
             ->value("<span id='mycount2'>$processing</span> Galaxies Processing")
-            ->onlyHere(),     
+            ->onlyHere(),
+
+            Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-primary text-center ')
+            ->value("<span id='mycount7'>No response</span>")
+            ->onlyHere(),
 	]);
 @endphp
 @section('content')
-<iframe class="wwt-embed" src="http://www.worldwidetelescope.org/wwtweb/ShowImage.aspx?scale=0.24803649024573962&rotation=180.0&ra=83.85961130945472&dec=-6.352086834373836&y=1388.2640380859375&x=1121.197509765625&imageurl=https%3A%2F%2Fs3.amazonaws.com%2Faasie%2Fimages%2F308158864287067800170087%2Fpublic-issn%2F114%2Fpublic-issue%2F2101%2F308158864287067800170087_0002101.000_hr.jpg&name=Figure"  style="width: 100%; height: 550px;">
-  <p>Cannot display WorldWide Telescope because your browser does not support iframes.</p>
-
 @endsection

@@ -25,6 +25,57 @@ class guestController extends Controller
 
     public function store(Request $request)
     {
+		//creating data to send in http json request
+		//doing this before the method check so we can return all the previous inputs if they forget the method
+		//and the method check fails
+		$assigned_calc_ID = $request->input('assigned_calc_ID');
+		$optical_u = floatval($request->input('optical_u'));
+		$optical_v = floatval($request->input('optical_v'));
+		$optical_g = floatval($request->input('optical_g'));
+		$optical_r = floatval($request->input('optical_r'));
+		$optical_i = floatval($request->input('optical_i'));
+		$optical_z = floatval($request->input('optical_z'));
+		$infrared_three_six = floatval($request->input('infrared_three_six'));
+		$infrared_four_five = floatval($request->input('infrared_four_five'));
+		$infrared_five_eight = floatval($request->input('infrared_five_eight'));
+		$infrared_eight_zero = floatval($request->input('infrared_eight_zero'));
+		$infrared_J = floatval($request->input('infrared_J'));
+		$infrared_H = floatval($request->input('infrared_H'));
+		$infrared_K = floatval($request->input('infrared_K'));
+		$radio_one_four = floatval($request->input('radio_one_four'));
+
+		$request->session()->forget('assigned_calc_ID');
+		$request->session()->put('assigned_calc_ID', $assigned_calc_ID);
+		$request->session()->forget('optical_u');
+		$request->session()->put('optical_u', $optical_u);
+		$request->session()->forget('optical_v');
+		$request->session()->put('optical_v', $optical_v);
+		$request->session()->forget('optical_g');
+		$request->session()->put('optical_g', $optical_g);
+		$request->session()->forget('optical_r');
+		$request->session()->put('optical_r', $optical_r);
+		$request->session()->forget('optical_i');
+		$request->session()->put('optical_i', $optical_i);
+		$request->session()->forget('optical_z');
+		$request->session()->put('optical_z', $optical_z);
+		$request->session()->forget('infrared_three_six');
+		$request->session()->put('infrared_three_six', $infrared_three_six);
+		$request->session()->forget('infrared_four_five');
+		$request->session()->put('infrared_four_five', $infrared_four_five);
+		$request->session()->forget('infrared_four_five');
+		$request->session()->put('infrared_four_five', $infrared_four_five);
+		$request->session()->forget('infrared_five_eight');
+		$request->session()->put('infrared_five_eight', $infrared_five_eight);
+		$request->session()->forget('infrared_eight_zero');
+		$request->session()->put('infrared_eight_zero', $infrared_eight_zero);
+		$request->session()->forget('infrared_J');
+		$request->session()->put('infrared_J', $infrared_J);
+		$request->session()->forget('infrared_H');
+		$request->session()->put('infrared_H', $infrared_H);
+		$request->session()->forget('infrared_K');
+		$request->session()->put('infrared_K', $infrared_K);
+		$request->session()->forget('radio_one_four');
+		$request->session()->put('radio_one_four', $radio_one_four);
 
 		//method selection check logic
 		$methodCount = methods::count();
@@ -40,67 +91,10 @@ class guestController extends Controller
 			return back()->withErrors("At least one method must be selected.");
 		}
 
-		//creating job entry in the database
-		$userId = 1;
-		$job = new Jobs();
-		$job->job_name = "guest job name";
-		$job->job_description = "guest job description";
-		$job->user_id = $userId;
-		$job->save();
-		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
-		$jobId = $lastJob->job_id;
+		$methods = $request->input('methods');
+		$request->session()->forget('methods');
+		$request->session()->put('methods', $methods);
 
-		//creating data to send in http json request
-    	$galaxy = array();
-		$galaxy[0] = new redshifts();
-		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
-		$galaxy[0]->optical_u = $request->input('optical_u');
-		$galaxy[0]->optical_v = $request->input('optical_v');
-		$galaxy[0]->optical_g = $request->input('optical_g');
-		$galaxy[0]->optical_r = $request->input('optical_r');
-		$galaxy[0]->optical_i = $request->input('optical_i');
-		$galaxy[0]->optical_z = $request->input('optical_z');
-		$galaxy[0]->infrared_three_six = $request->input('infrared_three_six');
-		$galaxy[0]->infrared_four_five = $request->input('infrared_four_five');
-		$galaxy[0]->infrared_five_eight = $request->input('infrared_five_eight');
-		$galaxy[0]->infrared_eight_zero = $request->input('infrared_eight_zero');
-		$galaxy[0]->infrared_J = $request->input('infrared_J');
-		$galaxy[0]->infrared_H = $request->input('infrared_H');
-		$galaxy[0]->infrared_K = $request->input('infrared_K');
-		$galaxy[0]->radio_one_four = $request->input('radio_one_four');
-		$galaxy[0]->toJson();
-
-		$galaxy[1] = new redshifts();
-		$galaxy[1]->job_id = $jobId;
-		$galaxy[1]->methods = $request->input('methods');
-		//todo - this is reliant on guest being id 1 in the users table.
-		$galaxy[1]->user_ID = 1;
-
-		//todo - this is reliant on guest being id 1 in the users table.
-		$userEmail = User::select('email')->where('id', 1)->first();
-		$mergeData = $userEmail . " : " . random_bytes(32);
-		$cipherMethod = "aes-128-cbc";
-		$key = "5rCBIs9Km!!cacr1";
-		$iv = "123hasdba036vpax";
-		$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
-		$galaxy[1]->token = $tokenData;
-		$galaxy[1]->toJson();
-
-		//setting up all required API data to send via JSON
-		$dataJSON = $galaxy;
-		////initialising the guzzle client
-		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
-		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
-		////writing the code to send data to the API
-		try{
-			$client->request('POST', '', ['json' => $dataJSON]);
-		}
-		catch(\GuzzleHttp\Exception\ConnectException $e){
-			return back()->withErrors("Upload failed. Try again later.");
-		}
-
-		$request->session()->forget('jobId');
-		$request->session()->put('jobId', $jobId);
 		return redirect('guestResult');
     }
 
@@ -142,35 +136,31 @@ class guestController extends Controller
 	}
 
 	public function guestResult(Request $request){
-    	if($request->session()->exists('jobId')){
-			$job = $request->session()->get('jobId');
+    	if($request->session()->exists('assigned_calc_ID')){
+			$assigned_calc_ID = $request->session('assigned_calc_ID');
+			$optical_u = $request->session('optical_u');
+			$optical_v = $request->session('optical_v');
+			$optical_g = $request->session('optical_g');
+			$optical_r = $request->session('optical_r');
+			$optical_i = $request->session('optical_i');
+			$optical_z = $request->session('optical_z');
+			$infrared_three_six = $request->session('infrared_three_six');
+			$infrared_four_five = $request->session('infrared_four_five');
+			$infrared_five_eight = $request->session('infrared_five_eight');
+			$infrared_eight_zero = $request->session('infrared_eight_zero');
+			$infrared_J = $request->session('infrared_J');
+			$infrared_H = $request->session('infrared_H');
+			$infrared_K = $request->session('infrared_K');
+			$radio_one_four = $request->session('radio_one_four');
+			$methods = $request->session('methods');
 		}
     	else{
     		return redirect('guest');
 		}
 
-		$result = 0;
-
-		$status = DB::select("SELECT status FROM redshifts
-			INNER JOIN jobs on redshifts.job_id = jobs.job_id
-			WHERE jobs.job_id = " . $job);
-		if(isset($status[0]->status)){
-			if($status[0]->status == "COMPLETED" || $status[0]->status == "READ" ){
-				$result = DB::select("SELECT redshift_result, redshift_alt_result FROM calculations
-				INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
-				INNER JOIN jobs on redshifts.job_id = jobs.job_id
-				WHERE jobs.job_id = " . $job);
-				//return($result[0]);
-			}
-			else{
-				//return($status[0]->status);
-			}
-		}
-		else{
-			//return "WAITING";
-		}
-		$jobId = $job;
-		return view('result', compact('status', 'result', 'jobId'));
+		return view('result', compact('assigned_calc_ID','optical_u', 'optical_v', 'optical_g',
+			'optical_r', 'optical_i', 'optical_z', 'infrared_three_six', 'infrared_four_five', 'infrared_five_eight',
+			'infrared_eight_zero', 'infrared_J', 'infrared_H', 'infrared_K', 'radio_one_four', 'methods'));
 	}
 
 

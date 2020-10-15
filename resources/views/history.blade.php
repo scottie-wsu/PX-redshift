@@ -32,6 +32,13 @@
 				background: dodgerblue;
 
 			}
+			.showLink{
+				color: #0000FF;
+				transition: 0.1s;
+			}
+			.showLink:hover{
+				text-decoration: underline;
+			}
 		</style>
 
 	</head>
@@ -39,8 +46,6 @@
 
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
-
-	<a class="historyButton" href="{{ route('zipAll') }}">{{ __('Download all results') }}</a>
 
 	<div class="overflow-auto">
 		<div class="table-responsive">
@@ -55,6 +60,11 @@
 						<th>Download files</th>
 					</tr>
 					</thead>
+
+					@php
+						$rowIndex = 0;
+					@endphp
+
 					@foreach($jobs as $job)
 						@php
 							$skipFlag = 0;
@@ -123,7 +133,7 @@
 						@if($skipFlag == 0)
 							@csrf
 							<tbody>
-							<tr class="view">
+							<tr id="{{ $job->job_name }}" class="view">
 								<!-- <td></td> -->
 								<td>{{ $job->job_name }}</td>
 								<td>{{ $job->job_description }}</td>
@@ -146,7 +156,7 @@
 									<td>
 										<form action="{{ route("zipJob") }}" method="post">
 											@csrf
-											<button name="job_id" value="{{ $job->job_id }}">Download</button>
+											<button class="showLink" name="job_id" value="{{ $job->job_id }}">Download</button>
 										</form>
 									</td>
 									@endif
@@ -160,7 +170,8 @@
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
 
-										<table  id="historyTableInner" class="display">
+										<table  id="historyTableInner{{ $rowIndex }}" class="display">
+											@php $rowIndex = $rowIndex+1; @endphp
 											<thead>
 											<tr>
 												<th>Galaxy ID</th>
@@ -212,7 +223,7 @@
 													<td>{{ $calculation->redshift_result }}</td>
 													@php
 														if(isset($calculation->redshift_alt_result)){
-															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
+															echo ('<td><a class="showLink" href="' . $calculation->redshift_alt_result . '">Show</td>');
 														}
 													@endphp
 												</tr>
