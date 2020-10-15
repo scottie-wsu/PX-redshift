@@ -27,7 +27,7 @@ return 'I can see the CHILD ROW!!!';
 			$('#historyTableOuter tbody').on('click', 'td.details-control', function () {
 				var tr = $(this).closest('tr');
 				var row = tableOuter.row( tr );
- 
+
 				if ( row.child.isShown() ) {
 					row.child.hide();
 					tr.removeClass('shown');
@@ -42,17 +42,17 @@ return 'I can see the CHILD ROW!!!';
 /* $(document).ready(function() {
 		function searchByColumn(tableOuter){
 			var defaultSearch = 0 // Job Name
-			
+
 			$(document).on('change', '#search-column', function() {
 				defaultSearch = this.value;
 			});
-			
+
 			$(document).on('keyup', '#search-by-column', function(){
 				tableOuter.search('').columns().search('').draw();
 				tableOuter.column(defaultSearch).search(this.value).draw();
 			});
 		}
-		
+
     var tableOuter = $('#historyTableOuter').DataTable( {
 			"searching": true,
 			"fixedHeader": true,
@@ -71,42 +71,45 @@ return 'I can see the CHILD ROW!!!';
 											<input class="form-control" type="text" id="search-by-column" placeholder="Search...">\
 											</div>\
 										</div>');
-		
+
 		searchByColumn(tableOuter);
-		
+
 } ); */
 
 $(document).ready(function() {
 		function searchByColumn(table){
 			var defaultSearch = 0 // Galaxy ID
-			
+
 			$(document).on('change', '#search-column', function() {
 				defaultSearch = this.value;
 			});
-			
+
 			$(document).on('keyup', '#search-by-column', function(){
 				table.search('').columns().search('').draw();
 				table.column(defaultSearch).search(this.value).draw();
 			});
 		}
-		
-    var table = $('#historyTableInner').DataTable( {
+
+
+
+	$("table[id^=historyTableInner]").each(function(index) {
+		var table = $('#historyTableInner'+index).DataTable( {
 			"searching": true,
 			"fixedHeader": true,
 			"responsive": true,
 			/* "order": [[0, 'asc'], [16, 'asc']], */
 			"orderFixed":{
-				"post":[[0, 'asc']]
+				"pre":[[0, 'asc']]
+
 			},
+
 			/* "orderFixed": [[15, 'asc']], */
-			
+
 			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
 			"dom": '<"filterSearch"><"alwaysGroup">rtip'
 		});
-		
+	});
 
-		
-		
 		$("div.filterSearch").html('<div class="row">\
 											<div class="col-md-5">\
 											<select class="form-control" id="search-column">\
@@ -136,9 +139,9 @@ $(document).ready(function() {
 /* 		$("div.alwaysGroup").html('<label for="alwaysGroupCheckBox">\
 															<input type="checkbox" name="alwaysGroupCheckBox" id="alwaysGroupCheckBox"\
 															value="groupByID" checked> Always Group By Galaxy ID\
-															</label>');		 */						
-		
-		
+															</label>');		 */
+
+
 /* 		function alwaysGroup(table){
 				if(document.getElementById('alwaysGroupCheckBox').checked){
 					table.rowGroup().enable().draw();
@@ -148,15 +151,15 @@ $(document).ready(function() {
 					table.rowGroup().disable().draw();
 					table.order.draw();
 				}
-			} 
-			
+			}
+
 			$('#alwaysGroupCheckBox').on('click', function(){
 				alwaysGroup(table);
 			});
 		 */
-		
+
 
 
 		searchByColumn(table);
-		
+
 } );

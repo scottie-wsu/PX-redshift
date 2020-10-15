@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\calculations;
+use GuzzleHttp\Client;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -15,7 +16,10 @@ class AnalyticsController extends Controller
 {
 	public function custom()
 	{
-		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
+		//this is borked on my local machine but works fine on the server. SQL sucks
+		//$institutionCount = User::select('institution', DB::raw('count(*) as total'))->distinct('institution')->groupBy('institution')->orderBy('created_at')->get();
+		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->distinct('institution')->groupBy('institution')->get();
+
 		$institutionCountTotal = $institutionCount->pluck('total');
 		$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
 		//dump($institutionLabels->keys()->toArray());
@@ -23,7 +27,7 @@ class AnalyticsController extends Controller
 
 		$jobCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
-		$jobCountPerUser = DB::select('SELECT name, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY jobs.user_id, users.name');
+		$jobCountPerUser = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
 
 
@@ -146,7 +150,7 @@ class AnalyticsController extends Controller
 		//
 		//method breakdown chart
 		//
-		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
+		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
 
 		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
 		$colorArray =[
@@ -460,6 +464,27 @@ class AnalyticsController extends Controller
 
 		$result = $methodCount;
 		echo $result;
+	}
+
+	public function ajaxCounts7(){
+		////initialising the guzzle client
+		$dataJSON = new redshifts();
+		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
+		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
+		////writing the code to send data to the API
+		try{
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
+			return "Connection error";
+		}
+		if($response->getStatusCode() != 200){
+			return "Request error ".$response->getStatusCode();
+		}
+		$load = json_decode(var_dump($response->getBody()->read(512)));
+		$load = explode("errors", $load);
+		return $load[1];
 	}
 
 }

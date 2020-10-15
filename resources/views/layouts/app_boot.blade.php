@@ -76,10 +76,18 @@
 
 </head>
 <style>
-nav-items{
-font-size: 15px;
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height:2em;
+	background-color: black;
+	color: white;
+	text-align: center;
 }
 </style>
+
 
 
 
@@ -110,4 +118,7 @@ font-size: 15px;
     <!-- Main JS-->
     <script src="{{ asset('js/global.js') }}"></script>
 </body>
+<div class="footer">
+	<p>Powered in part by <a href="https://backpackforlaravel.com/">Backpack for Laravel</a></p>
+</div>
 </html>

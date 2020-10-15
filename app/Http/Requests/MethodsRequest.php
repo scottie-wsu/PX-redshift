@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
+use App\Rules\PyScript;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MethodsRequest extends FormRequest
@@ -26,7 +27,8 @@ class MethodsRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'method_name' => 'required|min:1|max:255',
+			'python_script_path' => ['required', 'file', new PyScript],
         ];
     }
 
@@ -50,7 +52,8 @@ class MethodsRequest extends FormRequest
     public function messages()
     {
         return [
-            //
+        	'method_name' => 'Method name is a required field and must be less than 255 characters.',
+            'python_script_path' => 'File must be a valid .py file.',
         ];
     }
 }
