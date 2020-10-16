@@ -332,38 +332,49 @@ class AnalyticsController extends Controller
 		$perArray = explode("Per", $perData);
 		$per = $perArray[0]; //institution/job/user/day/method
 
-		//todo - REMEMBER THAT REDSHIFT_RESULT MAY NOT BE A SINGLE NUMBER IN THE FINAL VERSION - NEED TO IMPLEMENT WHERE RESULT IS NUMERIC CODE
-		//todo - this is the finished queries for left/right data
-		//
-		//$calculationCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
-		//$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
-		//todo - this is the end of the finished queries
 
-		//todo - this one requires the most work probably - need to recreate labels variable to pull each redshift result (easy) then put these results into bins
-		//$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result;');
+		$chartType = $request->input('chartType') . PHP_EOL;
+		dump($chartType);
+		$rightAxisData = $request->input('rightAxisData') . PHP_EOL;
+
+		$perData = $request->input('perData') . PHP_EOL;
 
 
+		$jobCountPerUser = DB::select("select count(jobs.job_id) as 'job count', users.id from jobs, users where jobs.user_id = users.id GROUP by users.id");
+		$jobCountPerInstitution = DB::select("select count(jobs.job_id) as 'job count', users.institution from jobs, users where jobs.user_id = users.id GROUP by users.institution");
+		$userCountPerInstitution = DB::select("select count(users.id) as 'users_count', users.institution from users GROUP by users.institution");
+		$calculationCountPerUser = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', users.id from users, jobs, redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id AND redshifts.job_id = jobs.job_id AND jobs.user_id = users.id GROUP by users.id");
+		$calculationCountPerJob = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', redshifts.job_id from redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id GROUP by redshifts.job_id");
+		$calculationCountPerInstitution = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', users.institution from users, jobs, redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id AND redshifts.job_id = jobs.job_id AND jobs.user_id = users.id GROUP by users.institution");
+		$calculationCountPerMethod = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', calculations.method_id from calculations GROUP by calculations.method_id");
+
+		// var_dump($jobCountPerUser);
+
+		// //todo - REMEMBER THAT REDSHIFT_RESULT MAY NOT BE A SINGLE NUMBER IN THE FINAL VERSION - NEED TO IMPLEMENT WHERE RESULT IS NUMERIC CODE
+		// //todo - this is the finished queries for left/right data
+		// //
+		// //$calculationCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
+		// //$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
+		// //todo - this is the end of the finished queries
+
+		// //todo - this one requires the most work probably - need to recreate labels variable to pull each redshift result (easy) then put these results into bins
+		// //$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result;');
 
 
-		$jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
+		// $jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
 
-		//$jobCountPerUser = DB::table('jobs')->select('user_id')->join("jobs.user_id", "users.id")->count();
+		// // $jobCountPerUser = DB::table('jobs')->select('user_id')->join("jobs.user_id", "users.id")->count();
 
-		//$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
-		//$institutionCountTotal = $institutionCount->pluck('total');
+		// //$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
+		// //$institutionCountTotal = $institutionCount->pluck('total');
 
-		$institutionLabels = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
-		//$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
-		$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
-		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+		// $institutionLabels = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
+		// //$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
+		// $userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
+		// $redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
 
-
-
-
-
-		$calculationCountPerInstitution = $redshiftResultsPerInstitution;
-		$calculationCountPerInstitution = $jobCountPerUser;
-
+		// $calculationCountPerInstitution = $redshiftResultsPerInstitution;
+		// $calculationCountPerInstitution = $jobCountPerUser;
 
 		$chartjs = app()->chartjs
 
