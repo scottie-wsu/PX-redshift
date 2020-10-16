@@ -43,7 +43,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Users per institution",
 					"yAxisID" => "A",
-					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'backgroundColor' => "rgba(38, 185, 154, 1)",
 					'borderColor' => "rgba(38, 185, 154, 0.7)",
 					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
@@ -56,7 +56,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Jobs completed per institution",
 					"yAxisID" => "B",
-					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
+					'backgroundColor' => "rgba(200, 34, 154, 1)",
 					'borderColor' => "rgba(200, 34, 154, 0.7)",
 					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
@@ -460,7 +460,7 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->get()->count();
+    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;
