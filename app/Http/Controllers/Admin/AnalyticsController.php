@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\calculations;
+use GuzzleHttp\Client;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -10,11 +11,15 @@ use App\redshifts;
 use App\methods;
 use App\Jobs;
 
+
 class AnalyticsController extends Controller
 {
 	public function custom()
 	{
-		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
+		//this is borked on my local machine but works fine on the server. SQL sucks
+		//$institutionCount = User::select('institution', DB::raw('count(*) as total'))->distinct('institution')->groupBy('institution')->orderBy('created_at')->get();
+		$institutionCount = User::select('institution', DB::raw('count(*) as total'))->distinct('institution')->groupBy('institution')->get();
+
 		$institutionCountTotal = $institutionCount->pluck('total');
 		$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
 		//dump($institutionLabels->keys()->toArray());
@@ -22,7 +27,7 @@ class AnalyticsController extends Controller
 
 		$jobCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
-		$jobCountPerUser = DB::select('SELECT name, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY jobs.user_id, users.name');
+		$jobCountPerUser = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN jobs on users.id = jobs.user_id GROUP BY users.institution');
 
 
 
@@ -38,7 +43,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Users per institution",
 					"yAxisID" => "A",
-					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'backgroundColor' => "rgba(38, 185, 154, 1)",
 					'borderColor' => "rgba(38, 185, 154, 0.7)",
 					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
@@ -51,7 +56,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Jobs completed per institution",
 					"yAxisID" => "B",
-					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
+					'backgroundColor' => "rgba(200, 34, 154, 1)",
 					'borderColor' => "rgba(200, 34, 154, 0.7)",
 					"pointBorderColor" => "rgba(200, 34, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(200, 34, 154, 0.7)",
@@ -145,7 +150,7 @@ class AnalyticsController extends Controller
 		//
 		//method breakdown chart
 		//
-		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id');
+		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
 
 		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
 		$colorArray =[
@@ -327,33 +332,49 @@ class AnalyticsController extends Controller
 		$perArray = explode("Per", $perData);
 		$per = $perArray[0]; //institution/job/user/day/method
 
-		//todo - REMEMBER THAT REDSHIFT_RESULT MAY NOT BE A SINGLE NUMBER IN THE FINAL VERSION - NEED TO IMPLEMENT WHERE RESULT IS NUMERIC CODE
-		//todo - this is the finished queries for left/right data
-		//$jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
-		//$calculationCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
-		//$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
-		//todo - this is the end of the finished queries
 
-		//todo - this one requires the most work probably - need to recreate labels variable to pull each redshift result (easy) then put these results into bins
-		//$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result;');
+		$chartType = $request->input('chartType') . PHP_EOL;
+		dump($chartType);
+		$rightAxisData = $request->input('rightAxisData') . PHP_EOL;
+
+		$perData = $request->input('perData') . PHP_EOL;
 
 
+		$jobCountPerUser = DB::select("select count(jobs.job_id) as 'job count', users.id from jobs, users where jobs.user_id = users.id GROUP by users.id");
+		$jobCountPerInstitution = DB::select("select count(jobs.job_id) as 'job count', users.institution from jobs, users where jobs.user_id = users.id GROUP by users.institution");
+		$userCountPerInstitution = DB::select("select count(users.id) as 'users_count', users.institution from users GROUP by users.institution");
+		$calculationCountPerUser = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', users.id from users, jobs, redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id AND redshifts.job_id = jobs.job_id AND jobs.user_id = users.id GROUP by users.id");
+		$calculationCountPerJob = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', redshifts.job_id from redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id GROUP by redshifts.job_id");
+		$calculationCountPerInstitution = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', users.institution from users, jobs, redshifts, calculations where calculations.galaxy_id = redshifts.calculation_id AND redshifts.job_id = jobs.job_id AND jobs.user_id = users.id GROUP by users.institution");
+		$calculationCountPerMethod = DB::select("select count(calculations.real_calculation_id) as 'calculations_count', calculations.method_id from calculations GROUP by calculations.method_id");
+
+		// var_dump($jobCountPerUser);
+
+		// //todo - REMEMBER THAT REDSHIFT_RESULT MAY NOT BE A SINGLE NUMBER IN THE FINAL VERSION - NEED TO IMPLEMENT WHERE RESULT IS NUMERIC CODE
+		// //todo - this is the finished queries for left/right data
+		// //
+		// //$calculationCountPerInstitution = DB::select('SELECT institution, COUNT(*) as total FROM users INNER JOIN redshifts on users.id = redshifts.user_id GROUP BY users.institution');
+		// //$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
+		// //todo - this is the end of the finished queries
+
+		// //todo - this one requires the most work probably - need to recreate labels variable to pull each redshift result (easy) then put these results into bins
+		// //$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result;');
 
 
-		//$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
-		//$institutionCountTotal = $institutionCount->pluck('total');
+		// $jobCountPerUser = DB::select('SELECT user_id, COUNT(*) as total FROM jobs INNER JOIN users on jobs.user_id = users.id GROUP BY users.id');
 
-		$institutionLabels = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
-		//$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
-		$userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
-		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+		// // $jobCountPerUser = DB::table('jobs')->select('user_id')->join("jobs.user_id", "users.id")->count();
 
+		// //$institutionCount = User::select('institution', DB::raw('count(*) as total'))->groupBy('institution')->get();
+		// //$institutionCountTotal = $institutionCount->pluck('total');
 
+		// $institutionLabels = calculations::orderBy('redshift_result')->pluck('real_calculation_id', 'redshift_result');
+		// //$institutionLabels = User::orderBy('created_at')->pluck('id', 'institution');
+		// $userPerInstitutionCount = DB::select('SELECT institution, COUNT(*) as total FROM users GROUP BY users.institution');
+		// $redshiftResultsPerInstitution = DB::select('SELECT redshift_result, COUNT(*) as total FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
 
-
-
-		$calculationCountPerInstitution = $redshiftResultsPerInstitution;
-
+		// $calculationCountPerInstitution = $redshiftResultsPerInstitution;
+		// $calculationCountPerInstitution = $jobCountPerUser;
 
 		$chartjs = app()->chartjs
 
@@ -376,7 +397,7 @@ class AnalyticsController extends Controller
 				],
 
 				[
-					"label" => "Jobs completed per institution",
+					"label" => "Job count per institution",
 					"yAxisID" => "B",
 					'backgroundColor' => "rgba(200, 34, 154, 0.7)",
 					'borderColor' => "rgba(200, 34, 154, 0.7)",
@@ -398,7 +419,7 @@ class AnalyticsController extends Controller
         				position: 'left',
 
 					}, {
-        				id: 'B',z
+        				id: 'B',
         				type: 'linear',
         				position: 'right',
 
@@ -450,10 +471,31 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->get()->count();
+    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;
+	}
+
+	public function ajaxCounts7(){
+		////initialising the guzzle client
+		$dataJSON = new redshifts();
+		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
+		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
+		////writing the code to send data to the API
+		try{
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
+			return "Connection error";
+		}
+		if($response->getStatusCode() != 200){
+			return "Request error ".$response->getStatusCode();
+		}
+		$load = json_decode(var_dump($response->getBody()->read(512)));
+		$load = explode("errors", $load);
+		return $load[1];
 	}
 
 }

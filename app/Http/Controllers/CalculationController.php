@@ -34,7 +34,7 @@ class CalculationController extends Controller
 		$userId = auth()->id();
 		//todo - may possibly need to include redshifts.status in the select on the server
 		//todo - will need to add another LIKE command, possibly http if files are being stored on another server
-		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM ps2035.calculations
+		$dbFiles = DB::select("SELECT calculations.redshift_alt_result FROM calculations
 			INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 			INNER JOIN jobs on redshifts.job_id = jobs .job_id
 			INNER JOIN users on jobs.user_id = users.id
@@ -220,11 +220,15 @@ class CalculationController extends Controller
 			$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 			$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 			////writing the code to send data to the API
-			$response = $client->request('POST', '', ['json' => $dataJSON]);
-			if($response->getStatusCode() != 200){
+			try{
+				$response = $client->request('POST', '', ['json' => $dataJSON]);
+			}
+			catch(\GuzzleHttp\Exception\ConnectException $e){
 				return back()->withErrors("Upload failed. Try again later.");
 			}
-
+			if($response->getStatusCode() != 200){
+				return back()->withErrors("Upload failed with error code ".$response->getStatusCode().". Try again later.");
+			}
 			return redirect('/progress');
 		}
 		else{
@@ -285,6 +289,27 @@ class CalculationController extends Controller
 
 	public function store(Request $request){
 
+		$jobName = $request->input('job_name');
+
+		if(!(isset($jobName))){
+			return back()->withErrors("Job name is a required field.");
+		}
+
+		//method selection check logic
+		$methodCount = methods::count();
+		$y = 0;
+		for($i=1;$i<$methodCount+1;$i++){
+			if($request->input('method_id_for_files'.$i)!= null){
+				$methodRequests[$y] = $request->input('method_id_for_files'.$i);
+				$y = $y+1;
+			}
+		}
+
+		if($y == 0){
+			return back()->withErrors("At least one method must be selected.");
+		}
+
+
 		//creating job entry in the database
 		$userId = auth()->id();
 		$job = new Jobs();
@@ -340,11 +365,19 @@ class CalculationController extends Controller
 		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
-		$response = $client->request('POST', '', ['json' => $dataJSON]);
-		if($response->getStatusCode() != 200){
+
+		//$response = $client->request('POST', '', ['json' => $dataJSON]);
+
+
+		try{
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
 			return back()->withErrors("Upload failed. Try again later.");
 		}
-
+		if($response->getStatusCode() != 200){
+			return back()->withErrors("Upload failed with error code ".$response->getStatusCode().". Try again later.");
+		}
 		return redirect('/progress');
 
 
