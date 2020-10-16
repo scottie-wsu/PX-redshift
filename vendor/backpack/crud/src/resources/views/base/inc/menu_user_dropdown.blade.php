@@ -18,8 +18,10 @@ font-size: 15px;
 		<a class="nav-link" href="{{ route('history') }}">{{ __(' History') }}</a>
 	</li>
 	<li class="nav-item">
-        <a class="nav-link" href="{{ backpack_url('logout') }}">
-            {{ trans('backpack::base.logout') }}
+
+		<a class="nav-link" href="{{ backpack_url('logout') }}">
+			{{ trans('backpack::base.logout') }}
+
 		</a>
 		</li>
 </ul>
