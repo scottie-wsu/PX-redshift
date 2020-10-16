@@ -27,15 +27,6 @@ class CreateUsersTable extends Migration
         });
 		DB::table('users')->insert(array(
 			[
-				'name' => 'guest',
-				'email' => 'guest@guest.com.is.invalid',
-				'institution' => 'Guest',
-				'password' => 'password',
-				'level' => 0,
-				'created_at' => Carbon::now(),
-				'updated_at' => Carbon::now()
-			],
-			[
 				'name' => 'test',
 				'email' => 'test@test.com',
 				'institution' => 'TestAccount',
