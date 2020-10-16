@@ -85,7 +85,7 @@ $(document).ready(function() {
 				
 			function searchByColumn(searchTable, p){
 				defaultSearch[p] = 0;
-				$(document).on('change', 'search-column'+p, function(){
+				$(document).on('change click', '#search-column'+p, function(){
 					defaultSearch[p] = this.value;
 				});
 				$(document).on('keyup click', '#search-by-column'+p, function(){

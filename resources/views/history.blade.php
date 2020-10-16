@@ -165,8 +165,8 @@
 										<p>{{ $job->job_description }}</p>
 										
 										<div class="row">
-											<div class="col-md-5">
-											<select class="form-control" id="search-column{{ $rowIndex }}">
+											<div class="col-md-2">
+											<select class="form-control input--style-4" id="search-column{{ $rowIndex }}">
 												<option value="0">Galaxy ID</option>
 												<option value="1">Optical u</option>
 												<option value="2">Optical v</option>
@@ -186,8 +186,8 @@
 												<option value="16">Redshift result</option>
 											</select>
 											</div>
-											<div class="col-md-6">
-											<input class="form-control" type="text" id="search-by-column{{ $rowIndex }}" placeholder="Search...">
+											<div class="col-md-3">
+											<input class="form-control input--style-4" type="text" id="search-by-column{{ $rowIndex }}" placeholder="Search...">
 											</div>
 										</div>
 
@@ -216,6 +216,7 @@
 												<th>Method</th>
 												<th>Redshift result</th>
 												<th>Redshift file result</th>
+												<th>Embed</th>
 											</tr>
 											</thead>
 											<tbody>
@@ -250,6 +251,11 @@
 															echo ('<td><a href="' . $calculation->redshift_alt_result . '">Show</td>');
 														}
 													@endphp
+													
+													@php
+														if(isset($calculation->redshift_alt_result)){
+															echo ('<td><a href="' . $calculation->redshift_alt_result . '" data-lightbox="' . $calculation->redshift_alt_result . 'file" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img></td>');}
+													@endphp 
 												</tr>
 											@endforeach
 											</tbody>
@@ -259,7 +265,8 @@
 								<td style="display: none"></td>
     							<td style="display: none"></td>
     							<td style="display: none"></td>
-								<td style="display: none"></td>								
+								<td style="display: none"></td>
+								<td style="display: none"></td>										
 							</tr>
 
 

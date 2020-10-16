@@ -102,6 +102,27 @@ tr.shown td.details-control {
 	padding-left: 10px;
 }
 
+td a {
+	color: #007bff;
+}
+
+td a:hover{
+	text-decoration: underline;
+}
+
+img.thumbnail{
+	width:25px;
+  height: 25px;
+}
+
+img.thumbnail{
+	border: solid 4px transparent; 
+}
+img.thumbnail:hover{
+	border-color:  ##a64bf4;
+}
+
+
 /* .alwaysGroup{
     display: inline-block;
     vertical-align: middle;

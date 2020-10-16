@@ -64,6 +64,7 @@
    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
    <script src="{{ asset('vendor/RowGroup-1.1.2/js/dataTables.rowGroup.min.js') }}" defer></script>
+	 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" defer>
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/RowGroup-1.1.2/css/rowGroup.bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" defer>
@@ -83,7 +84,7 @@
 	<!-- Vendor CSS-->
 	<link  href="{{ asset('vendor/select2/select2.min.css') }}" rel="stylesheet" media="all">
 	<link  href="{{ asset('vendor/datepicker/daterangepicker.css') }}" rel="stylesheet" media="all">
-
+	<link  href="{{ asset('vendor/lightbox2-2.11.3/css/lightbox.css') }}" rel="stylesheet" media="all"/>
 
 </head>
 <style>
@@ -196,6 +197,7 @@
 <!--===============================================================================================-->
 <script src="{{ asset('vendor/countdowntime/countdowntime.js') }}"></script>
 <!--===============================================================================================-->
+<script src="{{ asset('vendor/lightbox2-2.11.3/js/lightbox.js') }}"></script>
 <script src="{{ asset('js/main.js') }}"></script>
 
 
