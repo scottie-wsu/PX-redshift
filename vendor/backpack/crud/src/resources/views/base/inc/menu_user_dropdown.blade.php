@@ -18,10 +18,8 @@ font-size: 15px;
 		<a class="nav-link" href="{{ route('history') }}">{{ __(' History') }}</a>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" href="{{ route('logout') }}"
-			onclick="event.preventDefault();
-				document.getElementById('logout-form').submit();">
-					{{ __('Logout') }}
+		<a class="nav-link" href="{{ backpack_url('logout') }}">
+			{{ trans('backpack::base.logout') }}
 		</a>
 		</li>
 </ul>
