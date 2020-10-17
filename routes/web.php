@@ -42,3 +42,7 @@ Route::get('/guestAjax', 'guestController@guestAjax')->name('guestAjax')->middle
 Route::get('/guestResult', 'guestController@guestResult')->name('guestResult')->middleware('guest');
 
 Route::get('/fetch-progress', 'ProgressController@FetchProgress')->name('fetchProgress');
+
+
+Route::get('/plots', 'PlotController@Index')->name('plots');
+Route::post('/fetch-plot', 'PlotController@FetchPlot')->name('fetchPlot');
