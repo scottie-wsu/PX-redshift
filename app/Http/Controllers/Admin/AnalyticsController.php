@@ -460,7 +460,7 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->get()->count();
+    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;

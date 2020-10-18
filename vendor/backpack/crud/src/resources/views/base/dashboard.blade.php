@@ -111,7 +111,7 @@ use App\Jobs;
 	$jobCount = Jobs::select('job_id')->get()->count();
     $redshiftCount = redshifts::select('calculation_id')->get()->count();
     $usersCount = User::select('id')->get()->count();
-    $methodCount = methods::select('method_id')->get()->count();
+    $methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
         use App\calculations;
         use Illuminate\Support\Facades\DB;
