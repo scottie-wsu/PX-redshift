@@ -47,7 +47,7 @@ class PlotController extends Controller
     }
 
     public function Index() {
-        return View::make('plots')->with('availablePlots', $this->availablePlots);
+        return View::make('plotting')->with('availablePlots', $this->availablePlots);
     }
 
     public function FetchPlot(Request $request) {
@@ -58,7 +58,7 @@ class PlotController extends Controller
             $result =  DB::select($this->plots[$selectedPlot]->sql);
         }
         else {
-            return View::make('plots')->with('availablePlots', $this->availablePlots)->with('invalidForm', TRUE);
+            return View::make('plotting')->with('availablePlots', $this->availablePlots)->with('invalidForm', TRUE);
         }
 
         $labels = array();
@@ -68,7 +68,7 @@ class PlotController extends Controller
             array_push($data, $x->val);
         }
 
-        return View::make('plots')
+        return View::make('plotting')
         ->with('availablePlots', $this->availablePlots)
         ->with('graphType', $selectedPlotType)
         ->with('graphTitle', $this->plots[$selectedPlot]->graphTitle)
