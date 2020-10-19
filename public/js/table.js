@@ -77,6 +77,7 @@ return 'I can see the CHILD ROW!!!';
 } ); */
 
 $(document).ready(function() {
+
 	
 
 		var defaultSearch = [];
@@ -101,12 +102,14 @@ $(document).ready(function() {
 		var table=[];
 		for (var i=0; i < numTables; i++) {
 		table[i] = $('#historyTableInner'+i).DataTable( {
+
 			"searching": true,
 			"fixedHeader": true,
 			"responsive": true,
 			/* "order": [[0, 'asc'], [16, 'asc']], */
 			"orderFixed":{
 				"pre":[[0, 'asc']]
+
 			},
 			/* "orderFixed": [[15, 'asc']], */
 			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
@@ -116,6 +119,7 @@ $(document).ready(function() {
 		}
 
 /* 		$("div.filterSearch").html('<div class="row">\
+
 											<div class="col-md-5">\
 											<select class="form-control" id="search-column">\
 												<option value="0">Galaxy ID</option>\
@@ -140,7 +144,9 @@ $(document).ready(function() {
 											<div class="col-md-6">\
 											<input class="form-control" type="text" id="search-by-column" placeholder="Search...">\
 											</div>\
+
 										</div>'); */
+
 /* 		$("div.alwaysGroup").html('<label for="alwaysGroupCheckBox">\
 															<input type="checkbox" name="alwaysGroupCheckBox" id="alwaysGroupCheckBox"\
 															value="groupByID" checked> Always Group By Galaxy ID\
@@ -162,9 +168,11 @@ $(document).ready(function() {
 				alwaysGroup(table);
 			});
 		 */
+
 		
 
 		for (var j=0; j < numTables; j++) {
 			searchByColumn(table[j], j);
 		}
+
 } );

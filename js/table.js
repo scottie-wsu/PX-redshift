@@ -102,7 +102,9 @@ $(document).ready(function() {
 			/* "orderFixed": [[15, 'asc']], */
 			
 			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
+
 			"dom": '<"filterSearch">rtip'
+
 		});
 		
 
@@ -160,5 +162,5 @@ $(document).ready(function() {
 
 		searchByColumn(table);
 		
-} );
 
+} );

@@ -60,9 +60,11 @@
 
 	    <!-- External table scripts and css-->
 
+
    <script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
+
    <script src="{{ asset('vendor/RowGroup-1.1.2/js/dataTables.rowGroup.min.js') }}" defer></script>
 	 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" defer>
@@ -125,6 +127,8 @@
 					use App\User;
 					use Illuminate\Support\Facades\Auth;
 					use Illuminate\Support\Facades\DB;
+					use Illuminate\Support\Facades\URL;
+
 
 					//admin check logic
 					$user = Auth::user();
@@ -134,12 +138,20 @@
 					//jobs processing check logic
 					$jobCheck = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
 
-					//return ($userChecker == 1);
+					//show download link for all jobs on history page logic
+					$urlFull = URL::current();
+					$url = explode("/", $urlFull);
 				@endphp
+
+				@if(end($url) == 'history')
+					<li class="nav-item">
+						<a class="nav-link" href="{{ route('zipAll') }}"> Download all results </a>
+					</li>
+				@endif
 
 				@if($jobCheck == true)
 					<li class="nav-item">
-						<b><a class="nav-link" href="{{ route('progress') }}">{{ __('Calculation progress') }}</a></b>
+						<a class="nav-link" href="{{ route('progress') }}">{{ __('Calculation progress') }}</a>
 					</li>
 				@endif
 

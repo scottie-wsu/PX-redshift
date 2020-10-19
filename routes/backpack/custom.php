@@ -31,6 +31,7 @@ Route::group([
     Route::get('analytics4', 'AnalyticsController@ajaxCounts4')->name('ajaxcounts4');
     Route::get('analytics5', 'AnalyticsController@ajaxCounts5')->name('ajaxcounts5');
     Route::get('analytics6', 'AnalyticsController@ajaxCounts6')->name('ajaxcounts6');
+	Route::get('analytics7', 'AnalyticsController@ajaxCounts7')->name('ajaxcounts7');
 
 	Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');

@@ -6,8 +6,8 @@
 ">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
 				<form class="login100-form validate-form" method="POST" action="{{ route('login') }}">
-                @csrf    
-              
+                @csrf
+
 
   <span class="login100-form-title p-b-49">
 						Login
@@ -17,9 +17,9 @@
 						<span class="label-input100">{{ __('E-Mail Address') }}</span>
 						<input id="email" class="input100 form-control @error('email') is-invalid @enderror" type="email" name="email" placeholder="Type your email" value="{{ old('email') }}">
                         <span class="focus-input100" data-symbol="&#xf206;"></span>
-                        
+
                                 @error('email')
-                                
+
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -36,7 +36,7 @@
                                     </span>
                                 @enderror
 					</div>
-					
+
 					<div class="text-right p-t-8 p-b-31">
 						@if (Route::has('password.request'))
                                     <a  href="{{ route('password.request') }}">
@@ -54,30 +54,30 @@
 						</div>
 					</div>
 
-					
+
 
 					<div class="flex-col-c p-t-155">
 						<span class="txt1 p-b-2">
-							If your're just looking for a quick estimation then pick
+							If you're just looking for a quick estimation then pick
 						</span>
 						<a class="txt2" href="{{ route('guest') }}">{{ __(' Guest') }}</a>
-						
+
 						<span class="txt1 p-b-2">
-							Or Sign Up Using
+							Or sign up using
 						</span>
 
 						<a class="txt2" href="{{ route('register') }}">{{ __('Register') }}</a>
-						
+
 					</div>
 
-					
+
 				</form>
 			</div>
 		</div>
 	</div>
 
 	@endsection
-	
+
 
 
 
