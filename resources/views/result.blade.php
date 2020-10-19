@@ -126,23 +126,24 @@
 					console.log(array.methods);
 					array.methods.forEach(function(currentValue, index, arr){
 						if(data1.result[currentValue] == null){
-							console.log(currentValue);
-							console.log('test');
-							console.log(data1.result[currentValue]);
+							//console.log(currentValue);
+							//console.log('test');
+							//console.log(data1.result[currentValue]);
+							$("#resultArea").after("<div id='result"+currentValue+"'>Calculation using method {{$arrayMethods[0]->method_name}} failed. Please try again later.</div><br>");
 
 						}
 						else{
 							var redshift_result = data1.result[currentValue].redshift_result;
 							var redshift_alt_result = data1.result[currentValue].redshift_alt_result;
 
-							console.log(currentValue);
-							console.log('elsehere');
-							console.log(data1.result[currentValue].redshift_result);
+							//console.log(currentValue);
+							//console.log('elsehere');
+							//console.log(data1.result[currentValue].redshift_result);
 							if(redshift_result != null){
 								$("#resultArea").after("<div id='result"+currentValue+"'>Result for method {{$arrayMethods[0]->method_name}} is "+redshift_result+"</div><br>");
 							};
 							if(redshift_alt_result != null){
-								$("#resultArea").after("<div id='result"+currentValue+"'>File result for method {{$arrayMethods[0]->method_name}} is "+redshift_alt_result+"</div><br>");
+								$("#resultArea").after("<div id='result"+currentValue+"'>File result for method {{$arrayMethods[0]->method_name}} can be downloaded: <a href='"+redshift_alt_result+"'>here</a></div><br>");
 							};
 						};
 

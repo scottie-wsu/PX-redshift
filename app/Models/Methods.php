@@ -79,17 +79,22 @@ class Methods extends Model
 
 
 			$this->attributes[$attribute_name] = $value;
+			//\Storage::disk($disk)->append('debug.log', $this->{$attribute_name});
+			//\Storage::disk($disk)->append('debug.log', $request->file($attribute_name)->getClientOriginalName());
+
 
 			// if a new file is uploaded, delete the file from the disk
 			if ($request->hasFile($attribute_name) &&
 				$this->{$attribute_name} &&
 				$this->{$attribute_name} != null) {
 
-				\Storage::disk($disk)->delete($this->{$attribute_name});
-				$this->attributes[$attribute_name] = null;
+				$oldFile = Methods::select('python_script_path')->where('method_id', $request->method_id)->first();
+				\Storage::disk($disk)->delete($oldFile->python_script_path);
+				//$this->attributes[$attribute_name] = null;
 
 
 			}
+
 
 			// if a new file is uploaded, store it on disk and its filename in the database
 			if ($request->hasFile($attribute_name) && $request->file($attribute_name)->isValid()) {
@@ -102,6 +107,8 @@ class Methods extends Model
 				$file_path = $file->storeAs($destination_path, $new_file_name, $disk);
 
 				// 3. Save the complete path to the database
+				\Storage::disk($disk)->append('debug.log', $oldFile);
+
 				$this->attributes[$attribute_name] = $file_path;
 				$this->attributes['removed'] = 0;
 			}

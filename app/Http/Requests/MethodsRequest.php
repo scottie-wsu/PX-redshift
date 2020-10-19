@@ -28,7 +28,7 @@ class MethodsRequest extends FormRequest
     {
         return [
             'method_name' => 'required|min:1|max:255',
-			'python_script_path' => ['required', 'file', new PyScript],
+			'python_script_path' => ['sometimes','file', new PyScript],
         ];
     }
 

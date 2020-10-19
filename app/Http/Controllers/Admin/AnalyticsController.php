@@ -493,9 +493,11 @@ class AnalyticsController extends Controller
 		if($response->getStatusCode() != 200){
 			return "Request error ".$response->getStatusCode();
 		}
-		$load = json_decode(var_dump($response->getBody()->read(512)));
-		$load = explode("errors", $load);
-		return $load[1];
+		$string = (string)$response->getBody()->getContents();
+		$load = json_decode($string, true);
+		$fiveMinutes = $load['system-load'][0];
+		$fiveMinutes = $fiveMinutes*100;
+		return "System load last 5 minutes: ". $fiveMinutes . "%";
 	}
 
 }
