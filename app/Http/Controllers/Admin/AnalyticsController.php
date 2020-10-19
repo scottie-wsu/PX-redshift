@@ -43,7 +43,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Users per institution",
 					"yAxisID" => "A",
-					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'backgroundColor' => "rgba(38, 185, 154, 0.7)",
 					'borderColor' => "rgba(38, 185, 154, 0.7)",
 					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
@@ -114,7 +114,7 @@ class AnalyticsController extends Controller
 				[
 					"label" => "Jobs completed",
 					"yAxisID" => "A",
-					'backgroundColor' => "rgba(38, 185, 154, 0.31)",
+					'backgroundColor' => "rgba(38, 185, 154, 0.7)",
 					'borderColor' => "rgba(38, 185, 154, 0.7)",
 					"pointBorderColor" => "rgba(38, 185, 154, 0.7)",
 					"pointBackgroundColor" => "rgba(38, 185, 154, 0.7)",
@@ -152,6 +152,11 @@ class AnalyticsController extends Controller
 		//
 		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
 
+		$methodRemovedArray = methods::select('removed')->get();
+
+		
+	
+
 		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
 		$colorArray =[
 			'rgba(255, 40, 31, 0.6)', //red
@@ -168,6 +173,16 @@ class AnalyticsController extends Controller
 			'rgba(131, 206, 31, 0.8)', //bright green
 		];
 
+		$index = 0;
+		foreach($methodRemovedArray as $method)
+		{
+			if(	$method->removed == 1)
+			{
+			$colorArray[$index] = 'rgba(200,200,200)';
+			}
+			$index++;	
+		}
+
 		$chartjs2 = app()->chartjs
 			->name('pieChartTest')
 			->type('pie')
@@ -176,7 +191,7 @@ class AnalyticsController extends Controller
 			->datasets([
 				[
 					"label" => "Methods Used",
-					'backgroundColor' => ($colorArray),
+					'backgroundColor' => ($colorArray), 
 					'hoverBackgroundColor' => [],
 					'data' => collect($jobCountPerMethod)->pluck('total')->toArray(),
 				]
