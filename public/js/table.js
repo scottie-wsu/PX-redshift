@@ -77,23 +77,32 @@ return 'I can see the CHILD ROW!!!';
 } ); */
 
 $(document).ready(function() {
-		function searchByColumn(table){
-			var defaultSearch = 0 // Galaxy ID
 
-			$(document).on('change', '#search-column', function() {
-				defaultSearch = this.value;
-			});
+	
 
-			$(document).on('keyup', '#search-by-column', function(){
-				table.search('').columns().search('').draw();
-				table.column(defaultSearch).search(this.value).draw();
-			});
+		var defaultSearch = [];
+
+
+				
+			function searchByColumn(searchTable, p){
+				defaultSearch[p] = 0;
+				$(document).on('change', 'search-column'+p, function(){
+					defaultSearch[p] = this.value;
+				});
+				$(document).on('keyup click', '#search-by-column'+p, function(){
+				  searchTable.search('').columns().search('').draw();
+					searchTable.column(defaultSearch[p]).search(this.value).draw();
+				});
 		}
+		
+	
+		
+	
+		
+		var table=[];
+		for (var i=0; i < numTables; i++) {
+		table[i] = $('#historyTableInner'+i).DataTable( {
 
-
-
-	$("table[id^=historyTableInner]").each(function(index) {
-		var table = $('#historyTableInner'+index).DataTable( {
 			"searching": true,
 			"fixedHeader": true,
 			"responsive": true,
@@ -102,15 +111,15 @@ $(document).ready(function() {
 				"pre":[[0, 'asc']]
 
 			},
-
 			/* "orderFixed": [[15, 'asc']], */
-
 			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
-			"dom": '<"filterSearch"><"alwaysGroup">rtip'
+			// <"filterSearch">
+			"dom": 'rtip'
 		});
-	});
+		}
 
-		$("div.filterSearch").html('<div class="row">\
+/* 		$("div.filterSearch").html('<div class="row">\
+
 											<div class="col-md-5">\
 											<select class="form-control" id="search-column">\
 												<option value="0">Galaxy ID</option>\
@@ -135,7 +144,9 @@ $(document).ready(function() {
 											<div class="col-md-6">\
 											<input class="form-control" type="text" id="search-by-column" placeholder="Search...">\
 											</div>\
-										</div>');
+
+										</div>'); */
+
 /* 		$("div.alwaysGroup").html('<label for="alwaysGroupCheckBox">\
 															<input type="checkbox" name="alwaysGroupCheckBox" id="alwaysGroupCheckBox"\
 															value="groupByID" checked> Always Group By Galaxy ID\
@@ -158,8 +169,10 @@ $(document).ready(function() {
 			});
 		 */
 
+		
 
-
-		searchByColumn(table);
+		for (var j=0; j < numTables; j++) {
+			searchByColumn(table[j], j);
+		}
 
 } );

@@ -24,6 +24,7 @@ return 'I can see the CHILD ROW!!!';
     ],
     "order": [[1, 'asc']]
 		});
+
 			$('#historyTableOuter tbody').on('click', 'td.details-control', function () {
 				var tr = $(this).closest('tr');
 				var row = tableOuter.row( tr );
@@ -101,7 +102,9 @@ $(document).ready(function() {
 			/* "orderFixed": [[15, 'asc']], */
 			
 			/* "rowGroup": { "startRender":null, "endRender":null,  "dataSrc":15}, */
-			"dom": '<"filterSearch"><"alwaysGroup">rtip'
+
+			"dom": '<"filterSearch">rtip'
+
 		});
 		
 
@@ -159,4 +162,5 @@ $(document).ready(function() {
 
 		searchByColumn(table);
 		
+
 } );

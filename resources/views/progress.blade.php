@@ -14,6 +14,47 @@
 				float: left;
 				margin-right: 1em;
 			}
+			.holder {
+				margin:15px 0;
+
+			}
+			.holder a {
+				font-size:12px;
+				cursor:pointer;
+				margin:0 5px;
+				font-family: "Poppins-Regular";
+				font-size: 16px;
+			}
+			.holder a:hover {
+				color:black;
+				font-weight: bold;
+			}
+			.holder a.jp-previous {
+				margin-right:15px;
+			}
+			.holder a.jp-next {
+				margin-left:15px;
+			}
+			.holder a.jp-current,a.jp-current:hover {
+				color:#0000FF;
+				font-weight:bold;
+				background-color: white;
+			}
+			.holder a.jp-disabled {
+				color:#bbb;
+				background-color: white;
+
+			}
+			.holder span {
+				margin:5px 5px;
+			}
+			form {
+				float:right;
+				margin-right:10px;
+			}
+			form label {
+				margin-right: 5px;
+			}
 		</style>
 	</head>
 
@@ -64,18 +105,14 @@
 			<div class="wrapper" style="width:70%">
 				<div class="card card-4">
 					<div class="card-body" >
-						<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-								integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-								crossorigin="anonymous">
-						</script>
 
-						<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-Paging/1.2.0/jquery.paging.min.js" integrity="sha512-x1BoAGQxys0d0VeupEcP7rfjB+OK70JXajGxx5cPzAI6HgsfwisDACGAwjlM4UnyvOiSpGVitVqo/I5zsoPJrw==" crossorigin="anonymous"></script>
+
 
 
 						<h3>Calculations in progress</h3>
 						<p>Completed jobs can be viewed on the <b><a href="{{route('history')}}" style="color:#0000EE">History page</a></b>.</p>
 						<br>
-						<ul id="listitems">
+						<ul id="itemContainer">
 							@foreach($jobsIncomplete as $job)
 								<li>
 									<div>
@@ -98,18 +135,19 @@
 								</li>
 							@endforeach
 						</ul>
+						<div class="holder"></div>
 						<script>
-						$(function() {
-							$("#listPage").JPaging({
-								pageSize:3
+							/* when document is ready */
+							$(function() {
+								/* initiate plugin */
+								$("div.holder").jPages({
+									containerID: "itemContainer",
+									perPage: 6,
+									previous: "Previous",
+									next: "Next"
+								});
 							});
-						});
 						</script>
-
-						<div id="listitems-pagination" style="display:none">
-							<a id="listitems-previous" href="#" class="disabled">&laquo; Previous</a>
-							<a id="listitems-next" href="#">Next &raquo;</a>
-						</div>
 					</div>
 				</div>
 			</div>

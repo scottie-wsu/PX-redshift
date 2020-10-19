@@ -11,6 +11,7 @@ use mysql_xdevapi\Exception;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Prologue\Alerts\Facades\Alert;
+use App\Http\Requests\MethodsCreateRequest as MethodsCreateRequest;
 
 
 
@@ -142,7 +143,7 @@ class MethodsCrudController extends CrudController
     protected function setupCreateOperation()
     {
 		//this will go to the Requests/MethodsRequest.php file, which will in turn call the Rules/PyScript.php file that checks file ext
-		CRUD::setValidation(MethodsRequest::class);
+		CRUD::setValidation(MethodsCreateRequest::class);
 
         $fields[] = [
             'name' => 'python_script_path',
