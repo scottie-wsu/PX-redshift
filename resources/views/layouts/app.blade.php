@@ -30,6 +30,7 @@
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/table.js') }}" defer></script>
 	<script src="{{ asset('js/noty.min.js') }}" defer></script>
+	<script src="{{ asset('js/jPages.js') }}" defer></script>
 
 	<!-- Fonts -->
 	<link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -60,8 +61,8 @@
 
 	    <!-- External table scripts and css-->
 
-
-   <script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>
+	<!--commenting out the jquery here as it breaks the progress page otherwise-->
+	<!--<script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>-->
    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
 
