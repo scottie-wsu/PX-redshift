@@ -7,18 +7,21 @@
 		<h3>Make a Plot</h3>
 			<form class="form-inline" action="/admin/plotting" method="post">
 				@csrf
-				<select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name = "selected-plot" require>
-					<option selected>Choose statistics</option>
+				<select class="custom-select my-1 mr-sm-2" id="selected-plot" name = "selected-plot">
+					<option selected>Choose a statistic</option>
 					@php
-						foreach($availablePlots as $key => $val) {
+						foreach($availablePlots as $x) {
 					@endphp
-					<option value="@php echo $key; @endphp">@php echo $val; @endphp</option>
+					<option value="@php echo $x->name; @endphp" @php if(isset($data) && $selectedPlot == $x->name) echo 'selected'; @endphp>@php echo $x->desc; @endphp</option>
 					@php } @endphp
 				</select>
-				<select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name = "selected-plot-type" require>
-					<option selected>Choose graph</option>
-					<option value="bar-chart">Bar Chart</option>
-					<option value="line-chart">Line Chart</option>
+				<select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name = "selected-plot-type">
+					<option selected>Choose a graph</option>
+					@php
+						foreach($graphTypes as $key => $val) {
+					@endphp
+					<option value = "@php echo $key; @endphp"  @php if(isset($data) && $selectedGraph == $key) echo 'selected'; @endphp>@php echo $val; @endphp </option>
+					@php } @endphp
 				</select>
 				<button type="submit" class="btn btn-success my-1">Plot</button>
 				@php  if (isset($invalidForm)) { @endphp
@@ -46,4 +49,5 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
 	<script src="{{ asset('js/generate-plot.js') }}"></script>
+	<script src="{{ asset('js/plotting.js') }}"></script>
 @endsection
