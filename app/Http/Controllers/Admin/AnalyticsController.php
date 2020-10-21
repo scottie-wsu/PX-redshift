@@ -500,4 +500,27 @@ class AnalyticsController extends Controller
 		return "System load last 5 minutes: ". $fiveMinutes . "%";
 	}
 
+	public function ajaxCounts8(){
+		////initialising the guzzle client
+		$dataJSON = new redshifts();
+		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
+		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
+		////writing the code to send data to the API
+		try{
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
+			return "Connection error";
+		}
+		if($response->getStatusCode() != 200){
+			return "Request error ".$response->getStatusCode();
+		}
+		$string = (string)$response->getBody()->getContents();
+		$load = json_decode($string, true);
+		$seconds30 = $load['system-load'][2];
+		$seconds30 = $seconds30*100;
+		return "System load last 30 seconds: ". $seconds30 . "%";
+	}
+
 }
