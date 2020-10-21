@@ -171,36 +171,43 @@
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
 										
-										<div class="row">
-											<div class="col-md-2">
+										<div class="row searchTable" >
+											<div class="col-md-2 ">
 											<select class="form-control input--style-4" id="search-column{{ $rowIndex }}">
 												<option value="0">Galaxy ID</option>
-												<option value="1">Optical u</option>
-												<option value="2">Optical v</option>
-												<option value="3">Optical g</option>
-												<option value="4">Optical r</option>
-												<option value="5">Optical i</option>
-												<option value="6">Optical z</option>
-												<option value="7">Infrared 3.6</option>
-												<option value="8">Infrared 4.5</option>
-												<option value="9">Infrared 5.8</option>
-												<option value="10">Infrared 8.0</option>
-												<option value="11">Infrared J</option>
-												<option value="12">Infrared H</option>
-												<option value="13">Infrared K</option>
-												<option value="14">Radio 1.4</option>
-												<option value="15">Method</option>
-												<option value="16">Redshift result</option>
+												<option value="1">Method</option>
+												<option value="2">Redshift result</option>
+												<option value="5">Optical u</option>
+												<option value="6">Optical v</option>
+												<option value="7">Optical g</option>
+												<option value="8">Optical r</option>
+												<option value="9">Optical i</option>
+												<option value="10">Optical z</option>
+												<option value="11">Infrared 3.6</option>
+												<option value="12">Infrared 4.5</option>
+												<option value="13">Infrared 5.8</option>
+												<option value="14">Infrared 8.0</option>
+												<option value="15">Infrared J</option>
+												<option value="16">Infrared H</option>
+												<option value="17">Infrared K</option>
+												<option value="18">Radio 1.4</option>
+
 											</select>
 											</div>
+
 											<div class="col-md-3">
 											<input class="form-control input--style-4" type="text" id="search-by-column{{ $rowIndex }}" placeholder="Search...">
 											</div>
 										</div>
+										<div class="hideShow">
+											<label class="hideShow">Hide Optics 
+    										<input type="checkbox" id="hideCheckbox{{ $rowIndex }}" class="hideShow">
+  											</label>
+										</div>
 
 
 
-										<table  id="historyTableInner{{ $rowIndex }}" class="display">
+										<table  id="historyTableInner{{ $rowIndex }}" class="display innerTable">
 											@php $rowIndex = $rowIndex+1; @endphp
 											
 											
@@ -208,6 +215,10 @@
 											<thead>
 											<tr>
 												<th>Galaxy ID</th>
+												<th>Method</th>
+												<th>Redshift result</th>
+												<th>Redshift file result</th>
+												<th>Embed</th>
 												<th>Optical u</th>
 												<th>Optical v</th>
 												<th>Optical g</th>
@@ -222,10 +233,7 @@
 												<th>Infrared H</th>
 												<th>Infrared K</th>
 												<th>Radio 1.4</th>
-												<th>Method</th>
-												<th>Redshift result</th>
-												<th>Redshift file result</th>
-												<th>Embed</th>
+
 											</tr>
 											</thead>
 											<tbody>
@@ -239,6 +247,28 @@
 											@foreach($calculations as $calculation)
 												<tr>
 													<td>{{ $calculation->assigned_calc_id }}</td>
+													<td>{{ $calculation->method_name }}</td>
+													<td>{{ $calculation->redshift_result }}</td>
+													
+													<td>
+													@php
+														if(isset($calculation->redshift_alt_result)){
+															echo ('<a class="showLink" href="' . $calculation->redshift_alt_result . '">Show');
+														}
+													@endphp
+													</td>
+													<td>
+													@php
+														if(isset($calculation->redshift_alt_result)){
+															$fileName = $calculation->redshift_alt_result;
+															$fileExtensionArray = explode(".", $fileName);
+															$fileExtension = end($fileExtensionArray);
+															if($fileExtension !== "csv"){
+															echo ('<a href="' . $calculation->redshift_alt_result . '" data-lightbox="file Set' . $rowIndex . '" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img>');}
+														}
+														
+													@endphp 
+													</td>
 													<td>{{ $calculation->optical_u }}</td>
 													<td>{{ $calculation->optical_v }}</td>
 													<td>{{ $calculation->optical_g }}</td>
@@ -253,18 +283,6 @@
 													<td>{{ $calculation->infrared_H }}</td>
 													<td>{{ $calculation->infrared_K }}</td>
 													<td>{{ $calculation->radio_one_four }}</td>
-													<td>{{ $calculation->method_name }}</td>
-													<td>{{ $calculation->redshift_result }}</td>
-													@php
-														if(isset($calculation->redshift_alt_result)){
-															echo ('<td><a class="showLink" href="' . $calculation->redshift_alt_result . '">Show</td>');
-														}
-													@endphp
-													
-													@php
-														if(isset($calculation->redshift_alt_result)){
-															echo ('<td><a href="' . $calculation->redshift_alt_result . '" data-lightbox="' . $calculation->redshift_alt_result . 'file" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img></td>');}
-													@endphp 
 												</tr>
 											@endforeach
 											</tbody>
