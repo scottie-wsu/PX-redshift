@@ -69,6 +69,7 @@
 
 		<div class="col" >
 			{!! $charts[2]->render() !!}
+            <p> Asterisk denotes the method is not available</p>
 		</div>
 		<div class="col">
 			{!! $charts[3]->render() !!}
