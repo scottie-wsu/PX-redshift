@@ -49,8 +49,6 @@
 		$arrayMethods = [];
 		use Illuminate\Support\Facades\DB;
 		use App\methods;
-		$data = session()->all();
-		dump($data);
 		$assigned_calc_ID = strval(session()->get('assigned_calc_ID'));
 		$optical_u = session()->get('optical_u');
 		$optical_v = session()->get('optical_v');
@@ -92,14 +90,35 @@
 				},
 			};
 			array.methods = [];
+			arrayName = [];
 			@foreach($methods as $method)
 			@php
 				echo 'array.methods.push('.$method.');
 ';
 			@endphp
+			@php
+				$index = 0;
+			@endphp
 			@endforeach
 
 			var arrayNew = JSON.stringify(array);
+
+
+
+
+			@foreach($methods as $method)
+			@php
+				$arrayMethods[] = methods::select('method_name')->where('method_id', $method)->first();
+			@endphp
+			@endforeach
+
+			@foreach($arrayMethods as $item)
+			@php
+				echo 'arrayName.push("'.$item->method_name.'");
+';
+			@endphp
+			@endforeach
+
 
 			$.ajax({
 				type: "POST",
@@ -115,21 +134,20 @@
 			})
 				.done(function( data1 ) {
 					$("#waiting").hide();
-					@foreach($methods as $method)
-					@php
-						$arrayMethods[] = methods::select('method_name')->where('method_id', $method)->first();
-					@endphp
-					@endforeach
-					var test = data1.result[2].redshift_result;
-					console.log(test);
 
-					console.log(array.methods);
+
+					//var test = data1.result[2].redshift_result;
+					//console.log(test);
+
+					//console.log(array.methods);
+					console.log(arrayName);
+
 					array.methods.forEach(function(currentValue, index, arr){
 						if(data1.result[currentValue] == null){
 							//console.log(currentValue);
 							//console.log('test');
 							//console.log(data1.result[currentValue]);
-							$("#resultArea").after("<div id='result"+currentValue+"'>Calculation using method {{$arrayMethods[0]->method_name}} failed. Please try again later.</div><br>");
+							$("#resultArea").after("<div id='result"+currentValue+"'>Calculation using method "+arrayName[index]+" failed. Please try again later.</div><br>");
 
 						}
 						else{
@@ -138,15 +156,16 @@
 
 							//console.log(currentValue);
 							//console.log('elsehere');
-							//console.log(data1.result[currentValue].redshift_result);
+							//console.log(data1.result[currentValue]);
+							console.log(arrayName[index]);
+
 							if(redshift_result != null){
-								$("#resultArea").after("<div id='result"+currentValue+"'>Result for method {{$arrayMethods[0]->method_name}} is "+redshift_result+"</div><br>");
+								$("#resultArea").after("<div id='result"+currentValue+"'>Result for method "+arrayName[index]+" is "+redshift_result+"</div><br>");
 							};
 							if(redshift_alt_result != null){
-								$("#resultArea").after("<div id='result"+currentValue+"'>File result for method {{$arrayMethods[0]->method_name}} can be downloaded: <a href='"+redshift_alt_result+"'>here</a></div><br>");
+								$("#resultArea").after("<div id='result"+currentValue+"'>File result for method "+arrayName[index]+" can be downloaded: <a href='"+redshift_alt_result+"'>here</a></div><br>");
 							};
 						};
-
 
 					});
 					//setTimeout(getCount, 2000);
@@ -163,12 +182,10 @@
 				<div class="card-body" >
 					<h3>Guest calculation results</h3>
 					<br>
-					<span id="waitingmsg">This page will update automatically with a result. Please wait and do not refresh the page.</span>
+					<span id="waitingmsg">This page will update automatically with a result for your galaxy: <b>{{ $assigned_calc_ID }}</b>. There is no need to refresh the page.</span>
 					<br>
 					<br>
-					<h4>Your result is:</h4>
-					<br>
-					<b style="font-size: large">
+					<b style="font-size: medium">
 						<div id="waiting" class="spinner-border justify-content-center" role="status">
 							<span class="sr-only">Loading...</span>
 						</div>
