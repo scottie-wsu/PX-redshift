@@ -32,7 +32,7 @@ Route::post('/home', 'HomeController@fail')->name('homefail');
 
 Route::get('/history', 'CalculationController@home')->name('history');
 
-Route::get('/progress', 'ProgressController@Index')->name('progress');
+Route::get('/progress', 'CalculationController@progress')->name('progress');
 Route::get('/progressAjax', 'CalculationController@progressAjax')->name('progressAjax');
 
 Route::get('/zipAll', 'CalculationController@zipAll')->name('zipAll');
@@ -40,5 +40,3 @@ Route::post('/zipJob', 'CalculationController@zipJob')->name('zipJob');
 
 Route::get('/guestAjax', 'guestController@guestAjax')->name('guestAjax')->middleware('guest');
 Route::get('/guestResult', 'guestController@guestResult')->name('guestResult')->middleware('guest');
-
-Route::get('/fetch-progress', 'ProgressController@FetchProgress')->name('fetchProgress');
