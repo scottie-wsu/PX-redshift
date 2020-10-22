@@ -21,10 +21,10 @@ Route::group([
 	Route::crud('users', 'UsersCrudController');
     Route::get('users/{id}/reset', 'UsersCrudController@reset');
 
+    Route::get('plotting', 'PlotController@Index')->name('plots');
+    Route::post('plotting', 'PlotController@FetchPlot')->name('fetchPlot');
 
 	Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
-	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
-	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
 	Route::get('analytics1', 'AnalyticsController@ajaxCounts1')->name('ajaxcounts1');
     Route::get('analytics2', 'AnalyticsController@ajaxCounts2')->name('ajaxcounts2');
     Route::get('analytics3', 'AnalyticsController@ajaxCounts3')->name('ajaxcounts3');
