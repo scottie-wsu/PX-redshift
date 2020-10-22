@@ -76,7 +76,17 @@
 
 							//checks that all? redshifts in a job have completed
 							if($jobCounterNullCheck != 0){
-								$jobCounter = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
+								$jobCounter = DB::table('redshifts')
+									->join('jobs', 'redshifts.job_id', 'jobs.job_id')
+									->join('users', 'jobs.user_id', 'users.id')
+									->where('jobs.user_id', $job->user_id)
+									->where(function($query) {
+										$query->where('status', 'PROCESSING')
+											->orWhere('status', 'SUBMITTED');
+									})->exists();
+							}
+							else{
+								$jobCounter = 0;
 							}
 
 							if(isset($jobCounter[0])){
@@ -170,7 +180,7 @@
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
 
-										
+
 										<div class="row searchTable" >
 											<div class="col-md-2 ">
 											<select class="form-control input--style-4" id="search-column{{ $rowIndex }}">
@@ -201,7 +211,7 @@
 											</div>
 										</div>
 										<div class="hideShow">
-											<label class="hideShow">Hide Optics 
+											<label class="hideShow">Hide Optics
     										<input type="checkbox" id="hideCheckbox{{ $rowIndex }}" class="hideShow">
   											</label>
 										</div>
@@ -250,7 +260,7 @@
 													<td>{{ $calculation->assigned_calc_id }}</td>
 													<td>{{ $calculation->method_name }}</td>
 													<td>{{ $calculation->redshift_result }}</td>
-													
+
 													<td>
 													@php
 														if(isset($calculation->redshift_alt_result)){
@@ -267,8 +277,8 @@
 															if($fileExtension !== "csv"){
 															echo ('<a href="' . $calculation->redshift_alt_result . '" data-lightbox="file Set' . $rowIndex . '" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img>');}
 														}
-														
-													@endphp 
+
+													@endphp
 													</td>
 													<td>{{ $calculation->optical_u }}</td>
 													<td>{{ $calculation->optical_v }}</td>
@@ -295,7 +305,7 @@
     							<td style="display: none"></td>
 								<td style="display: none"></td>
 
-								<td style="display: none"></td>										
+								<td style="display: none"></td>
 
 							</tr>
 
