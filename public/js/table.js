@@ -81,20 +81,30 @@ $(document).ready(function() {
 	
 
 		var defaultSearch = [];
-
+		var searchField= [];
 
 				
 			function searchByColumn(searchTable, p){
 				defaultSearch[p] = 0;
-				$(document).on('change', 'search-column'+p, function(){
+				$(document).on('change', '#search-column'+p, function(){
 					defaultSearch[p] = this.value;
+					searchTable.search('').columns().search('').draw();
+					searchTable.column(defaultSearch[p]).search(searchField[p]).draw();
+					
 				});
 				$(document).on('keyup click', '#search-by-column'+p, function(){
+					searchField[p] = this.value;
 				  searchTable.search('').columns().search('').draw();
 					searchTable.column(defaultSearch[p]).search(this.value).draw();
 				});
 		}
 		
+		function hideColumns(table, p){
+			//hide columns 5-18
+			$(document).on('change', '#hideCheckbox'+p , function() {
+			table.columns([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]).visible(!$(this).is(':checked'));
+		});
+		}
 	
 		
 	
@@ -102,9 +112,9 @@ $(document).ready(function() {
 		var table=[];
 		for (var i=0; i < numTables; i++) {
 		table[i] = $('#historyTableInner'+i).DataTable( {
-
+			
 			"searching": true,
-			"fixedHeader": true,
+
 			"responsive": true,
 			/* "order": [[0, 'asc'], [16, 'asc']], */
 			"orderFixed":{
@@ -174,5 +184,10 @@ $(document).ready(function() {
 		for (var j=0; j < numTables; j++) {
 			searchByColumn(table[j], j);
 		}
+		
+		for (var j=0; j < numTables; j++) {
+			hideColumns(table[j], j);
+		}
+		
 
 } );
