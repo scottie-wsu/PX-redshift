@@ -153,14 +153,13 @@
 
 								@endphp
 								<td>
-									@if($altCount>0)
-									
+
+
 										<form action="{{ route("zipJob") }}" method="post">
 											@csrf
 											<button class="showLink" name="job_id" value="{{ $job->job_id }}">Download</button>
 										</form>
-									
-									@endif
+
 									</td>
 
 							</tr>
@@ -170,10 +169,12 @@
 									<div class="fold-content">
 										<h3>{{ $job->job_name }}</h3>
 										<p>{{ $job->job_description }}</p>
+
 										
 										<div class="row searchTable" >
 											<div class="col-md-2 ">
 											<select class="form-control input--style-4" id="search-column{{ $rowIndex }}">
+
 												<option value="0">Galaxy ID</option>
 												<option value="1">Method</option>
 												<option value="2">Redshift result</option>
@@ -209,8 +210,8 @@
 
 										<table  id="historyTableInner{{ $rowIndex }}" class="display innerTable">
 											@php $rowIndex = $rowIndex+1; @endphp
-											
-											
+
+
 
 											<thead>
 											<tr>
@@ -293,7 +294,9 @@
     							<td style="display: none"></td>
     							<td style="display: none"></td>
 								<td style="display: none"></td>
+
 								<td style="display: none"></td>										
+
 							</tr>
 
 
@@ -312,5 +315,5 @@
 	<script type="text/javascript">
     	var numTables = '<?php echo $tnum ;?>';
 	</script>
-	
+
 @endsection

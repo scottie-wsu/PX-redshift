@@ -1,5 +1,10 @@
 @extends(backpack_view('blank'))
 <script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
+<style>
+	.row {
+		color: black;
+	}
+	</style>
 <script>
 function getCount1() {
 	$.ajax({
@@ -98,7 +103,19 @@ function getCount6() {
     getCount7();
 </script>
 
-
+<script>
+    function getCount8() {
+        $.ajax({
+            type: "GET",
+            url: "{{ route('ajaxcounts8') }}",
+        })
+            .done(function( data ) {
+                $('#mycount8').html(data);
+                setTimeout(getCount8, 2000);
+            });
+    }
+    getCount8();
+</script>
 
 
 @php
@@ -111,7 +128,7 @@ use App\Jobs;
 	$jobCount = Jobs::select('job_id')->get()->count();
     $redshiftCount = redshifts::select('calculation_id')->get()->count();
     $usersCount = User::select('id')->get()->count();
-    $methodCount = methods::select('method_id')->get()->count();
+    $methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
         use App\calculations;
         use Illuminate\Support\Facades\DB;
@@ -157,30 +174,35 @@ use App\Jobs;
             ->value("<span id='mycount6'>$methodCount</span> Methods Available")
             ->onlyHere(),
 
-         Widget::add() // filler
-            ->type('progress')
-            ->class('')
-            ->value('')
-            ->onlyHere(),
-
         Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-primary text-center ')
             ->value("<span id='mycount1'>$submitted</span> Galaxies Submitted")
             ->onlyHere(),
 
-         Widget::add()
+        Widget::add()
             ->type('progress')
             ->class('card border-0 text-white bg-dark text-center ')
             ->value("<span id='mycount2'>$processing</span> Galaxies Processing")
             ->onlyHere(),
 
-            Widget::add()
+
+        Widget::add()
+
             ->type('progress')
             ->class('card border-0 text-white bg-primary text-center ')
             ->value("<span id='mycount7'>No response</span>")
             ->onlyHere(),
+
+        Widget::add()
+            ->type('progress')
+            ->class('card border-0 text-white bg-primary text-center ')
+            ->value("<span id='mycount8'>No response</span>")
+            ->onlyHere(),
 	]);
+
+
+
 @endphp
 @section('content')
 @endsection

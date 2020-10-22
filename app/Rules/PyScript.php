@@ -28,9 +28,17 @@ class PyScript implements Rule
         //must return a true or false
 		//explodes original filename into an array split by ., then checks the final element (i.e. the extension)
 		//to see if it's a .py file. To extend to other file types, add an || end($exploded) == "YOUREXTHERE" to the if statement
-		$exploded = explode(".", $value->getClientOriginalName());
-		if(end($exploded) == "py"){
-			return true;
+
+		//this checks if there is a value set - if not, they clicked x on the script and didn't upload a new one, and they'll
+		//be returned with an error message
+		if(isset($value)){
+			$exploded = explode(".", $value->getClientOriginalName());
+			if(end($exploded) == "py"){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
 			return false;

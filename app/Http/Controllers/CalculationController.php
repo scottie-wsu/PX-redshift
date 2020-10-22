@@ -7,6 +7,7 @@ use App\calculations;
 use App\methods;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RedshiftExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,7 +23,6 @@ class CalculationController extends Controller
 		$this->middleware('auth');
 	}
 	public function index(){
-
 		return view('calculation');
 	}
 
@@ -134,15 +134,17 @@ class CalculationController extends Controller
 		$i = 0;
 		$lineCounter = 0;
 
-		//creating job entry in the database
-		$userId = auth()->id();
-		$job = new Jobs();
-		$job->job_name = $request->input('job_nameFile');
-		$job->job_description = $request->input('job_descriptionFile');
-		$job->user_id = $userId;
-		$job->save();
-		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
-		$jobId = $lastJob->job_id;
+		//moving this below so we're not making job entries when a file upload fails.
+		//won't break anything if we do, but jobs table gets very cluttered if we don't
+		////creating job entry in the database
+		//$userId = auth()->id();
+		//$job = new Jobs();
+		//$job->job_name = $request->input('job_nameFile');
+		//$job->job_description = $request->input('job_descriptionFile');
+		//$job->user_id = $userId;
+		//$job->save();
+		//$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
+		//$jobId = $lastJob->job_id;
 
 		while($lineCounter < $lineCount){
 			$skipFlag = 0;
@@ -193,6 +195,16 @@ class CalculationController extends Controller
 
 		$arrayCount = count($galaxy);
 
+		//creating job entry in the database
+		$userId = auth()->id();
+		$job = new Jobs();
+		$job->job_name = $request->input('job_nameFile');
+		$job->job_description = $request->input('job_descriptionFile');
+		$job->user_id = $userId;
+		$job->save();
+		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
+		$jobId = $lastJob->job_id;
+
 		//only create a request if there is at least 1 valid galaxy created in the loop above
 		if($arrayCount > 0){
 			//creating metadata row for API
@@ -202,9 +214,10 @@ class CalculationController extends Controller
 			$galaxy[$arrayCount]->user_ID = auth()->id();
 
 			//creating token logic
+			$userKey = Auth::user()->getAuthPassword();
 			$userEmail = User::select('email')->where('id', auth()->id())->first();
 			$userExtract = $userEmail['email'];
-			$mergeData = $userExtract . ":" . random_bytes(32);
+			$mergeData = $userExtract . ":" . $userKey . ":" . random_bytes(32);
 			$cipherMethod = "aes-128-cbc";
 			$key = "5rCBIs9Km!!cacr1";
 			$iv = "123hasdba036vpax";
@@ -246,10 +259,8 @@ class CalculationController extends Controller
 			//->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
 
 		$userId = auth()->id();
-		//FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
 		$jobs = DB::select('SELECT job_id, job_name, job_description, user_id, created_at FROM jobs WHERE user_id = '.$userId);
 
-		//return view('history', compact('calculations', 'jobs'));
 		return view('history', compact('jobs'));
 
 	}
@@ -310,7 +321,7 @@ class CalculationController extends Controller
 		}
 
 
-		//creating job entry in the database
+		////creating job entry in the database
 		$userId = auth()->id();
 		$job = new Jobs();
 		$job->job_name = $request->input('job_name');
@@ -346,9 +357,11 @@ class CalculationController extends Controller
 		$galaxy[1]->methods = $request->input('methods');
 		$galaxy[1]->user_ID = auth()->id();
 
+		//this is encrypted but still a bit of a concern
+		$userKey = Auth::user()->getAuthPassword();
 		$userEmail = User::select('email')->where('id', auth()->id())->first();
 		$userExtract = $userEmail['email'];
-		$mergeData = $userExtract . ":" . random_bytes(32);
+		$mergeData = $userExtract . ":" . $userKey . ":" . random_bytes(32);
 		$cipherMethod = "aes-128-cbc";
 		$key = "5rCBIs9Km!!cacr1";
 		$iv = "123hasdba036vpax";

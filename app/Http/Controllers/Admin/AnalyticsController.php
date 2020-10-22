@@ -152,7 +152,26 @@ class AnalyticsController extends Controller
 		//
 		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
 
-		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
+		$methodRemovedArray = methods::select('removed')->get();
+
+		//$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
+		$methodLabelArray = methods::select('method_name', 'removed')->get();
+
+		$methodLabels = [];
+		foreach ($methodLabelArray as $method)
+		{
+			if($method->removed == 1)
+			{
+				$methodLabels[] = $method->method_name . "*";
+			}
+			else{
+				$methodLabels[] = $method->method_name;
+			}
+		}
+
+
+		//dump($methodLabelArray);
+
 		$colorArray =[
 			'rgba(255, 40, 31, 0.6)', //red
 			'rgba(255, 242, 31, 0.6)', //yellow
@@ -168,11 +187,23 @@ class AnalyticsController extends Controller
 			'rgba(131, 206, 31, 0.8)', //bright green
 		];
 
+		$index = 0;
+		foreach($methodRemovedArray as $method)
+		{
+			if(	$method->removed == 1)
+			{
+				$colorValue = rand(150, 220);
+				$colorArray[$index] = 'rgba('.$colorValue.','.$colorValue.','.$colorValue.')';
+				//dump($colorValue);
+			}
+			$index++;
+		}
+
 		$chartjs2 = app()->chartjs
 			->name('pieChartTest')
 			->type('pie')
 			->size(['width' => 400, 'height' => 200])
-			->labels($method_name->keys()->toArray())
+			->labels($methodLabels)
 			->datasets([
 				[
 					"label" => "Methods Used",
@@ -457,21 +488,21 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts4(){
-    	$redshiftCount = redshifts::select('calculation_id')->get()->count();
+		$redshiftCount = redshifts::select('calculation_id')->get()->count();
 
 		$result = $redshiftCount;
 		echo $result;
 	}
 
 	public function ajaxCounts5(){
-    	$usersCount = User::select('id')->get()->count();
+		$usersCount = User::select('id')->get()->count();
 
 		$result = $usersCount;
 		echo $result;
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
+		$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;
@@ -493,9 +524,34 @@ class AnalyticsController extends Controller
 		if($response->getStatusCode() != 200){
 			return "Request error ".$response->getStatusCode();
 		}
-		$load = json_decode(var_dump($response->getBody()->read(512)));
-		$load = explode("errors", $load);
-		return $load[1];
+		$string = (string)$response->getBody()->getContents();
+		$load = json_decode($string, true);
+		$fiveMinutes = $load['system-load'][0];
+		$fiveMinutes = $fiveMinutes*100;
+		return "System load last 5 minutes: ". $fiveMinutes . "%";
+	}
+
+	public function ajaxCounts8(){
+		////initialising the guzzle client
+		$dataJSON = new redshifts();
+		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
+		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
+		////writing the code to send data to the API
+		try{
+			$response = $client->request('POST', '', ['json' => $dataJSON]);
+		}
+		catch(\GuzzleHttp\Exception\ConnectException $e){
+			return "Connection error";
+		}
+		if($response->getStatusCode() != 200){
+			return "Request error ".$response->getStatusCode();
+		}
+		$string = (string)$response->getBody()->getContents();
+		$load = json_decode($string, true);
+		$seconds30 = $load['system-load'][2];
+		$seconds30 = $seconds30*100;
+		return "System load last 30 seconds: ". $seconds30 . "%";
 	}
 
 }
