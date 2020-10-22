@@ -150,7 +150,7 @@ class AnalyticsController extends Controller
 		//
 		//method breakdown chart
 		//
-		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
+		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_name ORDER BY methods.method_id');
 
 		$methodRemovedArray = methods::select('removed')->get();
 
@@ -528,7 +528,7 @@ class AnalyticsController extends Controller
 		$load = json_decode($string, true);
 		$fiveMinutes = $load['system-load'][0];
 		$fiveMinutes = $fiveMinutes*100;
-		return "System load last 5 minutes: ". $fiveMinutes . "%";
+		return "System load last 1 minute: ". $fiveMinutes . "%";
 	}
 
 	public function ajaxCounts8(){
@@ -551,7 +551,7 @@ class AnalyticsController extends Controller
 		$load = json_decode($string, true);
 		$seconds30 = $load['system-load'][2];
 		$seconds30 = $seconds30*100;
-		return "System load last 30 seconds: ". $seconds30 . "%";
+		return "System load last 15 minutes: ". $seconds30 . "%";
 	}
 
 }
