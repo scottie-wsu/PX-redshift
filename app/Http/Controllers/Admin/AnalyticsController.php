@@ -152,7 +152,26 @@ class AnalyticsController extends Controller
 		//
 		$jobCountPerMethod = DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id GROUP BY methods.method_id ORDER BY methods.method_id');
 
-		$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
+		$methodRemovedArray = methods::select('removed')->get();
+
+		//$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
+		$methodLabelArray = methods::select('method_name', 'removed')->get();
+
+		$methodLabels = [];
+		foreach ($methodLabelArray as $method)
+		{
+			if($method->removed == 1)
+			{
+				$methodLabels[] = $method->method_name . "*";
+			}
+			else{
+				$methodLabels[] = $method->method_name;
+			}
+		}
+
+
+		//dump($methodLabelArray);
+
 		$colorArray =[
 			'rgba(255, 40, 31, 0.6)', //red
 			'rgba(255, 242, 31, 0.6)', //yellow
@@ -168,11 +187,23 @@ class AnalyticsController extends Controller
 			'rgba(131, 206, 31, 0.8)', //bright green
 		];
 
+		$index = 0;
+		foreach($methodRemovedArray as $method)
+		{
+			if(	$method->removed == 1)
+			{
+				$colorValue = rand(150, 220);
+				$colorArray[$index] = 'rgba('.$colorValue.','.$colorValue.','.$colorValue.')';
+				//dump($colorValue);
+			}
+			$index++;
+		}
+
 		$chartjs2 = app()->chartjs
 			->name('pieChartTest')
 			->type('pie')
 			->size(['width' => 400, 'height' => 200])
-			->labels($method_name->keys()->toArray())
+			->labels($methodLabels)
 			->datasets([
 				[
 					"label" => "Methods Used",
@@ -457,21 +488,21 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts4(){
-    	$redshiftCount = redshifts::select('calculation_id')->get()->count();
+		$redshiftCount = redshifts::select('calculation_id')->get()->count();
 
 		$result = $redshiftCount;
 		echo $result;
 	}
 
 	public function ajaxCounts5(){
-    	$usersCount = User::select('id')->get()->count();
+		$usersCount = User::select('id')->get()->count();
 
 		$result = $usersCount;
 		echo $result;
 	}
 
 	public function ajaxCounts6(){
-    	$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
+		$methodCount = methods::select('method_id')->where('removed', '0')->get()->count();
 
 		$result = $methodCount;
 		echo $result;
