@@ -21,10 +21,10 @@ Route::group([
 	Route::crud('users', 'UsersCrudController');
     Route::get('users/{id}/reset', 'UsersCrudController@reset');
 
+    Route::get('plotting', 'PlotController@Index')->name('plots');
+    Route::post('plotting', 'PlotController@FetchPlot')->name('fetchPlot');
 
 	Route::get('analytics', 'AnalyticsController@custom')->name('analytics');
-	Route::get('plotting', 'AnalyticsController@plotting')->name('plotting');
-	Route::post('plotting', 'AnalyticsController@plotDataPost')->name('plotdatapost');
 	Route::get('analytics1', 'AnalyticsController@ajaxCounts1')->name('ajaxcounts1');
     Route::get('analytics2', 'AnalyticsController@ajaxCounts2')->name('ajaxcounts2');
     Route::get('analytics3', 'AnalyticsController@ajaxCounts3')->name('ajaxcounts3');
@@ -32,6 +32,7 @@ Route::group([
     Route::get('analytics5', 'AnalyticsController@ajaxCounts5')->name('ajaxcounts5');
     Route::get('analytics6', 'AnalyticsController@ajaxCounts6')->name('ajaxcounts6');
 	Route::get('analytics7', 'AnalyticsController@ajaxCounts7')->name('ajaxcounts7');
+	Route::get('analytics8', 'AnalyticsController@ajaxCounts8')->name('ajaxcounts8');
 
 	Route::get('charts/institutions', 'Charts\InstitutionsChartController@response')->name('charts.institutions.index');
     Route::get('charts/jobs', 'Charts\JobsChartController@response')->name('charts.jobs.index');
