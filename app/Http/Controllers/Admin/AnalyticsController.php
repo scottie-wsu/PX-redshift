@@ -229,6 +229,11 @@ class AnalyticsController extends Controller
 
 		//figuring out how many bins. Using Sturges' formula
 		$binSize = round((log($redshiftTotalCount, 2))+1);
+
+		if($redshiftTotalCount < 1){
+			$charts = [$chartjs, $chartjs1, $chartjs2];
+			return view('analytics', compact('charts'));
+		}
 		//bincount here represents what range of values goes into one bin.
 		//e.g. binsize of 10 means bincount = 1, so 0-1, 1-2, etc are bins
 		$binCount = 10/$binSize;
@@ -273,8 +278,9 @@ class AnalyticsController extends Controller
 			}
 		}
 
-
-		$binLabelsMax = $binLabels[$binSize-1];
+		if($redshiftResultsPerInstitution == 0){
+			$binLabelsMax = $binLabels[$binSize-1];
+		}
 
 		$chartjs3 = app()->chartjs
 

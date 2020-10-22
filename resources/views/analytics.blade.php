@@ -71,9 +71,13 @@
 				{!! $charts[2]->render() !!}
 				<p> Asterisk denotes the method is not available</p>
 			</div>
-			<div class="col">
-				{!! $charts[3]->render() !!}
-			</div>
+
+			@if(isset($charts[3]))
+				<div class="col">
+					{!! $charts[3]->render() !!}
+				</div>
+			@endif
+
 		</div>
 
 	</div>

@@ -61,96 +61,109 @@
 
 
 	<body style="background-image: url({{ asset('images/bg1.jpg') }})">
-		<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
+	<script src="{{ asset('vendor/jquery/jquery-3.2.1.js') }}"></script>
 
 
-		<script>
-			function getCount() {
-				$.ajax({
-					type: "GET",
-					url: "{{ route('progressAjax') }}",
-					dataType:"json"
-				})
-					.done(function( data ) {
-						$("span[id^=progPercent]").each(function(index) {
-							//data[1] is the total galaxies in each job, data[0] is the number of galaxies still processing/submitted per job
-							var completed = 100-(data[0][index]/data[1][index]*100);
-							completed = completed.toFixed(2);
+	<script>
+		function getCount() {
+			$.ajax({
+				type: "GET",
+				url: "{{ route('progressAjax') }}",
+				dataType:"json"
+			})
+				.done(function( data ) {
+					$("span[id^=progPercent]").each(function(index) {
+						//data[1] is the total galaxies in each job, data[0] is the number of galaxies still processing/submitted per job
+						var completed = 100-(data[0][index]/data[1][index]*100);
+						completed = completed.toFixed(2);
+						if(!$.isNumeric(completed)){
+							$(this).text("100% complete");
+						}
+						else{
 							$(this).text(completed+"% complete");
 
-						});
+						}
 
-						$("div[id^=progBar]").each(function(index) {
-							//data[1] is the total galaxies in each job, data[0] is the number of galaxies still processing/submitted per job
-							var completed = 100-(data[0][index]/data[1][index]*100);
-							completed = completed.toFixed(2);
+					});
+
+					$("div[id^=progBar]").each(function(index) {
+						//data[1] is the total galaxies in each job, data[0] is the number of galaxies still processing/submitted per job
+						var completed = 100-(data[0][index]/data[1][index]*100);
+						completed = completed.toFixed(2);
+						if(!$.isNumeric(completed)){
+							$(this).attr("style", "width:100%;height:30px");
+							$(this).text("100%");
+						}
+						else{
 							$(this).attr("style", "width:"+completed+"%;height:30px");
 							$(this).attr("aria-valuenow", completed);
 							if(completed > 6){
 								$(this).text(completed+"%");
 							}
-						});
+						}
 
-
-
-						setTimeout(getCount, 2000);
 					});
 
-			}
-			getCount();
-		</script>
 
 
-		<div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
-			<div class="wrapper" style="width:70%">
-				<div class="card card-4">
-					<div class="card-body" >
+					setTimeout(getCount, 2000);
+				});
+
+		}
+		getCount();
+	</script>
+
+
+	<div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins" style="background-image: url({{ asset('images/bg1.jpg') }})">
+		<div class="wrapper" style="width:70%">
+			<div class="card card-4">
+				<div class="card-body" >
 
 
 
 
-						<h3>Calculations in progress</h3>
-						<p>Completed jobs can be viewed on the <b><a href="{{route('history')}}" style="color:#0000EE">History page</a></b>.</p>
-						<br>
-						<ul id="itemContainer">
-							@foreach($jobsIncomplete as $job)
-								<li>
-									<div>
-										<b class="pull-left">{{$job->job_name}}</b>
-										<br>
-										<span class="pull-left">Submitted at @php
-												$sqlDate = strtotime($job->created_at);
-												echo date("g:i:sA, jS M Y", $sqlDate);
-											@endphp</span>
+					<h3>Calculations in progress</h3>
+					<p>Completed jobs can be viewed on the <b><a href="{{route('history')}}" style="color:#0000EE">History page</a></b>.</p>
+					<br>
+					<ul id="itemContainer">
+						@foreach($jobsIncomplete as $job)
+							<li>
+								<div>
+									<b class="pull-left">{{$job->job_name}}</b>
+									<br>
+									<span class="pull-left">Submitted at @php
+											$sqlDate = strtotime($job->created_at);
+											echo date("g:i:sA, jS M Y", $sqlDate);
+										@endphp</span>
 
-										<span id="progPercent{{$job->job_id}}" class="pull-right"></span>
-										<br>
-										<div class="progress" style="height: 30px;">
-											<div id="progBar{{$job->job_id}}" class="progress-bar progress-label" role="progressbar" aria-valuenow="60"
-												 aria-valuemin="0" aria-valuemax="60" style="width:0%; height:30px">
-											</div>
+									<span id="progPercent{{$job->job_id}}" class="pull-right"></span>
+									<br>
+									<div class="progress" style="height: 30px;">
+										<div id="progBar{{$job->job_id}}" class="progress-bar progress-label" role="progressbar" aria-valuenow="60"
+											 aria-valuemin="0" aria-valuemax="60" style="width:0%; height:30px">
 										</div>
-										<br>
 									</div>
-								</li>
-							@endforeach
-						</ul>
-						<div class="holder"></div>
-						<script>
-							/* when document is ready */
-							$(function() {
-								/* initiate plugin */
-								$("div.holder").jPages({
-									containerID: "itemContainer",
-									perPage: 6,
-									previous: "Previous",
-									next: "Next"
-								});
+									<br>
+								</div>
+							</li>
+						@endforeach
+					</ul>
+					<div class="holder"></div>
+					<script>
+						/* when document is ready */
+						$(function() {
+							/* initiate plugin */
+							$("div.holder").jPages({
+								containerID: "itemContainer",
+								perPage: 6,
+								previous: "Previous",
+								next: "Next"
 							});
-						</script>
-					</div>
+						});
+					</script>
 				</div>
 			</div>
 		</div>
+	</div>
 	</body>
 @endsection

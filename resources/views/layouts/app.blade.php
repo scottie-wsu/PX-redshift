@@ -59,15 +59,15 @@
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/daterangepicker/daterangepicker.css') }}">
 
-	    <!-- External table scripts and css-->
+	<!-- External table scripts and css-->
 
 	<!--commenting out the jquery here as it breaks the progress page otherwise-->
 	<!--<script src="https://code.jquery.com/jquery-3.5.1.js" defer></script>-->
-   <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
-   <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
+	<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
+	<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
 
-   <script src="{{ asset('vendor/RowGroup-1.1.2/js/dataTables.rowGroup.min.js') }}" defer></script>
-	 
+	<script src="{{ asset('vendor/RowGroup-1.1.2/js/dataTables.rowGroup.min.js') }}" defer></script>
+
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css" defer>
 	<link rel="stylesheet" type="text/css" href="{{ asset('vendor/RowGroup-1.1.2/css/rowGroup.bootstrap.min.css') }}">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" defer>
@@ -137,17 +137,26 @@
 					$userChecker = $check[0]->level;
 
 					//jobs processing check logic
-					$jobCheck = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
-
+					//$jobCheck = DB::table('redshifts')->where('status', 'PROCESSING')->orWhere('status', 'SUBMITTED')->exists();
+					$jobCheck = DB::table('redshifts')
+						->join('jobs', 'redshifts.job_id', 'jobs.job_id')
+						->join('users', 'jobs.user_id', 'users.id')
+						->where('jobs.user_id', $user->id)
+						->where(function($query) {
+							$query->where('status', 'PROCESSING')
+								->orWhere('status', 'SUBMITTED');
+						})->exists();
 					//show download link for all jobs on history page logic
 					$urlFull = URL::current();
 					$url = explode("/", $urlFull);
 				@endphp
 
 				@if(end($url) == 'history')
-					<li class="nav-item">
-						<a class="nav-link" href="{{ route('zipAll') }}"> Download all results </a>
-					</li>
+					@if($jobCheck == true)
+						<li class="nav-item">
+							<a class="nav-link" href="{{ route('zipAll') }}"> Download all results </a>
+						</li>
+					@endif
 				@endif
 
 				@if($jobCheck == true)
@@ -222,4 +231,3 @@
 	<p>Powered in part by <a href="https://backpackforlaravel.com/">Backpack for Laravel</a></p>
 </div>
 </html>
-
