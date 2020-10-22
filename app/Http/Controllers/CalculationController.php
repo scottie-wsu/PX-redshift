@@ -201,6 +201,7 @@ class CalculationController extends Controller
 		$job->job_name = $request->input('job_nameFile');
 		$job->job_description = $request->input('job_descriptionFile');
 		$job->user_id = $userId;
+		$job->created_at = \Carbon\Carbon::now();
 		$job->save();
 		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
 		$jobId = $lastJob->job_id;
@@ -256,7 +257,7 @@ class CalculationController extends Controller
 
 		//don't think this is actually needed anymore so commenting out just in case
 		//$calculations= calculations::join('redshifts', 'calculation_ID', '=', 'calculations.galaxy_ID')
-			//->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
+		//->select('redshifts.*','calculations.redshift_result')->orderByDesc('calculations.updated_at')->where('redshifts.user_ID', auth()->id());
 
 		$userId = auth()->id();
 		$jobs = DB::select('SELECT job_id, job_name, job_description, user_id, created_at FROM jobs WHERE user_id = '.$userId);
@@ -327,6 +328,7 @@ class CalculationController extends Controller
 		$job->job_name = $request->input('job_name');
 		$job->job_description = $request->input('job_description');
 		$job->user_id = $userId;
+		$job->created_at = \Carbon\Carbon::now();
 		$job->save();
 		$lastJob = DB::table('jobs')->latest('job_id')->where('user_id','=', $userId)->first();
 		$jobId = $lastJob->job_id;
@@ -445,10 +447,10 @@ class CalculationController extends Controller
 
 
 		//$count = count(DB::select("SELECT status FROM redshifts
-			//INNER JOIN jobs on redshifts.job_id = jobs.job_id
-			//INNER JOIN users on jobs.user_id = users.id
-			//WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
-			//AND users.id = " . $userId));
+		//INNER JOIN jobs on redshifts.job_id = jobs.job_id
+		//INNER JOIN users on jobs.user_id = users.id
+		//WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
+		//AND users.id = " . $userId));
 
 		//echo ("[".$count.",".$userId."]");
 		//$var = [$count, $maxCount];
