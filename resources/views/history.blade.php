@@ -73,19 +73,20 @@
 
 						//checks that a job actually has some redshifts
 						$jobCounterNullCheck = DB::table('redshifts')->where('job_id', $uniqueJobId)->count();
-
 						//checks that all? redshifts in a job have completed
 						if($jobCounterNullCheck != 0){
 							$jobCounterSubmitted = DB::table('redshifts')
 								->join('jobs', 'redshifts.job_id', 'jobs.job_id')
 								->join('users', 'jobs.user_id', 'users.id')
 								->where('jobs.user_id', $job->user_id)
+								->where('redshifts.job_id', $uniqueJobId)
 								->where('status', 'SUBMITTED')->exists();
 
 							$jobCounterProcessing = DB::table('redshifts')
 								->join('jobs', 'redshifts.job_id', 'jobs.job_id')
 								->join('users', 'jobs.user_id', 'users.id')
 								->where('jobs.user_id', $job->user_id)
+								->where('redshifts.job_id', $uniqueJobId)
 								->where('status', 'PROCESSING')->exists();
 
 
@@ -275,7 +276,7 @@
 												<td>
 													@php
 														if(isset($calculation->redshift_alt_result)){
-															echo ('<a class="showLink" href="' . $calculation->redshift_alt_result . '">Show');
+															echo ('<a class="showLink" target="_blank" href="' . $calculation->redshift_alt_result . '">Show');
 														}
 													@endphp
 												</td>

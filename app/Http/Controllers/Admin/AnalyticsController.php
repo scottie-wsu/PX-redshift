@@ -156,8 +156,8 @@ class AnalyticsController extends Controller
 
 		//$method_name = methods::orderBy('method_id')->pluck('method_id', 'method_name');
 		$methodLabelArray = methods::select('method_name', 'removed')->get();
-
 		$methodLabels = [];
+		$countDataArray = [];
 		foreach ($methodLabelArray as $method)
 		{
 			if($method->removed == 1)
@@ -167,10 +167,24 @@ class AnalyticsController extends Controller
 			else{
 				$methodLabels[] = $method->method_name;
 			}
+
+			$perMethodCount =  DB::select('SELECT method_name, COUNT(*) as total FROM calculations INNER JOIN methods on calculations.method_id = methods.method_id WHERE method_name = "'.$method->method_name.'" GROUP BY methods.method_name ORDER BY methods.method_id');
+			if(!is_null($perMethodCount)){
+				$blank = collect($perMethodCount)->pluck('total');
+
+				if(!is_numeric($blank->get('0'))){
+					$countDataArray[] = 0;
+				}
+				else{
+					$countDataArray[] = $blank->get('0');
+				}
+			}
+			else{
+				$countDataArray[] = 0;
+			}
+
 		}
 
-
-		//dump($methodLabelArray);
 
 		$colorArray =[
 			'rgba(255, 40, 31, 0.6)', //red
@@ -209,7 +223,7 @@ class AnalyticsController extends Controller
 					"label" => "Methods Used",
 					'backgroundColor' => ($colorArray),
 					'hoverBackgroundColor' => [],
-					'data' => collect($jobCountPerMethod)->pluck('total')->toArray(),
+					'data' => ($countDataArray),
 				]
 			])
 			->options([]);
@@ -278,9 +292,9 @@ class AnalyticsController extends Controller
 			}
 		}
 
-		if($redshiftResultsPerInstitution == 0){
-			$binLabelsMax = $binLabels[$binSize-1];
-		}
+
+		$binLabelsMax = $binLabels[$binSize-1];
+
 
 		$chartjs3 = app()->chartjs
 
@@ -494,7 +508,7 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts4(){
-		$redshiftCount = redshifts::select('calculation_id')->get()->count();
+		$redshiftCount = calculations::select('real_calculation_id')->get()->count();
 
 		$result = $redshiftCount;
 		echo $result;

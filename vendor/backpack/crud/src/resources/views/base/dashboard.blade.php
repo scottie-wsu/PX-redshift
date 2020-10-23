@@ -157,38 +157,38 @@
                 ->type('progress')
                 ->class('card border-0 text-white bg-success text-center ')
                 ->progressClass('progress-bar')
-                ->value("<span id='mycount4'>$redshiftCount</span> Redshifts Completed ")
+                ->value("<span id='mycount4'>$redshiftCount</span> calculations completed")
                 ->onlyHere(),
 
              Widget::add()
                 ->type('progress')
                 ->class('card border-0 text-white bg-warning text-center ')
                 ->progressClass('progress-bar')
-                ->value("<span id='mycount3'>$jobCount</span> Jobs Submitted")
+                ->value("<span id='mycount3'>$jobCount</span> jobs submitted")
                 ->onlyHere(),
 
             Widget::add()
                 ->type('progress')
                 ->class('card border-0 text-white bg-info text-center ')
-                ->value("<span id='mycount5'>$usersCount</span> Users Registered")
+                ->value("<span id='mycount5'>$usersCount</span> users registered")
                 ->onlyHere(),
 
             Widget::add()
                 ->type('progress')
                 ->class('card border-0 text-white bg-danger text-center ')
-                ->value("<span id='mycount6'>$methodCount</span> Methods Available")
+                ->value("<span id='mycount6'>$methodCount</span> methods available")
                 ->onlyHere(),
 
             Widget::add()
                 ->type('progress')
                 ->class('card border-0 text-white bg-primary text-center ')
-                ->value("<span id='mycount1'>$submitted</span> Galaxies Submitted")
+                ->value("<span id='mycount1'>$submitted</span> galaxies yet to be processed")
                 ->onlyHere(),
 
             Widget::add()
                 ->type('progress')
                 ->class('card border-0 text-white bg-dark text-center ')
-                ->value("<span id='mycount2'>$processing</span> Galaxies Processing")
+                ->value("<span id='mycount2'>$processing</span> galaxies processing")
                 ->onlyHere(),
 
 
