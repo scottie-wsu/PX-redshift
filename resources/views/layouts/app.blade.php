@@ -152,7 +152,7 @@
 				@endphp
 
 				@if(end($url) == 'history')
-					@if($jobCheck == true)
+					@if($jobCheck == false)
 						<li class="nav-item">
 							<a class="nav-link" href="{{ route('zipAll') }}"> Download all results </a>
 						</li>

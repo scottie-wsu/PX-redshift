@@ -110,6 +110,8 @@ class CalculationController extends Controller
 				$y = $y+1;
 			}
 		}
+		//return(dump($request->input('method_id_for_files'.$i);
+
 
 		if($y == 0){
 			return back()->withErrors("At least one method must be selected.");
@@ -117,7 +119,7 @@ class CalculationController extends Controller
 
 
 		//file upload logic
-		$target_dir = "temp/";
+		$target_dir = "storage/";
 		$clientFile = basename($_FILES["fileToUpload"]["name"]);
 		$explodedClientFile = explode(".", $clientFile);
 		$explodedCount = count($explodedClientFile);
@@ -162,7 +164,7 @@ class CalculationController extends Controller
 				//is it worth finding some way to notify a user some rows were invalid?
 				if($skipFlag != 1){
 					$galaxy[$i] = new redshifts();
-					$galaxy[$i]->assigned_calc_ID = $data[0];
+					$galaxy[$i]->assigned_calc_id = $data[0];
 					$galaxy[$i]->optical_u = floatval($data[1]);
 					$galaxy[$i]->optical_v = floatval($data[2]);
 					$galaxy[$i]->optical_g = floatval($data[3]);
@@ -311,8 +313,8 @@ class CalculationController extends Controller
 		$methodCount = methods::count();
 		$y = 0;
 		for($i=1;$i<$methodCount+1;$i++){
-			if($request->input('method_id_for_files'.$i)!= null){
-				$methodRequests[$y] = $request->input('method_id_for_files'.$i);
+			if($request->input('method_id_for_form'.$i)!= null){
+				$methodRequests[$y] = $request->input('method_id_for_form'.$i);
 				$y = $y+1;
 			}
 		}
@@ -336,7 +338,7 @@ class CalculationController extends Controller
 		//creating data for http json request
 		$galaxy = array();
 		$galaxy[0] = new redshifts();
-		$galaxy[0]->assigned_calc_ID = $request->input('assigned_calc_ID');
+		$galaxy[0]->assigned_calc_id = $request->input('assigned_calc_ID');
 		$galaxy[0]->optical_u = floatval($request->input('optical_u'));
 		$galaxy[0]->optical_v = floatval($request->input('optical_v'));
 		$galaxy[0]->optical_g = floatval($request->input('optical_g'));
@@ -356,7 +358,7 @@ class CalculationController extends Controller
 		//creating metadata row for API
 		$galaxy[1] = new redshifts();
 		$galaxy[1]->job_id = $jobId;
-		$galaxy[1]->methods = $request->input('methods');
+		$galaxy[1]->methods = $methodRequests;
 		$galaxy[1]->user_ID = auth()->id();
 
 		//this is encrypted but still a bit of a concern
@@ -425,22 +427,20 @@ class CalculationController extends Controller
 		$jobsIncomplete = array_column(DB::select("SELECT DISTINCT jobs.job_id, job_name FROM jobs
 			INNER JOIN redshifts on jobs.job_id = redshifts.job_id
 			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
-			AND jobs.user_id = " . $userId), 'job_id');
+			AND jobs.user_id = " . $userId ." ORDER BY jobs.created_at DESC;"), 'job_id');
 
 		foreach($jobsIncomplete as $jobId){
 			$count = count(DB::select("SELECT status FROM redshifts
 			INNER JOIN jobs on redshifts.job_id = jobs.job_id
 			INNER JOIN users on jobs.user_id = users.id
 			WHERE (status = 'SUBMITTED' OR status = 'PROCESSING')
-			AND jobs.job_id = " . $jobId ."
-			ORDER BY jobs.created_at DESC;"));
+			AND jobs.job_id = " . $jobId));
 			array_push($countsArray, $count);
 
 			$countMax = count(DB::select("SELECT status FROM redshifts
 			INNER JOIN jobs on redshifts.job_id = jobs.job_id
 			INNER JOIN users on jobs.user_id = users.id
-			WHERE jobs.job_id = " . $jobId ."
-			ORDER BY jobs.created_at DESC;"));
+			WHERE jobs.job_id = " . $jobId));
 			array_push($countsMaxArray, $countMax);
 		}
 
