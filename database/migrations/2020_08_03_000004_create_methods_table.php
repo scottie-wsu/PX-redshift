@@ -43,6 +43,13 @@ class CreateMethodsTable extends Migration
                 'method_description' => 'subtracting all measurements',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
+            ],
+			[
+			'method_name' => 'sum_as_graphs',
+			'python_script_path' => 'scripts/sum_as_graphs.py',
+			'method_description' => 'sums values and produces a graph',
+			'created_at' => Carbon::now(),
+			'updated_at' => Carbon::now()
             ]
         ));
     }

@@ -72,6 +72,12 @@
 				dataType:"json"
 			})
 				.done(function( data ) {
+					var numProgress = $('.progress').length;
+
+					if(numProgress < data[0].length){
+						$('.newJobNotif').attr("style", "");
+					}
+
 					$("span[id^=progPercent]").each(function(index) {
 						//data[1] is the total galaxies in each job, data[0] is the number of galaxies still processing/submitted per job
 						var completed = 100-(data[0][index]/data[1][index]*100);
@@ -123,6 +129,7 @@
 
 
 					<h3>Calculations in progress</h3>
+					<b class="newJobNotif" style="display:none">New jobs have been submitted! Refresh this page to track their progress.</b>
 					<p>Completed jobs can be viewed on the <b><a href="{{route('history')}}" style="color:#0000EE">History page</a></b>.</p>
 					<br>
 					<ul id="itemContainer">

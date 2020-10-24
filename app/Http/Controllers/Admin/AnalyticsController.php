@@ -529,9 +529,11 @@ class AnalyticsController extends Controller
 	}
 
 	public function ajaxCounts4(){
-		$redshiftCount = calculations::select('real_calculation_id')->get()->count();
+		$redshiftCount = redshifts::select('calculation_id')->where('status', 'FAILED')->get()->count();
+		$calcCount = calculations::select('real_calculation_id')->get()->count();
+		$nonFailCount = $calcCount-$redshiftCount;
 
-		$result = $redshiftCount;
+		$result = $nonFailCount;
 		echo $result;
 	}
 

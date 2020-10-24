@@ -215,16 +215,17 @@
 										}
 										echo(" failed. Please try again later.</b>");
 
-										echo("<p>Galaxies that were not calculated with the methods above:</p>");
-										foreach($failFinder as $fail){
-											if($failCounter < $failMax){
-												echo($fail->assigned_calc_id.", ");
-												$failCounter = $failCounter+1;
-											}
-											else{
-												echo($fail->assigned_calc_id);
-											}
-										}
+										////this is not neccessary unless in future it becomes possible to pick and choose what galaxies are calculated with what method
+										//echo("<p>Galaxies that were not calculated with the methods above:</p>");
+										//foreach($failFinder as $fail){
+											//if($failCounter < $failMax){
+												//echo($fail->assigned_calc_id.", ");
+												//$failCounter = $failCounter+1;
+											//}
+											//else{
+												//echo($fail->assigned_calc_id);
+											//}
+										//}
 
 									@endphp
 
