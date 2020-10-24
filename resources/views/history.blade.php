@@ -165,13 +165,14 @@
 								@endphp</td>
 							<td>{{ $interval }}</td>
 							@php
-								$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM calculations
-									INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
-									INNER JOIN jobs on redshifts.job_id = jobs .job_id
-									INNER JOIN users on jobs.user_id = users.id
-									WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
-									  AND calculations.redshift_alt_result LIKE '%alt_result%'
-									AND users.id = " . auth()->id()));
+								//no idea what this is doing, leaving it in just in case it breaks something
+									$altCount = count(DB::select("SELECT calculations.redshift_alt_result FROM calculations
+										INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id
+										INNER JOIN jobs on redshifts.job_id = jobs .job_id
+										INNER JOIN users on jobs.user_id = users.id
+										WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
+										  AND calculations.redshift_alt_result LIKE '%alt_result%'
+										AND users.id = " . auth()->id()));
 
 							@endphp
 							<td>
@@ -191,7 +192,41 @@
 								<div class="fold-content">
 									<h3>{{ $job->job_name }}</h3>
 									<p>{{ $job->job_description }}</p>
+									@php
+										//building a query to find the galaxy names and method name that caused a fail
+										$failFinder = DB::select('SELECT DISTINCT method_name, assigned_calc_id FROM redshifts
+											INNER JOIN calculations on redshifts.calculation_id = calculations.galaxy_id
+											INNER JOIN methods on calculations.method_id = methods.method_id
+											WHERE redshifts.status = "FAILED"
+											AND job_id = '.$uniqueJobId);
 
+										$methodFailArray = [];
+										$failMax = count($failFinder);
+										$failCounter = 1;
+
+
+										echo("<b style='color:red'>Estimations using methods: ");
+										foreach($failFinder as $fail){
+											//makes sure we're not printing that the same method failed over and over for every galaxy that failed
+											if(!in_array($fail->method_name, $methodFailArray)){
+												echo($fail->method_name.", ");
+												$methodFailArray[] = $fail->method_name;
+											}
+										}
+										echo(" failed. Please try again later.</b>");
+
+										echo("<p>Galaxies that were not calculated with the methods above:</p>");
+										foreach($failFinder as $fail){
+											if($failCounter < $failMax){
+												echo($fail->assigned_calc_id.", ");
+												$failCounter = $failCounter+1;
+											}
+											else{
+												echo($fail->assigned_calc_id);
+											}
+										}
+
+									@endphp
 
 									<div class="row searchTable" >
 										<div class="col-md-2 ">
@@ -223,7 +258,7 @@
 										</div>
 									</div>
 									<div class="hideShow">
-										<label class="hideShow">Hide Optics
+										<label class="hideShow">Hide data
 											<input type="checkbox" id="hideCheckbox{{ $rowIndex }}" class="hideShow">
 										</label>
 									</div>
@@ -267,46 +302,50 @@
 												INNER JOIN methods on calculations.method_id = methods.method_id
 												WHERE redshifts.job_id = '.$uniqueJobId);
 										@endphp
+
 										@foreach($calculations as $calculation)
-											<tr>
-												<td>{{ $calculation->assigned_calc_id }}</td>
-												<td>{{ $calculation->method_name }}</td>
-												<td>{{ $calculation->redshift_result }}</td>
+											@if($calculation->status != "FAILED")
+												<tr>
+													<td>{{ $calculation->assigned_calc_id }}</td>
+													<td>{{ $calculation->method_name }}</td>
+													<td>{{ $calculation->redshift_result }}</td>
 
-												<td>
-													@php
-														if(isset($calculation->redshift_alt_result)){
-															echo ('<a class="showLink" target="_blank" href="' . $calculation->redshift_alt_result . '">Show');
-														}
-													@endphp
-												</td>
-												<td>
-													@php
-														if(isset($calculation->redshift_alt_result)){
-															$fileName = $calculation->redshift_alt_result;
-															$fileExtensionArray = explode(".", $fileName);
-															$fileExtension = end($fileExtensionArray);
-															if($fileExtension !== "csv"){
-															echo ('<a href="' . $calculation->redshift_alt_result . '" data-lightbox="file Set' . $rowIndex . '" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img>');}
-														}
+													<td>
+														@php
+															if(isset($calculation->redshift_alt_result)){
+																echo ('<a class="showLink" target="_blank" href="' . $calculation->redshift_alt_result . '">Show');
+															}
+														@endphp
+													</td>
+													<td>
+														@php
+															if(isset($calculation->redshift_alt_result)){
+																$fileName = $calculation->redshift_alt_result;
+																$fileExtensionArray = explode(".", $fileName);
+																$fileExtension = end($fileExtensionArray);
+																if($fileExtension !== "csv"){
+																echo ('<a href="' . $calculation->redshift_alt_result . '" data-lightbox="file Set' . $rowIndex . '" ><img class="thumbnail" src="' . $calculation->redshift_alt_result . '"></img>');}
+															}
 
-													@endphp
-												</td>
-												<td>{{ $calculation->optical_u }}</td>
-												<td>{{ $calculation->optical_v }}</td>
-												<td>{{ $calculation->optical_g }}</td>
-												<td>{{ $calculation->optical_r }}</td>
-												<td>{{ $calculation->optical_i }}</td>
-												<td>{{ $calculation->optical_z }}</td>
-												<td>{{ $calculation->infrared_three_six }}</td>
-												<td>{{ $calculation->infrared_four_five }}</td>
-												<td>{{ $calculation->infrared_five_eight }}</td>
-												<td>{{ $calculation->infrared_eight_zero }}</td>
-												<td>{{ $calculation->infrared_J }}</td>
-												<td>{{ $calculation->infrared_H }}</td>
-												<td>{{ $calculation->infrared_K }}</td>
-												<td>{{ $calculation->radio_one_four }}</td>
-											</tr>
+														@endphp
+													</td>
+													<td>{{ $calculation->optical_u }}</td>
+													<td>{{ $calculation->optical_v }}</td>
+													<td>{{ $calculation->optical_g }}</td>
+													<td>{{ $calculation->optical_r }}</td>
+													<td>{{ $calculation->optical_i }}</td>
+													<td>{{ $calculation->optical_z }}</td>
+													<td>{{ $calculation->infrared_three_six }}</td>
+													<td>{{ $calculation->infrared_four_five }}</td>
+													<td>{{ $calculation->infrared_five_eight }}</td>
+													<td>{{ $calculation->infrared_eight_zero }}</td>
+													<td>{{ $calculation->infrared_J }}</td>
+													<td>{{ $calculation->infrared_H }}</td>
+													<td>{{ $calculation->infrared_K }}</td>
+													<td>{{ $calculation->radio_one_four }}</td>
+												</tr>
+											@endif
+
 										@endforeach
 										</tbody>
 									</table>

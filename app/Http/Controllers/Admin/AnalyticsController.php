@@ -10,6 +10,7 @@ use App\User;
 use App\redshifts;
 use App\methods;
 use App\Jobs;
+use Illuminate\Support\Facades\Auth;
 
 
 class AnalyticsController extends Controller
@@ -185,11 +186,10 @@ class AnalyticsController extends Controller
 
 		}
 
-
 		$colorArray =[
-			'rgba(255, 40, 31, 0.6)', //red
-			'rgba(255, 242, 31, 0.6)', //yellow
-			'rgba(31, 31, 255, 0.6)', //blue
+			'rgba(255, 40, 31, 0.8)', //red
+			'rgba(255, 242, 31, 0.8)', //yellow
+			'rgba(31, 31, 255, 0.8)', //blue
 			'rgba(141, 31, 187, 0.8)', //purple
 			'rgba(31, 187, 31, 0.8)', //green
 			'rgba(255, 165, 31, 0.8)', //orange
@@ -200,6 +200,14 @@ class AnalyticsController extends Controller
 			'rgba(133, 31, 255, 0.8)', //dark purple
 			'rgba(131, 206, 31, 0.8)', //bright green
 		];
+		//logic to make sure >12 methods will always have a unique colour
+		$colorCount = count($countDataArray);
+		for($i=12; $i<$colorCount; $i++){
+			$redValue = rand(50,200);
+			$greenValue = rand(50,200);
+			$blueValue = rand(50,200);
+			$colorArray[] = 'rgba('.$redValue.','.$greenValue.','.$blueValue.',0.8)';
+		}
 
 		$index = 0;
 		foreach($methodRemovedArray as $method)
@@ -231,19 +239,21 @@ class AnalyticsController extends Controller
 		//
 		//redshift result chart
 		//
-		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id GROUP BY calculations.redshift_result');
+		$redshiftResultsPerInstitution = DB::select('SELECT redshift_result FROM calculations INNER JOIN redshifts on calculations.galaxy_id = redshifts.calculation_id WHERE redshift_result > 0.0000');
 
 		//counting total redshifts
 		$redshiftTotalCount = count($redshiftResultsPerInstitution);
 		//creating a new array with no associativity/keys, just values
-		$newArray = array_column($redshiftResultsPerInstitution, 'redshift_result');
+		$sortedArray = array_column($redshiftResultsPerInstitution, 'redshift_result');
 		//sorting the new array into ascending numerical order
-		sort($newArray);
+		sort($sortedArray);
+
 		$arraySliced = array();
 
 		//figuring out how many bins. Using Sturges' formula
 		$binSize = round((log($redshiftTotalCount, 2))+1);
 
+		//skip creating a redshift chart if there are no redshifts completed
 		if($redshiftTotalCount < 1){
 			$charts = [$chartjs, $chartjs1, $chartjs2];
 			return view('analytics', compact('charts'));
@@ -251,17 +261,28 @@ class AnalyticsController extends Controller
 		//bincount here represents what range of values goes into one bin.
 		//e.g. binsize of 10 means bincount = 1, so 0-1, 1-2, etc are bins
 		$binCount = 10/$binSize;
+		//dump($binSize);
+
+		//this initialises the array completely, because if there are empty bins,
+		//the index is skipped causing errors with chart creation
+		for($y=0; $y<$binCount; $y++){
+			$arraySliced[$y] = 0;
+		}
+
 		for($i=0; $i<$binSize-1; $i++){
 			$arraySliced[0] = 0;
 			//looping over all the sorted redshifts
 			for($j=0; $j<$redshiftTotalCount; $j++){
+
 				//probably a better way to do this.
 				//writes arraysliced on every loop, which is what defines
 				//our bin cutoff points in terms of index
-				if($newArray[$j] <= $binCount*($i+1)){
+				if($sortedArray[$j] <= $binCount*($i+1)){
 					$arraySliced[$i+1] = $j+1;
 				}
+
 			}
+
 		}
 
 		//building the array of data, which is simply the count of results in each bin
@@ -531,7 +552,18 @@ class AnalyticsController extends Controller
 	public function ajaxCounts7(){
 		////initialising the guzzle client
 		$dataJSON = new redshifts();
-		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+
+		//creating token logic
+		$userKey = Auth::user()->getAuthPassword();
+		$userEmail = User::select('email')->where('id', auth()->id())->first();
+		$userExtract = $userEmail['email'];
+		$mergeData = $userExtract . ":" . $userKey . ":" . random_bytes(32);
+		$cipherMethod = "aes-128-cbc";
+		$key = "5rCBIs9Km!!cacr1";
+		$iv = "123hasdba036vpax";
+		$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
+		$dataJSON->token = $tokenData;
+
 		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
@@ -547,14 +579,25 @@ class AnalyticsController extends Controller
 		$string = (string)$response->getBody()->getContents();
 		$load = json_decode($string, true);
 		$fiveMinutes = $load['system-load'][0];
-		$fiveMinutes = $fiveMinutes*100;
+		$fiveMinutes = $fiveMinutes;
 		return "System load last 1 minute: ". $fiveMinutes . "%";
 	}
 
 	public function ajaxCounts8(){
 		////initialising the guzzle client
 		$dataJSON = new redshifts();
-		$dataJSON->token = "bWP64ux77I1l8R45gYtn8JwLBLw9lFoaRLKEGVh/kPClKKYDkRvgDJD93iTGf5Iz";
+
+		//creating token logic
+		$userKey = Auth::user()->getAuthPassword();
+		$userEmail = User::select('email')->where('id', auth()->id())->first();
+		$userExtract = $userEmail['email'];
+		$mergeData = $userExtract . ":" . $userKey . ":" . random_bytes(32);
+		$cipherMethod = "aes-128-cbc";
+		$key = "5rCBIs9Km!!cacr1";
+		$iv = "123hasdba036vpax";
+		$tokenData = openssl_encrypt($mergeData, $cipherMethod, $key, $options=0, $iv);
+		$dataJSON->token = $tokenData;
+
 		$urlAPI = 'https://redshift-01.cdms.westernsydney.edu.au/redshift/api/system-load/';
 		$client = new Client(['base_uri' => $urlAPI, 'verify' => false, 'exceptions' => false, 'http_errors' => false]);
 		////writing the code to send data to the API
@@ -570,7 +613,7 @@ class AnalyticsController extends Controller
 		$string = (string)$response->getBody()->getContents();
 		$load = json_decode($string, true);
 		$seconds30 = $load['system-load'][2];
-		$seconds30 = $seconds30*100;
+		$seconds30 = $seconds30;
 		return "System load last 15 minutes: ". $seconds30 . "%";
 	}
 

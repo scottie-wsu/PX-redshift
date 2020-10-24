@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RedshiftExport;
+use App\Exports\JobExport;
 use Maatwebsite\Excel\Facades\Excel;
 use GuzzleHttp\Client;
 use App\Jobs;
@@ -27,9 +28,11 @@ class CalculationController extends Controller
 	}
 
 	public function zipAll(){
+		//return(phpinfo());
 		$zipFileName = 'CompleteResultsWithFiles_' . date('Y-m-d_h-m-s',time()) . '.zip';
 		$zip = new \ZipArchive();
 		$zip->open($zipFileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
 
 		$userId = auth()->id();
 		//todo - may possibly need to include redshifts.status in the select on the server
@@ -39,14 +42,39 @@ class CalculationController extends Controller
 			INNER JOIN jobs on redshifts.job_id = jobs .job_id
 			INNER JOIN users on jobs.user_id = users.id
 			WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
-		  	AND calculations.redshift_alt_result LIKE '%alt_result%'
 			AND users.id = " . $userId);
 
 		foreach($dbFiles as $file){
 			$filename = $file->redshift_alt_result;
-			$path = \Storage::disk('public')->path($filename);
-			$internalZipPath = explode("alt_result/",$filename);
-			$zip->addFile($path, $internalZipPath[1]);
+
+			////this section was used for when files were stored with relative paths to the webserver
+			//$path = \Storage::disk('public')->path($filename);
+			//$internalZipPath = explode("alt_result/",$filename);
+
+			//pulling remote files based on complete urls being stored as redshift_alt_result
+			if(isset($filename)){
+				$download = file_get_contents($filename);
+
+				//getting the file extension, as urls in alt_result do not have one
+				$type = get_headers($filename, 1)["Content-Type"];
+
+				//extensionGuess = "png", "csv", etc
+				$extensionGuess = explode("/", $type[1]);
+				if($extensionGuess[1] == "png"){
+					$insideZipFileName = basename($filename).".png";
+				}
+				else{
+					if($extensionGuess[1] == "csv"){
+						$insideZipFileName = basename($filename).".csv";
+					}
+					else{
+						//fallback logic - if it's not a csv or a png, it just returns the file with no ext
+						$insideZipFileName = basename($filename);
+					}
+				}
+
+				$zip->addFromString($insideZipFileName, $download);
+			}
 		}
 		$str =  'Complete_Results_'. date('Y-m-d_h-m-s',time()) . '.csv';
 		$numericResultsCSV = Excel::store(new RedshiftExport, $str, 'public');
@@ -60,6 +88,9 @@ class CalculationController extends Controller
 
 	public function zipJob(Request $request){
 		$jobId = $request->job_id;
+		$request->session()->forget('job_id');
+		$request->session()->put('job_id', $jobId);
+
 		$jobName = DB::select("SELECT job_name FROM jobs WHERE job_id = " . $jobId);
 		$zipFileName = $jobName[0]->job_name . '_Results_' . date('Y-m-d_h-m-s',time()) . '.zip';
 		$zip = new \ZipArchive();
@@ -73,18 +104,42 @@ class CalculationController extends Controller
 			INNER JOIN jobs on redshifts.job_id = jobs.job_id
 			INNER JOIN users on jobs.user_id = users.id
 			WHERE (redshifts.status = 'COMPLETED' OR redshifts.status = 'READ')
-		  	AND calculations.redshift_alt_result LIKE '%alt_result%'
 		  	AND jobs.job_id = " . $jobId . "
 			AND users.id = " . $userId);
 
 		foreach($dbFiles as $file){
 			$filename = $file->redshift_alt_result;
-			$path = \Storage::disk('public')->path($filename);
-			$internalZipPath = explode("alt_result/",$filename);
-			$zip->addFile($path, $internalZipPath[1]);
+			////this section was used for when files were stored with relative paths to the webserver
+			//$path = \Storage::disk('public')->path($filename);
+			//$internalZipPath = explode("alt_result/",$filename);
+
+			//pulling remote files based on complete urls being stored as redshift_alt_result
+			if(isset($filename)){
+				$download = file_get_contents($filename);
+
+				//getting the file extension, as urls in alt_result do not have one
+				$type = get_headers($filename, 1)["Content-Type"];
+
+				//extensionGuess = "png", "csv", etc
+				$extensionGuess = explode("/", $type[1]);
+				if($extensionGuess[1] == "png"){
+					$insideZipFileName = basename($filename).".png";
+				}
+				else{
+					if($extensionGuess[1] == "csv"){
+						$insideZipFileName = basename($filename).".csv";
+					}
+					else{
+						//fallback logic - if it's not a csv or a png, it just returns the file with no ext
+						$insideZipFileName = basename($filename);
+					}
+				}
+
+				$zip->addFromString($insideZipFileName, $download);
+			}
 		}
 		$str =  $jobName[0]->job_name . '_Results_'. date('Y-m-d_h-m-s',time()) . '.csv';
-		$numericResultsCSV = Excel::store(new RedshiftExport, $str, 'public');
+		$numericResultsCSV = Excel::store(new JobExport, $str, 'public');
 		$path = \Storage::disk('public')->path($str);
 		$zip->addFile($path, $str);
 		$zip->close();
@@ -401,9 +456,6 @@ class CalculationController extends Controller
 	}
 
 	public function progress(Request $request){
-		//todo in the progress.blade - make the counter look good and include some kind of spinning loading circle/some other visual feedback that something is happening,
-		//todo in the progress.blade - create logic to display a button that links to the history page when the counter = 0
-		//todo in the progress.blade - if you finish those two, make some kind of progress bar that has a max value equal to the value on pageload, and readjust max value if another job is submitted
 
 		$userId = auth()->id();
 
